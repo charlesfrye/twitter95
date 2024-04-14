@@ -11,7 +11,6 @@ function Feed() {
   useEffect(() => {
     async function fetchFeed() {
       const newTweets = await getFeed();
-      console.log(newTweets);
       setTweets(newTweets);
     }
 
@@ -20,12 +19,11 @@ function Feed() {
 
   useEffect(() => {
     document.body.className = theme;
-    console.log("Theme updated in Feed:", theme);
   }, [theme]);
   return (
     <div className="Feed">
       <div className="header">
-        <h1>Feed</h1>
+        <h1>Welcome to Twitter!</h1>
       </div>
       <div className="tweetList">
         {tweets

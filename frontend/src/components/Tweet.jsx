@@ -1,6 +1,12 @@
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 function Tweet({ tweet }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/profile/${tweet.userId}`);
+  };
   return (
     <div className="tweet">
       <div className="tweetText">{tweet.text}</div>
@@ -13,8 +19,8 @@ function Tweet({ tweet }) {
           />
         ) : null}
       </div>
-      <div className="tweetAuthor">
-        <p>The author is {tweet.author}</p>
+      <div className="tweetAuthor" onClick={handleClick}>
+        <p>Posted by {tweet.author}</p>
       </div>
       <div className="tweetfakeTime">
         <p>Posted at {tweet.fakeTime}</p>

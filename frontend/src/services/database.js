@@ -1,21 +1,8 @@
-// TODO: actually fetch posts data from the database
-
 const fetchData = async () => {
   try {
-    const inData = {
-      user_id: "0",
-      limit: 10,
-    }
     const response = await fetch(
-      "https://ex-twitter--database-fastapi-app.modal.run/timeline",
-        {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(inData)
-      }
-      );
+      "https://ex-twitter--db-client-api.modal.run/tweets"
+    );
     const data = await response.json();
     return data;
   } catch (error) {

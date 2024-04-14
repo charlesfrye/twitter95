@@ -48,53 +48,129 @@ body.dark {
 }
 
 .tweet {
-	margin: 10px;
-	padding: 20px;
-	background-color: var(--background-tweet-default);
-	border-bottom: 1px solid var(--background-default); 
-	border-radius: 10px;
+	width: 100%;
+  font-family: 'MS Sans Serif', Geneva, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  background: #c0c0c0;
+  border: 2px outset #ffffff;
+  padding: 10px;
+  margin: 20px;
+  box-shadow: 2px 2px 0px #000000;
 }
 
-.tweetText {
-	font-style: italic;
-	color: var(--text-color-default); 
+.tweetText, .tweetAuthor, .tweetfakeTime, .tweetRoot, .tweetQuoted, .tweetRetweeted, .tweetLikedBy {
+  padding: 5px;
+  border: 1px solid #000000;
+  margin: 5px 0;
+  background: white;
 }
 
-.header {
+.tweetMedia img {
+  display: block;
+  margin: 5px auto;
+}
+
+.tweetMedia, .tweetRoot, .tweetQuoted, .tweetRetweeted {
+  display: none;
+}
+
+.tweetMedia:has(img), .tweetRoot:has(p), .tweetQuoted:has(p), .tweetRetweeted:has(p) {
+  display: block;
+}
+
+.tweetAuthor:before {
+  content: '';
+	background: #000080;
+  display: block;
+  height: 18px;
+  color: white;
+  padding: 0px 0px;
+	margin: 0px 0px;
+  font-weight: bold;
+	width: 100%;
+}
+
+.tweetAuthor p, .tweetfakeTime p, .tweetRoot p, .tweetQuoted p, .tweetRetweeted p, .tweetLikedBy p {
+  margin: 0;
+  font-family: 'MS Sans Serif', Geneva, sans-serif;
+}
+
+.tweet:hover {
+  border-color: #808080;
+}
+
+.Feed .header {
 	display: flex;
 	justify-content: space-between;
 	padding: 10px;
 	border-bottom: 1px solid var(--background-default);
-}
-
-.header h2 {
-	font-size: 20px;
+	font-family: 'Comic Sans MS', cursive, sans-serif;
+	font-size: 18px; 
+	border: 3px outset #FFFFFF;
 }
 
 .app {
 	display: flex;
 	justify-content: space-between;
 	align-items: stretch;
+	height: 100%;
 }
 
 .sidebar {
-	width: 20%;
 	padding: 20px;
-	background-color: var(--background-default);
+	background-color: #008080; 
 	display: flex;
 	flex: 1;
 	flex-direction: column;
 	align-items: center;
+	font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-size: 18px; 
+  border: 3px outset #FFFFFF; 
 }
 
-.sidebar.right {
-	background-color: white;
+.sidebarLeft {
+	flex: 0 0 20%;
+	background-color: #008080;
+  color: #FFFF00;
+  padding: 20px;
+  text-align: center;
+	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
+	background-size: cover;
+	background-repeat: no-repeat; 
+}
+
+.sidebarLeft h2, .sidebarLeft p {
+  margin: 10px 0; 
+}
+
+.tweetButton {
+  background-color: #00ffe5; 
+  color: #00ffe5; 
+  border: 2px outset #FFFFFF; 
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+	border: 2px outset #a0fff6;
+}
+
+.sidebar button:hover {
+  background-color: #00ffe5; 
+	color: #002521;
+}
+
+
+.sidebarRight {
+	color: rgb(238, 0, 255);
+	flex: 0 0 10%;
+	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
+	background-size: cover;
+	background-repeat: no-repeat;
 }
 
 .sidebarOption {
 	display: flex;
 	align-items: center;
-	width: 100%;
 	padding: 10px;
 	cursor: pointer;
 }
@@ -108,17 +184,7 @@ body.dark {
 	margin-bottom: 20px;
 }
 
-.sidebar button {
-	width: 100%;
-	padding: 10px;
-	background-color: var(--background-default);
-	color: var(--text-color-default);
-	border: none;
-	border-radius: 30px;
-	font-weight: bold;
-	cursor: pointer;
-}
-
 .feed {
-	flex: 2;
+	flex: 0 0 70%;
+	background-color: #f0f0f0;
 }
