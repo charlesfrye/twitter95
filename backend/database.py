@@ -53,34 +53,6 @@ class MongoClient:
          
         self.client = pymongo.MongoClient(connection_string, connect=True, appname="ex-twitter")
         self.db = self.client["ex-twitter"]
-        
-    # @modal.method()
-    # def connect(self, user=None, password=None, uri=None):    
-    #     import os     
-    #     import urllib      
-    #     mongodb_user = user or os.environ["MONGODB_USER"]     
-    #     mongodb_user = urllib.parse.quote_plus(mongodb_user)      
-    #     mongodb_password = password or os.environ["MONGODB_PASSWORD"]     
-    #     mongodb_password = urllib.parse.quote_plus(mongodb_password)      
-    #     mongodb_host = uri or os.environ["MONGODB_HOST"]      
-    #     connection_string = f"mongodb+srv://{mongodb_user}:{mongodb_password}@{mongodb_host}/?retryWrites=true&w=majority"     
-         
-    #     self.client = pymongo.MongoClient(connection_string, connect=True, appname="ex-twitter")
-    #     self.db = self.client["ex-twitter"]
-    #     return self.client
-
-    # @modal.method()
-    # def get_collection(self, collection=None):
-    #     """Accesses a specific collection in the document store."""
-    #     collection = self.get_database().get_collection(collection)
-    #     return collection
-
-    # @modal.method()
-    # def get_database(self, db="ex-twitter"):
-    #     """Accesses a specific database in the document store."""
-    #     client = self.client
-    #     db = client.get_database(db)
-    #     return db
     
     @modal.exit()
     def close(self):
