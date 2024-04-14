@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { MenuList, MenuListItem, Separator } from "react95";
 
 function Tweet({ tweet }) {
   const navigate = useNavigate();
@@ -9,19 +10,21 @@ function Tweet({ tweet }) {
   };
   return (
     <div className="tweet">
-      <div className="tweetText">{tweet.text}</div>
-      <div className="tweetMedia">
-        {tweet.media ? (
-          <img
-            src={tweet.media}
-            alt="Media"
-            style={{ width: "100%", height: "auto" }}
-          />
-        ) : null}
-      </div>
-      <div className="tweetAuthor" onClick={handleClick}>
-        <p>Posted by {tweet.author}</p>
-      </div>
+      <MenuList>
+        <MenuListItem>🎤 {tweet.text}</MenuListItem>
+        <Separator />
+        <MenuListItem onClick={handleClick}>💃🏻 {tweet.author}</MenuListItem>
+        <div className="tweetMedia">
+          {tweet.media ? (
+            <img
+              src={tweet.media}
+              alt="Media"
+              style={{ width: "100%", height: "auto" }}
+            />
+          ) : null}
+        </div>
+      </MenuList>
+      <Separator />
       <div className="tweetfakeTime">
         <p>Posted at {tweet.fakeTime}</p>
       </div>

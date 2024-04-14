@@ -20,6 +20,13 @@ body {
 	background-image: url("../public/space-background1.png");
 	background-size: 100px;
 	background-repeat: repeat;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 body.light {
@@ -41,7 +48,7 @@ body.dark {
 }
 
 #root {
-	max-width: 1280px;
+	width: 100%;
 	margin: 10px 10px;
 	padding: 10px 10px;
 	text-align: center;
@@ -57,6 +64,8 @@ body.dark {
   padding: 10px;
   margin: 20px;
   box-shadow: 2px 2px 0px #000000;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 .tweetText, .tweetAuthor, .tweetfakeTime, .tweetRoot, .tweetQuoted, .tweetRetweeted, .tweetLikedBy {
@@ -100,19 +109,20 @@ body.dark {
   border-color: #808080;
 }
 
-.Feed .header {
+.header {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	padding: 10px;
 	border-bottom: 1px solid var(--background-default);
 	font-family: 'Comic Sans MS', cursive, sans-serif;
 	font-size: 18px; 
+	color: var(--text-color-default);
 	border: 3px outset #FFFFFF;
 }
 
 .app {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-evenly;
 	align-items: stretch;
 	height: 100%;
 }
@@ -124,17 +134,16 @@ body.dark {
 	flex: 1;
 	flex-direction: column;
 	align-items: center;
+	text-align: center;
 	font-family: 'Comic Sans MS', cursive, sans-serif;
   font-size: 18px; 
-  border: 3px outset #FFFFFF; 
+  border: 3px outset #FFFFFF;
+	max-width: 200px; 
 }
 
 .sidebarLeft {
-	flex: 0 0 20%;
 	background-color: #008080;
   color: #FFFF00;
-  padding: 20px;
-  text-align: center;
 	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
 	background-size: cover;
 	background-repeat: no-repeat; 
@@ -162,7 +171,6 @@ body.dark {
 
 .sidebarRight {
 	color: rgb(238, 0, 255);
-	flex: 0 0 10%;
 	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
@@ -184,7 +192,26 @@ body.dark {
 	margin-bottom: 20px;
 }
 
+@keyframes tiltAnimation {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+.logo-animate {
+  display: block; 
+  animation: tiltAnimation 1s infinite; 
+  transition: transform 0.3s; 
+}
+
+
 .feed {
-	flex: 0 0 70%;
+	flex: 3;
+	max-width: 600px;
+	min-width: 300px;
+	margin: auto;
 	background-color: #f0f0f0;
 }
