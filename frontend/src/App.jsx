@@ -1,7 +1,9 @@
 import "./App.css";
 import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import { useTheme } from "./components/ThemeContext";
 import Feed from "./components/Feed";
+import Profile from "./components/Profile";
 import Sidebar from "./components/Sidebar";
 import { FaHome, FaBell, FaUserAlt, FaCog, FaSearch } from "react-icons/fa";
 
@@ -23,9 +25,12 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar options={leftSidebarOptions} />
-      <Feed />
-      <Sidebar options={rightSidebarOptions} />
+      <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
+      <Routes>
+        <Route path="/" element={<Feed />} />
+        <Route path="/profile/:userId" element={<Profile />} />
+      </Routes>
+      <Sidebar className="sidebarRight" options={rightSidebarOptions} />
     </div>
   );
 }
