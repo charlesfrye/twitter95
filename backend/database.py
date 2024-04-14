@@ -14,7 +14,7 @@ stub = modal.Stub(
 )
 
 
-@stub.function(keep_warm=1)
+@stub.function(keep_warm=1, max_concurrent_inputs=1000, concurrency_limit=1)
 @modal.asgi_app()
 def api():
     from sqlalchemy import and_, or_

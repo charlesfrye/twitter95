@@ -16,6 +16,7 @@ function Profile() {
         const userData = await getUser(userId);
         const userTweets = await getUserTweets(userId);
 
+
         setUser({ ...userData, tweets: userTweets });
       } catch (error) {
         console.error("Error fetching data:", error);
