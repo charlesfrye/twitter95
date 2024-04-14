@@ -28,6 +28,8 @@ function Tweet({ tweet }) {
   return (
     <div className="tweet">
       <MenuList>
+        <MenuListItem onClick={handleClick}>🎤 {tweet.text}</MenuListItem>
+        <Separator />
         <MenuListItem onClick={handleClick}>
           {user.profile_pic && (
             <img
@@ -36,11 +38,7 @@ function Tweet({ tweet }) {
               style={{ width: 30, height: 30, borderRadius: "50%" }}
             />
           )}
-          🎤 {tweet.text}
-        </MenuListItem>
-        <Separator />
-        <MenuListItem onClick={handleClick}>
-          💃🏻 {user.display_name || user.user_id}
+          {user.display_name || user.user_id}
         </MenuListItem>
         <div className="tweetMedia">
           {Array.isArray(tweet.images) ? (

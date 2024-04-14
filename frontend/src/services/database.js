@@ -1,38 +1,42 @@
-const fetchData = async () => {
+const fetchData = async (url) => {
   try {
-    const response = await fetch(
-      "https://ex-twitter--db-client-api.modal.run/tweets"
-    );
-    const data = await response.json();
-    return data;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
   } catch (error) {
-    console.error("Failed to fetch data:", error);
-    throw error;
+    console.error("Error fetching data:", error);
+    return { error };
   }
 };
 
-const getFeed = async (limit, realTime, userId) => {
-  // fetch limit tweets as of realTime (optionally for userId) from the db
-  const response = await fetchData();
-  return response;
-};
+const baseUrl = "https://ex-twitter--db-client-api.modal.run";
 
-const getTimeline = async (limit, realTime, userId) => {
-  // fetch limit most recent tweets as of realTime (optionally for userId) from the db
-  const response = await fetchData();
-  return response;
-};
-
-const getPosts = async (limit, realTime, userId) => {
-  // fetch limit most recent posts as of realTime for a given userId from the db (to put in profile page)
-  const response = await fetchData();
-  return response;
+const getFeed = async () => {
+  const url = `${baseUrl}/tweets/`;
+  return await fetchData(url);
 };
 
 const getUser = async (userId) => {
-  // fetch user data for a given userId from the db
-  const response = await fetchData().user[userId];
-  return response;
+  const url = `${baseUrl}/users/${userId}`;
+  return await fetchData(url);
 };
 
-export { getFeed, getTimeline, getPosts, getUser };
+const getUserTweets = async (userId) => {
+  const url = `${baseUrl}/users/${userId}/tweets/`;
+  return await fetchData(url);
+};
+
+const getUserProfile = async (userId) => {
+  try {
+    const user = await getUser(userId);
+    const tweets = await getUserTweets(userId);
+    return { ...user, tweets };
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return { error };
+  }
+};
+
+export { getFeed, getUser, getUserTweets, getUserProfile };
