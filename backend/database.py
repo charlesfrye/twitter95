@@ -63,6 +63,10 @@ class ReplyToTweetRequest(BaseModel):
     author: str
     text: str
     root: str # tweet id we are replying to
+    
+class FollowUserRequest(BaseModel):
+    userToBeFollowed: str
+    userToFollow: str
      
 class Tweet(BaseModel):
     id: PyObjectId
@@ -112,9 +116,13 @@ class MongoClient:
         return self.client.server_info()
 
     @modal.method()
-    def get_timeline(self, user_id, limit=10):
-        # tweets = self._get_tweets_from_following(user_id, limit)
+    def get_mock_timeline(self, user_id, limit=10):
         tweets = mock_feed[:limit]
+        return tweets
+    
+    @modal.method()
+    def get_timeline(self, user_id, limit=10):
+        tweets = self._get_tweets_from_following(self.db, user_id, limit)
         return tweets
 
     @modal.method()
@@ -157,6 +165,18 @@ class MongoClient:
         user_data["follows"] = []
         created_user_id = self.db["users"].insert_one(user_data).inserted_id
         return created_user_id
+    
+    @modal.method()
+    def follow_user(self, follow_req: FollowUserRequest) -> bool:
+        user_to_follow = self.db["users"].find_one({"_id": ObjectId(follow_req.userToFollow)})
+        if not user_to_follow:
+            return False
+        user_to_be_followed = self.db["users"].find_one({"_id": ObjectId(follow_req.userToBeFollowed)})
+        if not user_to_be_followed:
+            return False
+        
+        self.db["users"].update_one({"_id": ObjectId(follow_req.userToFollow)}, {"$push": {"follows": ObjectId(follow_req.userToBeFollowed)}})
+        return True
     
     @modal.method()
     def get_user(self, user_id: str) -> User:
@@ -207,11 +227,22 @@ async def foo(request: TimelineRequest) -> list[Tweet]:
     tl = client.get_timeline.local(request.user_id, request.limit)
     return tl
 
+@api.post("/mock_timeline")
+async def mock_timeline(request: TimelineRequest) -> list[Tweet]:
+    client = MongoClient()
+    tl = client.get_mock_timeline.local(request.user_id, request.limit)
+    return tl
+
 @api.post("/user")
 async def register_user(request: CreateUserRequest) -> PyObjectId:
     client = MongoClient()
     user_id = client.create_user.local(request)
     return str(user_id)
+
+@api.post("/user/follow")
+async def follow_user(request: FollowUserRequest) -> bool:
+    client = MongoClient()
+    return client.follow_user.local(request)
 
 @api.get("/user/{user_id}")
 async def get_user(user_id: str) -> User:
