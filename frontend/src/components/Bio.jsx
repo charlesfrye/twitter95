@@ -12,10 +12,7 @@ Bio.propTypes = {
   bio: PropTypes.shape({
     id: PropTypes.string, // user:id
     content: PropTypes.string,
-    location: PropTypes.shape({
-      lat: PropTypes.number,
-      long: PropTypes.number,
-    }),
+    location: PropTypes.string,
     birthdate: PropTypes.string,
     dateJoined: PropTypes.string,
   }),
