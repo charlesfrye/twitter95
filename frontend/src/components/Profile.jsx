@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Tweet from "./Tweet";
 import Bio from "./Bio";
 import User from "./User";
-import { getFeed, getUser } from "../services/database";
+import { getUser, getUserTweets } from "../services/database";
 
 function Profile() {
   const { userId } = useParams();
@@ -12,15 +12,20 @@ function Profile() {
   const [bio, setBio] = useState({});
 
   useEffect(() => {
-    async function fetchFeed() {
-      const userData = await getUser(userId);
-      setUser(userData);
-      setBio({ content: userData.bio, location: userData.location }); // Adjusted to hypothetical user data structure
-      const feed = await getFeed();
-      const userTweets = feed.filter((tweet) => tweet.user_id === userId);
-      setTweets(userTweets);
+    async function fetchData() {
+      try {
+        const userData = await getUser(userId);
+        const userTweets = await getUserTweets(userId);
+
+        setUser(userData);
+        setBio({ content: userData.bio, location: userData.location });
+        setTweets(userTweets);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
-    fetchFeed();
+
+    fetchData();
   }, [userId]);
 
   return (
