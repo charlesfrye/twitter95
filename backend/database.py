@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
+from typing import Optional
 from bson import ObjectId
 
 image = modal.Image.debian_slim().pip_install(
@@ -30,9 +31,20 @@ class PyObjectId(ObjectId):
     @classmethod
     def __get_pydantic_json_schema__(cls, field_schema):
         field_schema.update(type='string')
+        
+# class UserId(PyObjectId):
+#     @classmethod
+#     def __get_pydantic_json_schema__(cls, schema_ref_template: str):
+#         return super().__get_pydantic_json_schema__(schema_ref_template)
+
+# class TweetId(PyObjectId):
+#     @classmethod
+#     def __get_pydantic_json_schema__(cls, schema_ref_template: str):
+#         return super().__get_pydantic_json_schema__(schema_ref_template)
+    
 
 class TimelineRequest(BaseModel):
-    user_id: PyObjectId
+    user_id: str
     limit: int = 10
 
 class CreateUserRequest(BaseModel):
@@ -41,13 +53,32 @@ class CreateUserRequest(BaseModel):
     username: str
     displayName: str
     # bio: str
-
+    
+class CreateTweetRequest(BaseModel):
+    author: str
+    text: str
+    images: Optional[list[str]] = []
+    
+class ReplyToTweetRequest(BaseModel):
+    author: str
+    text: str
+    root: str # tweet id we are replying to
+    
 class Tweet(BaseModel):
     id: PyObjectId
+    author: PyObjectId
     text: str
-
+    fakeTime: int
+    realTime: int
+    views: int = 0
+    likes: list[PyObjectId] = [] # user ids
+    replies: list[PyObjectId] = [] # tweet Ids
+    quoted: Optional[PyObjectId] # If this is a quote tweet, the id of the tweet it is quoating
+    retweeted: Optional[PyObjectId] # If this is a retweet, the id of the tweet it is retweeting
+    images: Optional[list[str]]
+    
 class User(BaseModel):
-    id: PyObjectId
+    id: str
     follows: list[int]
     profilePic: str
     bannerPic: str
@@ -92,15 +123,29 @@ class MongoClient:
         return mock_feed[:limit]
 
     @modal.method()
-    def get_user(self, user_id):
-        #todo (find actual mongo implementation details)
-        return {"id": 1, "name": "Alice"}
-
+    def create_tweet(self, tweet_req: CreateTweetRequest):
+        tweet_data = tweet_req.dict()
+        tweet_data["author"] = PyObjectId(tweet_data["author"])
+        tweet_data["fakeTime"] = 0
+        tweet_data["realTime"] = 0
+        created_tweet_id = self.db["tweets"].insert_one(tweet_data).inserted_id
+        return created_tweet_id
+    
     @modal.method()
-    def create_tweet(self, tweet: Tweet):
-        #todo (find actual mongo implementation details)
-        return tweet
-
+    def reply_to_tweet(self, reply: ReplyToTweetRequest):
+        reply_tweet = reply.dict()
+        reply_tweet["author"] = PyObjectId(reply_tweet["author"])
+        reply_tweet["root"] = PyObjectId(reply_tweet["root"])
+        reply_tweet["fakeTime"] = 0
+        reply_tweet["realTime"] = 0
+        
+        reply_tweet_id = self.db["tweets"].insert_one(reply_tweet).inserted_id
+        
+        # Add the reply to the original tweet
+        self.db["tweets"].update_one({"_id": reply_tweet["root"]}, {"$push": {"replies": reply_tweet_id}})
+        
+        return reply_tweet_id
+    
     @modal.method()
     def get_tweet(self, tweet_id: str):
         requested_tweet = self.client.db["tweets"].find_one({"id": tweet_id})
@@ -112,6 +157,22 @@ class MongoClient:
         user_data["follows"] = []
         created_user_id = self.db["users"].insert_one(user_data).inserted_id
         return created_user_id
+    
+    @modal.method()
+    def get_user(self, user_id: str) -> User:
+        user_data = self.db["users"].find_one({"_id": ObjectId(user_id)})
+        print(user_data)
+        if not user_data:
+            return {}
+        returned_user = User(
+            id=str(user_data["_id"]),
+            follows=user_data["follows"],
+            profilePic=user_data["profilePic"],
+            bannerPic=user_data["bannerPic"],
+            username=user_data["username"],
+            displayName=user_data["displayName"],
+        )
+        return returned_user
     
     @modal.method()
     def like_tweet(self, tweet_id, user_id):
@@ -148,11 +209,25 @@ async def foo(request: TimelineRequest) -> list[Tweet]:
 
 @api.post("/user")
 async def register_user(request: CreateUserRequest) -> PyObjectId:
-    print("registering client")
     client = MongoClient()
-    user = client.create_user.local(request)
+    user_id = client.create_user.local(request)
+    return str(user_id)
 
+@api.get("/user/{user_id}")
+async def get_user(user_id: str) -> User:
+    client = MongoClient()
+    user = client.get_user.local(user_id)
     return user
+
+@api.post("/tweet")
+async def create_tweet(tweet: CreateTweetRequest):
+    client = MongoClient()
+    return str(client.create_tweet.local(tweet))
+
+@api.post("/tweet/reply")
+async def reply_to_tweet(reply: ReplyToTweetRequest):
+    client = MongoClient()
+    return str(client.reply_to_tweet.local(reply))
 
 @api.get("/bar")
 async def bar(arg="world"):
