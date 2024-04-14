@@ -2,7 +2,8 @@ import modal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from bson import ObjectId
 
 image = modal.Image.debian_slim().pip_install(
     "pymongo[srv]"
@@ -13,9 +14,25 @@ stub = modal.Stub("database", image=image, secrets=[modal.Secret.from_name("mong
 with image.imports():
     import pymongo
 
+    
 # Types
+class PyObjectId(ObjectId):
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, v):
+        if not ObjectId.is_valid(v):
+            raise ValueError('Invalid ObjectId')
+        return ObjectId(v)
+
+    @classmethod
+    def __get_pydantic_json_schema__(cls, field_schema):
+        field_schema.update(type='string')
+
 class TimelineRequest(BaseModel):
-    user_id: int
+    user_id: PyObjectId
     limit: int = 10
 
 class CreateUserRequest(BaseModel):
@@ -26,11 +43,11 @@ class CreateUserRequest(BaseModel):
     # bio: str
 
 class Tweet(BaseModel):
-    id: int
+    id: PyObjectId
     text: str
 
 class User(BaseModel):
-    id: str
+    id: PyObjectId
     follows: list[int]
     profilePic: str
     bannerPic: str
@@ -90,12 +107,12 @@ class MongoClient:
         return requested_tweet if requested_tweet else {}
 
     @modal.method()
-    def create_user(self, user: CreateUserRequest):
+    def create_user(self, user: CreateUserRequest) -> ObjectId:
         user_data = user.dict()
         user_data["follows"] = []
-        created_user = self.db["users"].insert_one(user_data)
-        return created_user
-
+        created_user_id = self.db["users"].insert_one(user_data).inserted_id
+        return created_user_id
+    
     @modal.method()
     def like_tweet(self, tweet_id, user_id):
         #todo (find actual mongo implementation details)
@@ -130,7 +147,8 @@ async def foo(request: TimelineRequest) -> list[Tweet]:
     return tl
 
 @api.post("/user")
-async def register_user(request: CreateUserRequest) -> User:
+async def register_user(request: CreateUserRequest) -> PyObjectId:
+    print("registering client")
     client = MongoClient()
     user = client.create_user.local(request)
 
