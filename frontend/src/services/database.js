@@ -14,7 +14,6 @@ const fetchData = async () => {
 const getFeed = async (limit, realTime, userId) => {
   // fetch limit tweets as of realTime (optionally for userId) from the db
   const response = await fetchData();
-
   return response;
 };
 
