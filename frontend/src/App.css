@@ -5,38 +5,73 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.sidebar {
+  width: 20%;
+  padding: 20px;
+  background-color: #f5f8fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.sidebarOption {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.sidebarOption h2 {
+  margin-left: 10px;
+}
+.sidebar img {
+  width: 50px;
+  margin-bottom: 20px;
 }
 
-.card {
-  padding: 2em;
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1da1f2;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.read-the-docs {
-  color: #888;
+.tweet {
+  padding: 20px;
+  border-bottom: 1px solid #e6ecf0;
+}
+
+.tweet__header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tweet__header h3 {
+  margin-left: 10px;
+}
+
+.tweet__body {
+  margin-bottom: 10px;
+}
+
+.tweet__image {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	padding: 10px;
+	border-bottom: 1px solid #e6ecf0;
+}
+
+.header h2 {
+	font-size: 20px;
 }
