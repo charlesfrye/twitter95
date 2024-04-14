@@ -63,13 +63,13 @@ function Tweet({ tweet }) {
       <div className="tweetfakeTime">
         <p>Posted at {tweet.fake_time}</p>
       </div>
-      <div className="tweetRoot">
+      {/* <div className="tweetRoot">
         {tweet.root !== tweet.tweet_id && (
           <div className="tweetRoot">
             <p>Root tweet text: {tweet.root}</p>
           </div>
         )}
-      </div>
+      </div> */}
       <div className="tweetQuoted">
         {tweet.quoted && (
           <div className="tweetQuoted">
