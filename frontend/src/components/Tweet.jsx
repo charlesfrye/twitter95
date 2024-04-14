@@ -43,7 +43,7 @@ function Tweet({ tweet }) {
       <div className="tweetLikedBy">
         {tweet.likedBy && (
           <div className="tweetLikedBy">
-            <p>Liked by: {tweet.likedBy.join(", ")}</p>
+            <p>Liked by: {tweet.likedBy}</p>
           </div>
         )}
       </div>

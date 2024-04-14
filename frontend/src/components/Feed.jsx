@@ -24,8 +24,10 @@ function Feed() {
   }, [theme]);
   return (
     <div className="Feed">
+      <div className="header">
+        <h1>Feed</h1>
+      </div>
       <div className="tweetList">
-        <p>hello</p>
         {tweets
           ? tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
           : null}

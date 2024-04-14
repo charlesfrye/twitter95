@@ -4,13 +4,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeContext.jsx";
 import Profile from "./components/Profile.jsx";
 import App from "./App.jsx";
-import Feed from "./components/Feed.jsx";
 import "./App.css";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Feed />,
+    element: <App />,
   },
   {
     path: "/profile",
