@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 import modal
 
-from .common import image
+from backend.common import image
 
 nyt_image = image.pip_install("pandas", "requests")
 volume = modal.Volume.from_name("nyt-bot-volume", create_if_missing=True)
@@ -11,17 +11,17 @@ stub = modal.Stub(
     "nyt_bot",
     # secrets=[modal.Secret.from_name("nyt-api-key")],
     image=nyt_image,
-    volumes={"/archive": volume},
+    # volumes={"/archive": volume},
 )
 
 with nyt_image.imports():
     import pandas as pd
     import requests
 
-    from . import models
+    from backend import models
 
 
-@stub.function(_allow_background_volume_commits=True)
+@stub.function(_allow_background_volume_commits=True, mounts=[modal.Mount.from_local_dir("~/Projects/ex-twitter/backend/archive", remote_path="/archive")])
 def go():
     user = create_or_fetch_user()
     df = load_articles()
@@ -31,15 +31,16 @@ def go():
 def add_tweets(df, user):
     for index, row in df.iterrows():
         tweet = models.TweetCreate(
-            author=user,
+            author_id=user.user_id,
             text=row["headline"],
             fake_time=generate_faketime_utc_timestamp(
                 row["pub_date"], calculate_publish_hour(index, len(df))
             ),
         )
+        print(tweet.json())
         try:
             response = requests.post(
-                "https://ex-twitter--db-client-api.modal.run/tweets/", json=tweet.dict()
+                "https://ex-twitter--db-client-api.modal.run/tweet/", data=tweet.json()
             )
             response.raise_for_status()
         except Exception as e:
@@ -53,14 +54,15 @@ def load_articles(day=None):
     df = df[["headline", "word_count", "url", "pub_date"]]
     if day is None:
         day = datetime.utcnow().day
-    articles = df[df["pub_date"] == f"1995-04-{day.zfill(2)}T05:00:00+0000"]
+    articles = df[df["pub_date"] == f"1995-04-{str(day).zfill(2)}T05:00:00+0000"]
 
     return articles
 
 
 def generate_faketime_utc_timestamp(date, hour) -> datetime:
     """returns the datetime object for the given date and hour in UTC"""
-    naive_datetime = datetime.strptime(f"{date} {hour}:00:00", "%Y-%m-%d %H:%M:%S")
+    naive_datetime = datetime.strptime(date, "%Y-%m-%dT%H:%M:%S%z")
+    naive_datetime = naive_datetime.replace(hour=hour, minute=0, second=0)
     utc_datetime = naive_datetime.replace(tzinfo=timezone.utc)
     return utc_datetime
 

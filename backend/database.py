@@ -85,10 +85,12 @@ def api():
 
     @api.post("/tweet/", response_model=models.TweetRead)
     def create_tweet(tweet: models.TweetCreate):
-        db.add(tweet)
+        # convert TweetCreat to the ORM Tweet Object
+        tweet_model = models.Tweet(**tweet.dict())
+        db.add(tweet_model)
         db.commit()
-        db.refresh(tweet)
-        return tweet
+        db.refresh(tweet_model)
+        return tweet_model
 
     @api.get("/tweets/", response_model=List[models.TweetRead])
     def read_tweets():

@@ -124,6 +124,7 @@ class UserRead(UserBase):
 
 class TweetBase(BaseModel):
     text: str
+    author_id: Optional[int] = None
     fake_time: Optional[datetime] = None
     real_time: Optional[datetime] = None
     images: Optional[List[str]] = None
@@ -133,10 +134,8 @@ class TweetBase(BaseModel):
 class TweetCreate(TweetBase):
     pass
 
-
 class TweetRead(TweetBase):
     tweet_id: int
-    author_id: int
     liked_by: List[UserRead] = []
     replies: List["TweetRead"] = []
     quoted: Optional[int] = None
