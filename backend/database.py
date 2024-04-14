@@ -63,7 +63,7 @@ class ReplyToTweetRequest(BaseModel):
     author: str
     text: str
     root: str # tweet id we are replying to
-    
+     
 class Tweet(BaseModel):
     id: PyObjectId
     author: PyObjectId
