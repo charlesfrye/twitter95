@@ -27,6 +27,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	text-overflow: wrap !important;
 }
 
 body.light {
@@ -58,23 +59,37 @@ body.dark {
 	width: 80%;
 	max-width: 600px;
   font-family: 'MS Sans Serif', Geneva, sans-serif;
-  font-size: 12px;
+  /* font-size: 4px; */
   color: #000000;
   background: #c0c0c0;
   border: 2px outset #ffffff;
   padding: 10px;
-  margin: 20px;
+  margin: 20px auto;
+	overflow: wrap;
   box-shadow: 2px 2px 0px #000000;
 	margin-left: auto;
 	margin-right: auto;
 }
 
+.menuitem{
+	text-wrap: wrap;
+	overflow: wrap;
+
+}
 .tweetText, .tweetAuthor, .tweetfakeTime, .tweetRoot, .tweetQuoted, .tweetRetweeted, .tweetLikedBy {
   padding: 5px;
   border: 1px solid #000000;
   margin: 5px 0;
   background: white;
-	overflow: hidden;
+	max-width: 500px;
+	overflow: visible;
+	white-space: normal;
+}
+
+
+.tweetTextReal{
+	overflow: visible;
+	white-space: normal;
 }
 
 .tweetMedia img {
