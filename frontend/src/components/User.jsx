@@ -4,7 +4,11 @@ function User({ user }) {
   return (
     <div className="user">
       <img
-        src={user.profile_pic}
+        src={
+          user.profile_pic
+            ? user.profile_pic
+            : "https://i.imgur.com/tdi3NGag.jpg"
+        }
         alt="Profile"
         style={{ width: 50, height: 50, borderRadius: "50%" }}
       />

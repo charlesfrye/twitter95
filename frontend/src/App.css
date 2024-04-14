@@ -74,6 +74,7 @@ body.dark {
   border: 1px solid #000000;
   margin: 5px 0;
   background: white;
+	overflow: hidden;
 }
 
 .tweetMedia img {

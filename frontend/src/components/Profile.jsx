@@ -7,9 +7,8 @@ import { getUser, getUserTweets } from "../services/database";
 
 function Profile() {
   const { userId } = useParams();
-  const [tweets, setTweets] = useState([]);
+  // const [tweets, setTweets] = useState([]);
   const [user, setUser] = useState({});
-  const [bio, setBio] = useState({});
 
   useEffect(() => {
     async function fetchData() {
@@ -17,9 +16,8 @@ function Profile() {
         const userData = await getUser(userId);
         const userTweets = await getUserTweets(userId);
 
-        setUser(userData);
-        setBio({ content: userData.bio, location: userData.location });
-        setTweets(userTweets);
+
+        setUser({ ...userData, tweets: userTweets });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -31,9 +29,9 @@ function Profile() {
   return (
     <div className="profile">
       <User user={user} />
-      <Bio bio={bio} />
-      {tweets.length > 0 ? (
-        tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
+
+      {user.tweets && user.tweets.length > 0 ? (
+        user.tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
       ) : (
         <p>No tweets found.</p>
       )}
