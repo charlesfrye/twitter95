@@ -11,6 +11,7 @@ function Feed() {
   useEffect(() => {
     async function fetchFeed() {
       const newTweets = await getFeed();
+
       setTweets(newTweets);
     }
 
