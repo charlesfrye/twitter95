@@ -39,7 +39,7 @@ def go():
         tweet_text = write_new_tweet(userInfo.user.display_name, userInfo.bio.content, tweets_to_read)
 
         print(f"{userInfo.user.display_name} wrote: {tweet_text}")
-        send_tweet(4, tweet_text)
+        send_tweet(i, tweet_text)
         
 
 def send_tweet(user_id, tweet_text):
