@@ -10,7 +10,7 @@
 				"root": "1",
 				"quoted": null,
 				"retweeted": null,
-				"likedBy": [],
+				"likedBy": 32,
 				"fakeTime": 0,
 				"realTime": 0,
 				"views": 0
@@ -24,7 +24,7 @@
 				"root": "1",
 				"quoted": null,
 				"retweeted": null,
-				"likedBy": [],
+				"likedBy": 34,
 				"fakeTime": 1,
 				"realTime": 1,
 				"views": 0
@@ -38,7 +38,7 @@
 				"root": "3",
 				"quoted": null,
 				"retweeted": null,
-				"likedBy": [],
+				"likedBy": 56,
 				"fakeTime": 2,
 				"realTime": 2,
 				"views": 0
@@ -52,7 +52,7 @@
 				"root": "4",
 				"quoted": "3",
 				"retweeted": null,
-				"likedBy": [],
+				"likedBy": 63,
 				"fakeTime": 3,
 				"realTime": 3,
 				"views": 0
@@ -66,7 +66,7 @@
 				"root": "5",
 				"quoted": null,
 				"retweeted": "4",
-				"likedBy": [],
+				"likedBy": 234,
 				"fakeTime": 4,
 				"realTime": 4,
 				"views": 0
