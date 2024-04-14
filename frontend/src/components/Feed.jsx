@@ -23,7 +23,7 @@ function Feed() {
   return (
     <div className="Feed">
       <div className="header">
-        <h1>Feed</h1>
+        <h1>Welcome to Twitter!</h1>
       </div>
       <div className="tweetList">
         {tweets
