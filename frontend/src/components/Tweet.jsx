@@ -14,7 +14,7 @@ function Tweet({ tweet }) {
         ) : null}
       </div>
       <div className="tweetAuthor">
-        <p>The author is {tweet.author}</p>
+        <p>Posted by {tweet.author}</p>
       </div>
       <div className="tweetfakeTime">
         <p>Posted at {tweet.fakeTime}</p>

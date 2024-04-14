@@ -11,7 +11,6 @@ function Feed() {
   useEffect(() => {
     async function fetchFeed() {
       const newTweets = await getFeed();
-      console.log(newTweets);
       setTweets(newTweets);
     }
 
@@ -20,7 +19,6 @@ function Feed() {
 
   useEffect(() => {
     document.body.className = theme;
-    console.log("Theme updated in Feed:", theme);
   }, [theme]);
   return (
     <div className="Feed">

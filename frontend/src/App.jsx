@@ -9,7 +9,7 @@ function App() {
   const { theme } = useTheme();
   const leftSidebarOptions = [
     { icon: FaHome, text: "Home" },
-    { icon: FaBell, text: "Notifications" },
+    { icon: FaBell, text: "Notifs" },
     { icon: FaUserAlt, text: "Profile" },
   ];
 
@@ -18,7 +18,6 @@ function App() {
     { icon: FaSearch, text: "Search" },
   ];
   useEffect(() => {
-    console.log(`Updating body class to ${theme}`);
     document.body.className = theme;
   }, [theme]);
 

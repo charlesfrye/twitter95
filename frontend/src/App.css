@@ -46,25 +46,66 @@ body.dark {
 	padding: 10px 10px;
 	text-align: center;
 }
+/* Base styling for the window appearance */
 
 .tweet {
-	margin: 10px;
-	padding: 20px;
-	background-color: var(--background-tweet-default);
-	border-bottom: 1px solid var(--background-default); 
-	border-radius: 10px;
+  font-family: 'MS Sans Serif', Geneva, sans-serif;
+  font-size: 12px;
+  color: #000000;
+  background: #c0c0c0;
+  border: 2px outset #ffffff;
+  padding: 10px;
+  margin: 20px;
+  box-shadow: 2px 2px 0px #000000;
 }
 
-.tweetText {
-	font-style: italic;
-	color: var(--text-color-default); 
+.tweetText, .tweetAuthor, .tweetfakeTime, .tweetRoot, .tweetQuoted, .tweetRetweeted, .tweetLikedBy {
+  padding: 5px;
+  border: 1px solid #000000;
+  margin: 5px 0;
+  background: white;
 }
 
-.header {
+.tweetMedia img {
+  display: block;
+  margin: 5px auto;
+}
+
+.tweetMedia, .tweetRoot, .tweetQuoted, .tweetRetweeted {
+  display: none;
+}
+
+.tweetMedia:has(img), .tweetRoot:has(p), .tweetQuoted:has(p), .tweetRetweeted:has(p) {
+  display: block;
+}
+
+.tweetAuthor:before {
+  content: '';
+	background: #000080;
+  display: block;
+  height: 18px;
+  color: white;
+  padding: 0px 0px;
+	margin: 0px 0px;
+  font-weight: bold;
+	width: 100%;
+}
+
+.tweetAuthor p, .tweetfakeTime p, .tweetRoot p, .tweetQuoted p, .tweetRetweeted p, .tweetLikedBy p {
+  margin: 0;
+  font-family: 'MS Sans Serif', Geneva, sans-serif;
+}
+
+.tweet:hover {
+  border-color: #808080;
+}
+
+.feed .header {
 	display: flex;
 	justify-content: space-between;
 	padding: 10px;
 	border-bottom: 1px solid var(--background-default);
+
 }
 
 .header h2 {
