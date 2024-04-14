@@ -31,7 +31,12 @@ function Tweet({ tweet }) {
         <MenuListItem
           size="sm"
           onClick={handleClick}
-          style={{ width: "500px", textOverflow: "wrap", overflow: "scroll" }}
+          style={{
+            width: "500px",
+            textOverflow: "wrap",
+            overflow: "scroll",
+            padding: "2rem",
+          }}
         >
           🎤 {tweet.text}
         </MenuListItem>
