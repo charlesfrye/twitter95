@@ -9,7 +9,7 @@ function Sidebar({ options, className }) {
   return (
     <div className={`sidebar ${className}`}>
       <img
-        src="../../public/logo.png"
+        src="./public/logo.png"
         alt="Twitter Logo"
         className="logo-animate"
       />

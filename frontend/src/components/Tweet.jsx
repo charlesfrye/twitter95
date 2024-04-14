@@ -1,23 +1,48 @@
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MenuList, MenuListItem, Separator } from "react95";
+import { getUser } from "../services/database";
 
 function Tweet({ tweet }) {
   const navigate = useNavigate();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const fetchedUser = await getUser(tweet.author_id);
+        setUser(fetchedUser);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        throw error;
+      }
+    }
+    fetchUser();
+  }, [tweet.author_id]);
 
   const handleClick = () => {
-    navigate(`/profile/${tweet.userId}`);
+    navigate(`/profile/${user.user_id}`);
   };
   return (
     <div className="tweet">
       <MenuList>
         <MenuListItem>🎤 {tweet.text}</MenuListItem>
         <Separator />
-        <MenuListItem onClick={handleClick}>💃🏻 {tweet.author}</MenuListItem>
+        <MenuListItem onClick={handleClick}>💃🏻 {user.user_id}</MenuListItem>
         <div className="tweetMedia">
-          {tweet.media ? (
+          {Array.isArray(tweet.images) ? (
+            tweet.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt="Media"
+                style={{ width: "100%", height: "auto" }}
+              />
+            ))
+          ) : tweet.images ? (
             <img
-              src={tweet.media}
+              src={tweet.images}
               alt="Media"
               style={{ width: "100%", height: "auto" }}
             />
@@ -26,10 +51,10 @@ function Tweet({ tweet }) {
       </MenuList>
       <Separator />
       <div className="tweetfakeTime">
-        <p>Posted at {tweet.fakeTime}</p>
+        <p>Posted at {tweet.fake_time}</p>
       </div>
       <div className="tweetRoot">
-        {tweet.root !== tweet.id && (
+        {tweet.root !== tweet.tweet_id && (
           <div className="tweetRoot">
             <p>Root tweet text: {tweet.root}</p>
           </div>
@@ -50,9 +75,9 @@ function Tweet({ tweet }) {
         )}
       </div>
       <div className="tweetLikedBy">
-        {tweet.likedBy && (
+        {tweet.liked_by && (
           <div className="tweetLikedBy">
-            <p>Liked by: {tweet.likedBy}</p>
+            <p>Likes {tweet.liked_by}</p>
           </div>
         )}
       </div>
@@ -62,22 +87,20 @@ function Tweet({ tweet }) {
 
 Tweet.propTypes = {
   tweet: PropTypes.shape({
-    id: PropTypes.string,
+    tweet_id: PropTypes.number,
     text: PropTypes.string,
-    media: PropTypes.oneOfType([
+    images: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.arrayOf(PropTypes.string),
     ]),
-    author: PropTypes.string, // User:id or User object?
-    root: PropTypes.string, // Tweet:id or Tweet object?
-    // quotedBy: PropTypes.string, // User:id or User object?
-    // retweetedBy: PropTypes.string, // User:id or User object?
-    quoted: PropTypes.string, // Tweet:id or Tweet object?
-    retweeted: PropTypes.string, // Tweet:id or Tweet object?
-    likedBy: PropTypes.number,
-    fakeTime: PropTypes.number,
-    realTime: PropTypes.number,
-    userId: PropTypes.string,
+    author_id: PropTypes.number,
+    root: PropTypes.string,
+    quoted: PropTypes.string,
+    retweeted: PropTypes.string,
+    liked_by: PropTypes.arrayOf(PropTypes.number),
+    replies: PropTypes.arrayOf(PropTypes.number),
+    fake_time: PropTypes.number,
+    real_time: PropTypes.number,
   }),
 };
 
