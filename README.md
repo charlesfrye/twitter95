@@ -1,3 +1,3 @@
 # ex-twitter
 
-What if Twitter (now X) was invented in the year X?
+What if Twitter was around in 1995?
