@@ -12,10 +12,10 @@ function Tweet({ tweet }) {
     async function fetchUser() {
       try {
         const fetchedUser = await getUser(tweet.author_id);
+        console.log(fetchedUser);
         setUser(fetchedUser);
       } catch (error) {
         console.error("Failed to fetch user:", error);
-        throw error;
       }
     }
     fetchUser();
@@ -24,12 +24,24 @@ function Tweet({ tweet }) {
   const handleClick = () => {
     navigate(`/profile/${user.user_id}`);
   };
+
   return (
     <div className="tweet">
       <MenuList>
-        <MenuListItem>🎤 {tweet.text}</MenuListItem>
+        <MenuListItem onClick={handleClick}>
+          {user.profile_pic && (
+            <img
+              src={user.profile_pic}
+              alt="User"
+              style={{ width: 30, height: 30, borderRadius: "50%" }}
+            />
+          )}
+          🎤 {tweet.text}
+        </MenuListItem>
         <Separator />
-        <MenuListItem onClick={handleClick}>💃🏻 {user.user_id}</MenuListItem>
+        <MenuListItem onClick={handleClick}>
+          💃🏻 {user.display_name || user.user_id}
+        </MenuListItem>
         <div className="tweetMedia">
           {Array.isArray(tweet.images) ? (
             tweet.images.map((image, index) => (
@@ -98,8 +110,8 @@ Tweet.propTypes = {
     quoted: PropTypes.string,
     retweeted: PropTypes.string,
     liked_by: PropTypes.arrayOf(PropTypes.number),
-    replies: PropTypes.arrayOf(PropTypes.number),
-    fake_time: PropTypes.number,
+    replies: PropTypes.arrayOf(PropTypes.object),
+    fake_time: PropTypes.string,
     real_time: PropTypes.number,
   }),
 };
