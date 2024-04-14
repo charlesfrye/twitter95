@@ -1,77 +1,124 @@
+:root {
+	--text-color-light: #333;  
+	--background-light: #99e5e9; 
+
+	--text-color-dim: #EEE;
+	--background-dim: #1B2A41;
+
+	--text-color-dark: #CCC;
+	--background-dark: #000;
+
+	--text-color-default: #ebcf00; 
+	--background-default: #000; 
+	--background-tweet-default: #333;
+}
+
+body {
+	font-family: 'Helvetica Neue', sans-serif;
+	color: var(--text-color-default);
+	background-color: var(--background-default);
+	background-image: url("../public/space-background1.png");
+	background-size: 100px;
+	background-repeat: repeat;
+}
+
+body.light {
+	--text-color-default: var(--text-color-light);
+	--background-default: var(--background-light);
+	background-image: none;  
+}
+
+body.dim {
+	--text-color-default: var(--text-color-dim);
+	--background-default: var(--background-dim);
+	background-image: none;  
+}
+
+body.dark {
+	--text-color-default: var(--text-color-dark);
+	--background-default: var(--background-dark);
+	background-image: none;  
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.sidebar {
-  width: 20%;
-  padding: 20px;
-  background-color: #f5f8fa;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.sidebarOption {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  cursor: pointer;
-}
-
-.sidebarOption h2 {
-  margin-left: 10px;
-}
-.sidebar img {
-  width: 50px;
-  margin-bottom: 20px;
-}
-
-.sidebar button {
-  width: 100%;
-  padding: 10px;
-  background-color: #1da1f2;
-  color: #fff;
-  border: none;
-  border-radius: 30px;
-  font-weight: bold;
-  cursor: pointer;
+	max-width: 1280px;
+	margin: 10px 10px;
+	padding: 10px 10px;
+	text-align: center;
 }
 
 .tweet {
-  padding: 20px;
-  border-bottom: 1px solid #e6ecf0;
+	margin: 10px;
+	padding: 20px;
+	background-color: var(--background-tweet-default);
+	border-bottom: 1px solid var(--background-default); 
+	border-radius: 10px;
 }
 
-.tweet__header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.tweet__header h3 {
-  margin-left: 10px;
-}
-
-.tweet__body {
-  margin-bottom: 10px;
-}
-
-.tweet__image {
-	width: 100%;
-	margin-bottom: 10px;
+.tweetText {
+	font-style: italic;
+	color: var(--text-color-default); 
 }
 
 .header {
 	display: flex;
 	justify-content: space-between;
 	padding: 10px;
-	border-bottom: 1px solid #e6ecf0;
+	border-bottom: 1px solid var(--background-default);
 }
 
 .header h2 {
 	font-size: 20px;
+}
+
+.app {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+}
+
+.sidebar {
+	width: 20%;
+	padding: 20px;
+	background-color: var(--background-default);
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: center;
+}
+
+.sidebar.right {
+	background-color: white;
+}
+
+.sidebarOption {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.sidebarOption h2 {
+	margin-left: 10px;
+}
+
+.sidebar img {
+	width: 50px;
+	margin-bottom: 20px;
+}
+
+.sidebar button {
+	width: 100%;
+	padding: 10px;
+	background-color: var(--background-default);
+	color: var(--text-color-default);
+	border: none;
+	border-radius: 30px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.feed {
+	flex: 2;
 }

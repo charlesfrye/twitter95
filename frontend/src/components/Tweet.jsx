@@ -4,6 +4,49 @@ function Tweet({ tweet }) {
   return (
     <div className="tweet">
       <div className="tweetText">{tweet.text}</div>
+      <div className="tweetMedia">
+        {tweet.media ? (
+          <img
+            src={tweet.media}
+            alt="Media"
+            style={{ width: "100%", height: "auto" }}
+          />
+        ) : null}
+      </div>
+      <div className="tweetAuthor">
+        <p>The author is {tweet.author}</p>
+      </div>
+      <div className="tweetfakeTime">
+        <p>Posted at {tweet.fakeTime}</p>
+      </div>
+      <div className="tweetRoot">
+        {tweet.root !== tweet.id && (
+          <div className="tweetRoot">
+            <p>Root tweet text: {tweet.root}</p>
+          </div>
+        )}
+      </div>
+      <div className="tweetQuoted">
+        {tweet.quoted && (
+          <div className="tweetQuoted">
+            <p>Quoted tweet text: {tweet.quoted}</p>
+          </div>
+        )}
+      </div>
+      <div className="tweetRetweeted">
+        {tweet.retweeted && (
+          <div className="tweetRetweeted">
+            <p>Retweeted tweet text: {tweet.retweeted}</p>
+          </div>
+        )}
+      </div>
+      <div className="tweetLikedBy">
+        {tweet.likedBy && (
+          <div className="tweetLikedBy">
+            <p>Liked by: {tweet.likedBy}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -22,8 +65,9 @@ Tweet.propTypes = {
     // retweetedBy: PropTypes.string, // User:id or User object?
     quoted: PropTypes.string, // Tweet:id or Tweet object?
     retweeted: PropTypes.string, // Tweet:id or Tweet object?
-    likedBy: PropTypes.arrayOf(PropTypes.string),
-    timestamp: PropTypes.string,
+    likedBy: PropTypes.number,
+    fakeTime: PropTypes.number,
+    realTime: PropTypes.number,
     userId: PropTypes.string,
   }),
 };
