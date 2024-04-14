@@ -10,11 +10,11 @@ function Bio({ bio }) {
 
 Bio.propTypes = {
   bio: PropTypes.shape({
-    id: PropTypes.string, // user:id
     content: PropTypes.string,
     location: PropTypes.string,
-    birthdate: PropTypes.string,
-    dateJoined: PropTypes.string,
+    birthday: PropTypes.string,
+    joined_on: PropTypes.string,
+    user_id: PropTypes.number,
   }),
 };
 

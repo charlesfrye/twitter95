@@ -8,11 +8,7 @@ function Sidebar({ options, className }) {
 
   return (
     <div className={`sidebar ${className}`}>
-      <img
-        src="./public/logo.png"
-        alt="Twitter Logo"
-        className="logo-animate"
-      />
+      <img src="./logo.png" alt="Twitter Logo" className="logo-animate" />
       {options.map((option, index) => (
         <SidebarOption key={index} Icon={option.icon} text={option.text} />
       ))}
