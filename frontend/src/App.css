@@ -10,6 +10,7 @@
 
 	--text-color-default: #ebcf00; 
 	--background-default: #000; 
+	--background-tweet-default: #333;
 }
 
 body {
@@ -44,14 +45,12 @@ body.dark {
 	margin: 10px 10px;
 	padding: 10px 10px;
 	text-align: center;
-	background-color: var(--background-default);
 }
 
 .tweet {
 	margin: 10px;
 	padding: 20px;
-	background-image: url(../public/space-background1.png);
-	background-repeat: repeat;
+	background-color: var(--background-tweet-default);
 	border-bottom: 1px solid var(--background-default); 
 	border-radius: 10px;
 }
@@ -72,13 +71,24 @@ body.dark {
 	font-size: 20px;
 }
 
+.app {
+	display: flex;
+	justify-content: space-between;
+	align-items: stretch;
+}
+
 .sidebar {
 	width: 20%;
 	padding: 20px;
 	background-color: var(--background-default);
 	display: flex;
+	flex: 1;
 	flex-direction: column;
 	align-items: center;
+}
+
+.sidebar.right {
+	background-color: white;
 }
 
 .sidebarOption {
@@ -107,4 +117,8 @@ body.dark {
 	border-radius: 30px;
 	font-weight: bold;
 	cursor: pointer;
+}
+
+.feed {
+	flex: 2;
 }

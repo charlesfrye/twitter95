@@ -1,13 +1,22 @@
 import "./App.css";
 import { useEffect } from "react";
 import { useTheme } from "./components/ThemeContext";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Feed from "./components/Feed";
-// import Profile from "./components/Profile";
+import Sidebar from "./components/Sidebar";
+import { FaHome, FaBell, FaUserAlt, FaCog, FaSearch } from "react-icons/fa";
 
 function App() {
   const { theme } = useTheme();
+  const leftSidebarOptions = [
+    { icon: FaHome, text: "Home" },
+    { icon: FaBell, text: "Notifications" },
+    { icon: FaUserAlt, text: "Profile" },
+  ];
 
+  const rightSidebarOptions = [
+    { icon: FaCog, text: "Settings" },
+    { icon: FaSearch, text: "Search" },
+  ];
   useEffect(() => {
     console.log(`Updating body class to ${theme}`);
     document.body.className = theme;
@@ -15,19 +24,9 @@ function App() {
 
   return (
     <div className="app">
-      <header className="nav">
-        <Link to="/feed">Feed </Link>
-        <Link to="/profile">Profile</Link>
-      </header>
-      <div className="main-content">
-        <div className="sidebar left-sidebar"></div>
-        <div className="content">
-          <Router>
-            <Route path="/feed" component={Feed} />
-          </Router>
-        </div>
-        <div className="sidebar right-sidebar"></div>
-      </div>
+      <Sidebar options={leftSidebarOptions} />
+      <Feed />
+      <Sidebar options={rightSidebarOptions} />
     </div>
   );
 }
