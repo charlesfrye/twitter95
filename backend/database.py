@@ -144,75 +144,76 @@ def fastapi_app():
     return api
 
 
-
 # Mock data
 mock_feed = [
     {
-        "id": 1,
+        "id": "1",
         "text": "Hello, world!",
         "images": [],
-        "author": 1,
-        "replies": [2],
-        "root": 1,
+        "author": "1",
+        "replies": ["2"],
+        "root": "1",
         "quoted": None,
         "retweeted": None,
         "likedBy": [],
         "fakeTime": 0,
         "realTime": 0,
-        "views": 0
+        "views": 0,
     },
     {
-        "id": 2,
+        "id": "2",
         "text": "This is a reply to tweet 1",
         "images": [],
-        "author": 2,
+        "author": "2",
         "replies": [],
-        "root": 1,
+        "root": "1",
         "quoted": None,
         "retweeted": None,
         "likedBy": [],
         "fakeTime": 1,
         "realTime": 1,
-        "views": 0
+        "views": 0,
     },
     {
-        "id": 3,
+        "id": "3",
         "text": "This is a tweet with an image",
-        "images": ["https://fastly.picsum.photos/id/630/200/300.jpg?hmac=Qat1qmS4S2t4rLYqAEW2wwkzkXdCnsYltDyo8kbmjfw"],
-        "author": 1,
+        "images": [
+            "https://fastly.picsum.photos/id/630/200/300.jpg?hmac=Qat1qmS4S2t4rLYqAEW2wwkzkXdCnsYltDyo8kbmjfw"
+        ],
+        "author": "1",
         "replies": [],
-        "root": 3,
+        "root": "3",
         "quoted": None,
         "retweeted": None,
         "likedBy": [],
         "fakeTime": 2,
         "realTime": 2,
-        "views": 0
+        "views": 0,
     },
     {
-        "id": 4,
+        "id": "4",
         "text": "This is a tweet with a quoted tweet",
         "images": [],
-        "author": 2,
+        "author": "2",
         "replies": [],
-        "root": 4,
-        "quoted": 3,
+        "root": "4",
+        "quoted": "3",
         "retweeted": None,
         "likedBy": [],
         "fakeTime": 3,
         "realTime": 3,
-        "views": 0
+        "views": 0,
     },
     {
-        "id": 5,
+        "id": "5",
         "text": "This is a tweet with a retweet",
         "images": [],
-        "author": 1,
+        "author": "1",
         "replies": [],
-        "root": 5,
+        "root": "5",
         "quoted": None,
-        "retweeted": 4,
+        "retweeted": "4",
         "likedBy": [],
-        "fakeTime": 4
-    }
+        "fakeTime": 4,
+    },
 ]
