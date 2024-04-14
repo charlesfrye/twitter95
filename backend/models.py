@@ -161,6 +161,13 @@ class BioRead(BioBase):
         orm_mode = True
 
 
-# Update forward refs (this is needed for models that reference each other)
+class ProfileRead(BaseModel):
+    user: UserRead
+    bio: BioRead
+
+    class Config:
+        orm_mode = True
+
+
 UserRead.update_forward_refs()
 TweetRead.update_forward_refs()

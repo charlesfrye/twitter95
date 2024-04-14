@@ -1,8 +1,10 @@
+from datetime import datetime
+from typing import List, Optional
+
+import fastapi
 import modal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from typing import List
 
 from .common import image
 
@@ -12,9 +14,11 @@ stub = modal.Stub(
 )
 
 
-@stub.function()
+@stub.function(keep_warm=1)
 @modal.asgi_app()
 def api():
+    from sqlalchemy import and_, or_
+
     from . import models
 
     api = FastAPI()
@@ -34,7 +38,6 @@ def api():
         connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}"
 
         engine = create_engine(connection_string, echo=True)
-        # models.Base.metadata.create_all(engine)
 
         Session = sessionmaker(bind=engine)
         session = Session()
@@ -53,16 +56,34 @@ def api():
 
     @api.post("/users/", response_model=models.UserRead)
     def create_user(user: models.UserCreate):
+        user = models.User(**user.dict())
         db.add(user)
         db.commit()
-        db.refresh(user)
+
+        user = models.UserRead(**user.__dict__)
+
         return user
 
     @api.get("/users/", response_model=List[models.UserRead])
     def read_users():
-        return db.query(models.User).all()
+        return [
+            models.UserRead(**user.__dict__) for user in db.query(models.User).all()
+        ]
 
-    @api.post("/tweets/", response_model=models.TweetRead)
+    @api.get("/users/{user_id}")
+    def read_user(user_id: int) -> Optional[models.UserRead]:
+        return models.UserRead(**db.query(models.User).get(user_id).__dict__)
+
+    @api.get("/users/{user_id}/tweets/", response_model=List[models.TweetRead])
+    def read_user_tweets(user_id: int):
+        user = db.query(models.User).get(user_id)
+        return [models.TweetRead(**tweet.__dict__) for tweet in user.tweets]
+
+    @api.get("/names/{user_name}")
+    def read_user_by_name(user_name: str) -> Optional[models.UserRead]:
+        return db.query(models.User).filter(models.User.user_name == user_name).first()
+
+    @api.post("/tweet/", response_model=models.TweetRead)
     def create_tweet(tweet: models.TweetCreate):
         db.add(tweet)
         db.commit()
@@ -73,4 +94,73 @@ def api():
     def read_tweets():
         return db.query(models.Tweet).all()
 
+    @api.post("/timeline/", response_model=List[models.TweetRead])
+    def read_timeline(
+        real_time: datetime, user_id: Optional[int] = None, limit: int = 10
+    ):
+        fake_time = to_fake(real_time)
+        posts_query = db.query(models.Tweet).join(
+            models.followers_association,
+            models.followers_association.c.followed_id == models.Tweet.author_id,
+        )
+        if user_id is not None:
+            # get tweets from users that the user follows
+            posts_query = posts_query.filter(
+                and_(
+                    models.followers_association.c.follower_id == user_id,
+                    or_(
+                        models.Tweet.fake_time <= fake_time,
+                        models.Tweet.fake_time == None,
+                    ),
+                )
+            )
+        posts_query = (
+            posts_query.order_by(models.Tweet.fake_time.desc()).limit(limit).all()
+        )
+        if not posts_query:
+            raise fastapi.HTTPException(
+                status_code=404, detail="No tweets found in the timeline"
+            )
+        # TODO: increment views
+        return [models.TweetRead(**post.__dict__) for post in posts_query]
+
+    @api.post("/posts/", response_model=List[models.TweetRead])
+    def read_posts(real_time: datetime, user_id: int, limit: int = 10):
+        fake_time = to_fake(real_time)
+        posts = (
+            db.query(models.Tweet)
+            .filter(
+                and_(
+                    or_(
+                        models.Tweet.fake_time <= fake_time,
+                        models.Tweet.fake_time == None,  # noqa: E711
+                    ),
+                ),
+                models.Tweet.author_id == user_id,
+            )
+            .order_by(models.Tweet.fake_time.desc())
+            .limit(limit)
+            .all()
+        )
+        # TODO: increment views
+        return [models.TweetRead(**post.__dict__) for post in posts]
+
+    @api.post("/profile", response_model=models.ProfileRead)
+    def read_profile(user_id: int):
+        user = db.query(models.User).get(user_id)
+        bio = db.query(models.Bio).get(user_id)
+        if bio is None:
+            return models.ProfileRead(
+                user=models.UserRead(**user.__dict__),
+                bio=models.BioRead(user_id=user_id),
+            )
+        return models.ProfileRead(
+            user=models.UserRead(**user.__dict__),
+            bio=models.BioRead(**bio.__dict__),
+        )
+
     return api
+
+
+def to_fake(real_time: datetime) -> datetime:
+    return real_time
