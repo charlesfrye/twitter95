@@ -27,21 +27,16 @@ function Tweet({ tweet }) {
 
   return (
     <div className="tweet">
-      <MenuList>
+      <MenuList className="!flex !flex-col text-ellipsis">
         <MenuListItem
           size="sm"
           onClick={handleClick}
-          style={{
-            width: "500px",
-            textOverflow: "wrap",
-            overflow: "scroll",
-            padding: "2rem",
-          }}
+          className="!whitespace-normal !text-left !cursor-pointer"
         >
           🎤 {tweet.text}
         </MenuListItem>
         <Separator />
-        <MenuListItem onClick={handleClick}>
+        <MenuListItem className="!cursor-pointer" onClick={handleClick}>
           {user.profile_pic && (
             <img
               src={user.profile_pic}
