@@ -1,4 +1,5 @@
 import datetime
+
 from sqlalchemy import (
     CheckConstraint,
     Column,
@@ -9,9 +10,10 @@ from sqlalchemy import (
     Table,
     Text,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, relationship
+
+from .common import to_fake
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -47,7 +49,7 @@ class Tweet(Base):
     tweet_id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("users.user_id"))
     text = Column(Text)
-    fake_time = Column(DateTime)
+    fake_time = Column(DateTime, default=lambda: to_fake(datetime.datetime.utcnow()))
     real_time = Column(DateTime, default=datetime.datetime.utcnow)
     replies = relationship(
         "Tweet",
