@@ -144,7 +144,7 @@ def api():
         return tweet_model
 
     @api.get("/tweets/", response_model=List[models.TweetRead])
-    async def read_tweets(limit=10, ascending=False):
+    async def read_tweets(limit=10, ascending: bool = False):
         sort = asc if ascending else desc
         async with new_session() as db:
             result = await db.execute(
