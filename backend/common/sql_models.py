@@ -13,6 +13,8 @@ from sqlalchemy import (
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, relationship
 
+from .utils import to_fake
+
 
 class Base(AsyncAttrs, DeclarativeBase):
     pass
