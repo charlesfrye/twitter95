@@ -21,7 +21,14 @@ with nyt_image.imports():
     from backend import models
 
 
-@stub.function(_allow_background_volume_commits=True, mounts=[modal.Mount.from_local_dir("~/Projects/ex-twitter/backend/archive", remote_path="/archive")])
+@stub.function(
+    _allow_background_volume_commits=True,
+    mounts=[
+        modal.Mount.from_local_dir(
+            "~/Projects/ex-twitter/backend/archive", remote_path="/archive"
+        )
+    ],
+)
 def go():
     user = create_or_fetch_user()
     df = load_articles()
