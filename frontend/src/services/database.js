@@ -1,3 +1,9 @@
+const urlPrefix = "ex-twitter--db-client-api";
+const urlSuffix =
+  import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
+
+const baseUrl = `https://${urlPrefix}${urlSuffix}`;
+
 const fetchData = async (url) => {
   try {
     const response = await fetch(url);
@@ -10,8 +16,6 @@ const fetchData = async (url) => {
     return { error };
   }
 };
-
-const baseUrl = "https://ex-twitter--db-client-api.modal.run";
 
 const getFeed = async () => {
   const url = `${baseUrl}/tweets/`;
