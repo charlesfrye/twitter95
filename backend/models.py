@@ -67,7 +67,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_name = Column(String)
+    user_name = Column(String)  # TODO: make unique
     display_name = Column(String)
     profile_pic = Column(String, default="")
     banner_pic = Column(String, default="")
@@ -134,12 +134,9 @@ class TweetBase(BaseModel):
 class TweetCreate(TweetBase):
     pass
 
+
 class TweetRead(TweetBase):
     tweet_id: int
-    liked_by: List[UserRead] = []
-    replies: List["TweetRead"] = []
-    quoted: Optional[int] = None
-    retweeted: Optional[int] = None
     root: Optional[int] = None
 
     class Config:
