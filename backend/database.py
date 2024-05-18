@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from typing import List, Optional
 
@@ -17,7 +18,10 @@ stub = modal.Stub(
 @stub.function(keep_warm=1, allow_concurrent_inputs=1000, concurrency_limit=1)
 @modal.asgi_app()
 def api():
-    from sqlalchemy import and_, desc, or_, select
+    from sqlalchemy import and_, desc, or_
+    from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+    from sqlalchemy.future import select
+    from sqlalchemy.orm import sessionmaker
 
     from . import models
 
@@ -30,19 +34,17 @@ def api():
     )
 
     def connect():
-        import os
-
-        from sqlalchemy import create_engine
-
         user = os.environ["PGUSER"]
         password = os.environ["PGPASSWORD"]
         host = os.environ["PGHOST"]
         port = os.environ["PGPORT"]
         database = os.environ["PGDATABASE"]
 
-        connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+        connection_string = (
+            f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
+        )
 
-        engine = create_engine(
+        engine = create_async_engine(
             connection_string,
             isolation_level="READ COMMITTED",  # default and lowest level in pgSQL
             echo=True,  # log SQL as it is emitted
@@ -52,13 +54,7 @@ def api():
 
     engine = connect()
 
-    def new_session():
-        from sqlalchemy.orm import sessionmaker
-
-        Session = sessionmaker(bind=engine)
-        session = Session()
-
-        return session
+    new_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
     api.add_middleware(
         CORSMiddleware,
@@ -69,69 +65,75 @@ def api():
     )
 
     @api.post("/users/", response_model=models.UserRead)
-    def create_user(user: models.UserCreate):
-        with new_session() as db:
+    async def create_user(user: models.UserCreate):
+        async with new_session() as db:
             user = models.User(**user.dict())
             db.add(user)
-            db.commit()
+            await db.commit()
+            await db.refresh(user)
 
         user = models.UserRead(**user.__dict__)
 
         return user
 
     @api.get("/users/", response_model=List[models.UserRead])
-    def read_users():
-        with new_session() as db:
-            users = db.scalars(select(models.User).order_by(desc(models.User.user_id)))
+    async def read_users():
+        async with new_session() as db:
+            users = await db.scalars(
+                select(models.User).order_by(desc(models.User.user_id))
+            )
 
             return [models.UserRead(**user.__dict__) for user in users]
 
     @api.get("/users/{user_id}")
-    def read_user(user_id: int) -> Optional[models.UserRead]:
-        with new_session() as db:
-            user = db.execute(
-                select(models.User).filter_by(user_id=user_id)
-            ).scalar_one_or_none()
+    async def read_user(user_id: int) -> Optional[models.UserRead]:
+        async with new_session() as db:
+            result = await db.execute(select(models.User).filter_by(user_id=user_id))
+            user = result.scalar_one_or_none()
         if user is None:
             return None
         return models.UserRead(**user.__dict__)
 
     @api.get("/users/{user_id}/tweets/", response_model=List[models.TweetRead])
-    def read_user_tweets(user_id: int):
-        with new_session() as db:
-            user = db.execute(
-                select(models.User).filter_by(user_id=user_id)
-            ).scalar_one_or_none()
-            tweets = user.tweets
-        return [models.TweetRead(**tweet.__dict__) for tweet in tweets]
+    async def read_user_tweets(user_id: int):
+        async with new_session() as db:
+            result = await db.execute(select(models.User).filter_by(user_id=user_id))
+            user = result.scalar_one_or_none()
+            if user is None:
+                raise FastAPI.HTTPException(status_code=404, detail="User not found")
+
+            tweets = await user.awaitable_attrs.tweets
+        return [models.TweetRead.from_orm(tweet) for tweet in reversed(tweets)]
 
     @api.get("/names/{user_name}")
-    def read_user_by_name(user_name: str) -> Optional[models.UserRead]:
-        with new_session() as db:
-            user = db.execute(
+    async def read_user_by_name(user_name: str) -> Optional[models.UserRead]:
+        async with new_session() as db:
+            result = await db.execute(
                 select(models.User).filter_by(user_name=user_name)
-            ).scalar_one_or_none()
+            )
+            user = result.scalar_one_or_none()
         return user
 
     @api.post("/tweet/", response_model=models.TweetRead)
-    def create_tweet(tweet: models.TweetCreate):
+    async def create_tweet(tweet: models.TweetCreate):
         tweet_model = models.Tweet(**tweet.dict())
-        with new_session() as db:
+        async with new_session() as db:
             db.add(tweet_model)
-            db.commit()
-            db.refresh(tweet_model)
+            await db.commit()
+            await db.refresh(tweet_model)
         return tweet_model
 
     @api.get("/tweets/", response_model=List[models.TweetRead])
-    def read_tweets(limit=10):
-        with new_session() as db:
-            tweets = db.execute(
+    async def read_tweets(limit=10):
+        async with new_session() as db:
+            result = await db.execute(
                 select(models.Tweet).order_by(desc(models.Tweet.fake_time)).limit(limit)
-            ).scalars()
+            )
+            tweets = result.scalars()
             return [models.TweetRead(**tweet.__dict__) for tweet in tweets]
 
     @api.post("/timeline/", response_model=List[models.TweetRead])
-    def read_timeline(
+    async def read_timeline(
         real_time: datetime, user_id: Optional[int] = None, limit: int = 10
     ):
         # TODO: why is user_id optional?
@@ -184,11 +186,13 @@ def api():
         return [models.TweetRead(**post.__dict__) for post in posts]
 
     @api.post("/profile", response_model=models.ProfileRead)
-    def read_profile(user_id: int):
-        with new_session() as db:
-            user = db.query(models.User).get(user_id)
-        with new_session() as db:
-            bio = db.query(models.Bio).get(user_id)
+    async def read_profile(user_id: int):
+        async with new_session() as db:
+            result = await db.execute(select(models.User).filter_by(user_id=user_id))
+            user = result.scalar_one_or_none()
+            if user is None:
+                return FastAPI.HTTPException(status_code=404, detail="User not found")
+            bio = await user.awaitable_attrs.bio
         if bio is None:
             return models.ProfileRead(
                 user=models.UserRead(**user.__dict__),
