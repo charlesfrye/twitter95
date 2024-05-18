@@ -2,9 +2,7 @@ from datetime import datetime, timedelta
 
 import modal
 
-image = modal.Image.debian_slim(python_version="3.11").pip_install(
-    "asyncpg==0.29.0", "sqlalchemy[asyncio]==2.0.30"
-)
+mount = modal.Mount.from_local_python_packages("common")
 
 
 def to_fake(real_time: datetime) -> datetime:
@@ -12,3 +10,6 @@ def to_fake(real_time: datetime) -> datetime:
     fake_time = real_time - delta
     fake_time = fake_time.replace(tzinfo=None)
     return fake_time
+
+
+__all__ = ["to_fake", "mount"]
