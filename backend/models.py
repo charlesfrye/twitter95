@@ -11,7 +11,6 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -50,7 +49,6 @@ class Tweet(Base):
     text = Column(Text)
     fake_time = Column(DateTime)
     real_time = Column(DateTime, default=datetime.datetime.utcnow)
-    liked_by = relationship("User", secondary=likes_association, backref="likes")
     replies = relationship(
         "Tweet",
         secondary=replies_association,
@@ -60,11 +58,7 @@ class Tweet(Base):
     )
     quoted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
     retweeted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
-    images = Column(ARRAY(String))
-    root = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
     views = Column(Integer, default=0)
-
-    user = relationship("User", back_populates="tweets")
 
 
 class User(Base):
@@ -82,8 +76,6 @@ class User(Base):
         secondaryjoin=user_id == followers_association.c.followed_id,
         backref="followers",
     )
-
-    tweets = relationship("Tweet", back_populates="user")
 
 
 class Bio(Base):
@@ -120,7 +112,6 @@ class UserCreate(UserBase):
 
 class UserRead(UserBase):
     user_id: int
-    tweets: List["TweetRead"] = []
 
     class Config:
         orm_mode = True
@@ -131,7 +122,6 @@ class TweetBase(BaseModel):
     author_id: Optional[int] = None
     fake_time: Optional[datetime] = None
     real_time: Optional[datetime] = None
-    images: Optional[List[str]] = None
     views: Optional[int] = 0
 
 
@@ -141,7 +131,6 @@ class TweetCreate(TweetBase):
 
 class TweetRead(TweetBase):
     tweet_id: int
-    root: Optional[int] = None
 
     class Config:
         orm_mode = True

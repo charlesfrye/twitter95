@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 
 import fastapi
@@ -18,7 +18,7 @@ stub = modal.Stub(
 @stub.function(keep_warm=1, allow_concurrent_inputs=1000, concurrency_limit=1)
 @modal.asgi_app()
 def api():
-    from sqlalchemy import and_, desc, or_
+    from sqlalchemy import and_, asc, desc, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
     from sqlalchemy.orm import sessionmaker
@@ -72,18 +72,21 @@ def api():
             await db.commit()
             await db.refresh(user)
 
+        # TODO: from_orm
         user = models.UserRead(**user.__dict__)
 
         return user
 
     @api.get("/users/", response_model=List[models.UserRead])
-    async def read_users():
+    async def read_users(ascending: bool = False):
         async with new_session() as db:
             users = await db.scalars(
-                select(models.User).order_by(desc(models.User.user_id))
+                select(models.User).order_by(
+                    models.User.user_id if ascending else desc(models.User.user_id)
+                )
             )
 
-            return [models.UserRead(**user.__dict__) for user in users]
+        return [models.UserRead.from_orm(user) for user in users]
 
     @api.get("/users/{user_id}")
     async def read_user(user_id: int) -> Optional[models.UserRead]:
@@ -91,19 +94,30 @@ def api():
             result = await db.execute(select(models.User).filter_by(user_id=user_id))
             user = result.scalar_one_or_none()
         if user is None:
-            return None
-        return models.UserRead(**user.__dict__)
+            raise fastapi.HTTPException(
+                status_code=404, detail=f"User {user_id} not found"
+            )
+        return models.UserRead.from_orm(user)
 
     @api.get("/users/{user_id}/tweets/", response_model=List[models.TweetRead])
-    async def read_user_tweets(user_id: int):
+    async def read_user_tweets(user_id: int, limit=10):
         async with new_session() as db:
             result = await db.execute(select(models.User).filter_by(user_id=user_id))
             user = result.scalar_one_or_none()
             if user is None:
-                raise FastAPI.HTTPException(status_code=404, detail="User not found")
+                raise fastapi.HTTPException(
+                    status_code=404, detail=f"User {user_id} not found"
+                )
 
-            tweets = await user.awaitable_attrs.tweets
-        return [models.TweetRead.from_orm(tweet) for tweet in reversed(tweets)]
+            result = await db.scalars(
+                select(models.Tweet)
+                .filter_by(author_id=user_id)
+                .order_by(desc(models.Tweet.fake_time), desc(models.Tweet.tweet_id))
+                .limit(limit)
+            )
+            tweets = result.all()
+
+        return [models.TweetRead.from_orm(tweet) for tweet in tweets]
 
     @api.get("/names/{user_name}")
     async def read_user_by_name(user_name: str) -> Optional[models.UserRead]:
@@ -112,6 +126,10 @@ def api():
                 select(models.User).filter_by(user_name=user_name)
             )
             user = result.scalar_one_or_none()
+            if user is None:
+                raise fastapi.HTTPException(
+                    status_code=404, detail=f"User {user_name} not found"
+                )
         return user
 
     @api.post("/tweet/", response_model=models.TweetRead)
@@ -124,52 +142,55 @@ def api():
         return tweet_model
 
     @api.get("/tweets/", response_model=List[models.TweetRead])
-    async def read_tweets(limit=10):
+    async def read_tweets(limit=10, ascending=False):
+        sort = asc if ascending else desc
         async with new_session() as db:
             result = await db.execute(
-                select(models.Tweet).order_by(desc(models.Tweet.fake_time)).limit(limit)
+                select(models.Tweet)
+                .order_by(sort(models.Tweet.fake_time), sort(models.Tweet.tweet_id))
+                .limit(limit)
             )
             tweets = result.scalars()
-            return [models.TweetRead(**tweet.__dict__) for tweet in tweets]
+        return [models.TweetRead.from_orm(tweet) for tweet in tweets]
 
     @api.post("/timeline/", response_model=List[models.TweetRead])
     async def read_timeline(
-        real_time: datetime, user_id: Optional[int] = None, limit: int = 10
+        real_time: datetime, user_id: int, limit: int = 10, ascending=False
     ):
-        # TODO: why is user_id optional?
-        # TODO: set up fake/real time
         fake_time = to_fake(real_time)
-        with new_session() as db:
-            posts_query = db.query(models.Tweet).join(
-                models.followers_association,
-                models.followers_association.c.followed_id == models.Tweet.author_id,
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            followed_users = select(models.followers_association.c.followed_id).where(
+                models.followers_association.c.follower_id == user_id
             )
-            if user_id is not None:
-                # get tweets from users that the user follows
-                posts_query = posts_query.filter(
+
+            result = await db.execute(
+                select(models.Tweet)
+                .where(models.Tweet.author_id.in_(followed_users))
+                .filter(
                     and_(
-                        models.followers_association.c.follower_id == user_id,
                         or_(
                             models.Tweet.fake_time <= fake_time,
                             models.Tweet.fake_time == None,  # noqa: E711
                         ),
                     )
                 )
-            posts_query = (
-                posts_query.order_by(models.Tweet.fake_time.asc()).limit(limit).all()
+                .order_by(sort(models.Tweet.fake_time), sort(models.Tweet.tweet_id))
+                .limit(limit)
             )
-            if not posts_query:
-                raise fastapi.HTTPException(
-                    status_code=404, detail="No tweets found in the timeline"
-                )
-        return [models.TweetRead(**post.__dict__) for post in posts_query]
+
+            tweets = result.scalars()
+        return [models.TweetRead.from_orm(tweet) for tweet in tweets]
 
     @api.post("/posts/", response_model=List[models.TweetRead])
-    def read_posts(real_time: datetime, user_id: int, limit: int = 10):
+    async def read_posts(
+        real_time: datetime, user_id: int, limit: int = 10, ascending=False
+    ):
         fake_time = to_fake(real_time)
-        with new_session() as db:
-            posts = (
-                db.query(models.Tweet)
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            results = await db.execute(
+                select(models.Tweet)
                 .filter(
                     and_(
                         or_(
@@ -179,11 +200,11 @@ def api():
                     ),
                     models.Tweet.author_id == user_id,
                 )
-                .order_by(models.Tweet.fake_time.asc())
+                .order_by(sort(models.Tweet.fake_time), sort(models.Tweet.tweet_id))
                 .limit(limit)
-                .all()
             )
-        return [models.TweetRead(**post.__dict__) for post in posts]
+            posts = results.scalars()
+        return [models.TweetRead.from_orm(post) for post in posts]
 
     @api.post("/profile", response_model=models.ProfileRead)
     async def read_profile(user_id: int):
@@ -195,16 +216,19 @@ def api():
             bio = await user.awaitable_attrs.bio
         if bio is None:
             return models.ProfileRead(
-                user=models.UserRead(**user.__dict__),
+                user=models.UserRead.from_orm(user),
                 bio=models.BioRead(user_id=user_id),
             )
         return models.ProfileRead(
-            user=models.UserRead(**user.__dict__),
-            bio=models.BioRead(**bio.__dict__),
+            user=models.UserRead.from_orm(user),
+            bio=models.BioRead.from_orm(bio),
         )
 
     return api
 
 
 def to_fake(real_time: datetime) -> datetime:
-    return real_time
+    delta = timedelta(seconds=915_235_088)  # rough number of seconds from 1995 to 2024
+    fake_time = real_time - delta
+    fake_time = fake_time.replace(tzinfo=None)
+    return fake_time
