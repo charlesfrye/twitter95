@@ -10,12 +10,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from .common import image
 
 
-stub = modal.Stub(
-    "db-client", image=image, secrets=[modal.Secret.from_name("pgsql-secret")]
+app = modal.App(
+    "db-client",
+    image=image,
+    secrets=[modal.Secret.from_name("pgsql-secret")],
 )
 
 
-@stub.function(keep_warm=1, allow_concurrent_inputs=1000, concurrency_limit=1)
+@app.function(keep_warm=1, allow_concurrent_inputs=1000, concurrency_limit=1)
 @modal.asgi_app()
 def api():
     from sqlalchemy import and_, asc, desc, or_
