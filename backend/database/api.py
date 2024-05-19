@@ -115,6 +115,20 @@ def api():
             )
         return user
 
+    @api.delete("/users/{user_id}")
+    async def delete_user(user_id: int):
+        async with new_session() as db:
+            result = await db.execute(
+                select(models.sql.User).filter_by(user_id=user_id)
+            )
+            user = result.scalar_one_or_none()
+            if user is None:
+                raise fastapi.HTTPException(
+                    status_code=404, detail=f"User {user_id} not found"
+                )
+            await db.delete(user)
+            await db.commit()
+
     @api.get("/users/{user_id}/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_user_tweets(user_id: int, limit=10):
         async with new_session() as db:
@@ -177,11 +191,10 @@ def api():
             tweets = result.scalars()
         return list(tweets)
 
-    @api.post("/timeline/", response_model=List[models.pydantic.TweetRead])
+    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
     async def read_timeline(
-        real_time: datetime, user_id: int, limit: int = 10, ascending=False
+        fake_time: datetime, user_id: int, limit: int = 10, ascending=False
     ):
-        fake_time = common.to_fake(real_time)
         sort = asc if ascending else desc
         async with new_session() as db:
             followed_users = select(
@@ -209,11 +222,10 @@ def api():
 
         return list(tweets)
 
-    @api.post("/posts/", response_model=List[models.pydantic.TweetRead])
+    @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
     async def read_posts(
-        real_time: datetime, user_id: int, limit: int = 10, ascending=False
+        fake_time: datetime, user_id: int, limit: int = 10, ascending=False
     ):
-        fake_time = common.to_fake(real_time)
         sort = asc if ascending else desc
         async with new_session() as db:
             results = await db.execute(
