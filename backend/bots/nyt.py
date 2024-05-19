@@ -80,7 +80,9 @@ def connect_nyt():
 
 
 @app.function()
-async def post_nyt_articles(fake_time: datetime = None, lookahead_hours: int = None):
+async def post_nyt_articles(
+    fake_time: datetime = None, lookahead_hours: int = None, dryrun: bool = False
+):
     bot_id = get_or_create_bot_id.local()
 
     if fake_time is None:
@@ -92,26 +94,32 @@ async def post_nyt_articles(fake_time: datetime = None, lookahead_hours: int = N
     lookahead = timedelta(hours=lookahead_hours)
 
     while fake_time < (start_hour + lookahead):
-        print(f"posting articles for {fake_time:%Y-%m-%d %H}")
         articles = get_articles_at_hour(fake_time)
-        posted = 0
-        for article in articles:
-            try:
-                if article := filter_article(article):
-                    if text := parse_article(article):
-                        Client.create_tweet.remote(
-                            author_id=bot_id,
-                            text=text,
-                            fake_time=fake_time.isoformat(),
-                        )
-                        print(f"posted {text}")
-                        posted += 1
-            except Exception as e:
-                print(e)
-            if posted >= 10:
-                break
-        if posted < 10:
-            warnings.warn(f"posted only {posted} articles for {fake_time:%Y-%m-%d %H}")
+        if articles:
+            print(f"posting articles for {fake_time:%Y-%m-%d %H}")
+            posted = 0
+            for article in articles:
+                try:
+                    if article := filter_article(article):
+                        if text := parse_article(article):
+                            if dryrun:
+                                print("would have posted", text)
+                            else:
+                                Client.create_tweet.remote(
+                                    author_id=bot_id,
+                                    text=text,
+                                    fake_time=fake_time.isoformat(),
+                                )
+                                print("posted", text)
+                            posted += 1
+                except Exception as e:
+                    print(e)
+                if posted >= 10:
+                    break
+            if posted < 10:
+                warnings.warn(
+                    f"posted only {posted} articles for {fake_time:%Y-%m-%d %H}"
+                )
         fake_time += timedelta(hours=1)
 
 
@@ -122,11 +130,22 @@ def get_articles_at_hour(hour: datetime):
     articles = []
     for article in archive:
         try:
-            posted_time = datetime.fromisoformat(article["pub_date"])
+            posted_time = datetime.fromisoformat(article["pub_date"]).replace(
+                tzinfo=None
+            )
+        except KeyError:
+            try:  # sometimes the pub_date is missing, but we have a web_url with a date
+                web_url = article["web_url"]
+                route = web_url.split("nytimes.com/")[1]
+                y, m, d, *_ = route.split("/")
+                posted_time = datetime.fromisoformat(f"{y}-{m}-{d}")
+            except Exception:
+                continue
+        try:
             if posted_time == hour:
+                print(article["lead_paragraph"][:20])
                 articles.append(article)
-        except Exception as e:
-            print(e)
+        except KeyError:
             continue
     print(f"found {len(articles)} articles for {hour:%Y-%m-%d %H}")
     return articles
@@ -139,6 +158,8 @@ def filter_article(article):
             and len(article["lead_paragraph"].strip()) >= 20
         ):
             return article
+        else:
+            print("article not of type News or Op-Ed or lead paragraph too short")
     except Exception as e:
         print(e)
 
@@ -149,7 +170,7 @@ def parse_article(article):
 
         article_type = article["type_of_material"].upper()
 
-        text += f"{article_type}:"
+        text += f"{article_type}: "
 
         article_lead = article["lead_paragraph"].strip()
 
