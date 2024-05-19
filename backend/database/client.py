@@ -7,7 +7,7 @@ import modal
 import common
 
 DB_URL_PREFIX = "ex-twitter--db-client-api"
-DB_URL_SUFFIX = "-dev.modal.run"
+DB_URL_SUFFIX = ".modal.run"
 
 DB_BASE_URL = f"https://{DB_URL_PREFIX}{DB_URL_SUFFIX}"
 
