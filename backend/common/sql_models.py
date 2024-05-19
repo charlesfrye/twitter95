@@ -67,7 +67,7 @@ class User(Base):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_name = Column(String)  # TODO: make unique
+    user_name = Column(String, unique=True)
     display_name = Column(String)
     profile_pic = Column(String, default="")
     banner_pic = Column(String, default="")
