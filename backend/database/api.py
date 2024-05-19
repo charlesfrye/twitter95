@@ -30,7 +30,7 @@ app = modal.App(
 )
 @modal.asgi_app()
 def api():
-    from sqlalchemy import and_, asc, desc, or_
+    from sqlalchemy import and_, asc, delete, desc, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
     from sqlalchemy.orm import sessionmaker
@@ -126,7 +126,30 @@ def api():
                 raise fastapi.HTTPException(
                     status_code=404, detail=f"User {user_id} not found"
                 )
+
+            # remove tweets
+            await db.execute(
+                delete(models.sql.Tweet).where(models.sql.Tweet.author_id == user_id)
+            )
+
+            # remove following edges
+            await db.execute(
+                delete(models.sql.followers_association).where(
+                    models.sql.followers_association.c.follower_id == user_id
+                )
+            )
+
+            # remove followed edges
+            await db.execute(
+                delete(models.sql.followers_association).where(
+                    models.sql.followers_association.c.followed_id == user_id
+                )
+            )
+
+            # remove the user
             await db.delete(user)
+
+            # Commit transaction
             await db.commit()
 
     @api.get("/users/{user_id}/tweets/", response_model=List[models.pydantic.TweetRead])

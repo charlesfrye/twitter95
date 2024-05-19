@@ -30,13 +30,13 @@ class Client:
 
     @modal.method()
     async def get_user_by_name(self, user_name):
-        async with self.session.get(f"/names/{user_name}") as resp:
+        async with self.session.get(f"/names/{user_name}/") as resp:
             resp.raise_for_status()
             return await resp.json()
 
     @modal.method()
     async def get_user_by_id(self, user_id: int):
-        async with self.session.get(f"/users/{user_id}") as resp:
+        async with self.session.get(f"/users/{user_id}/") as resp:
             resp.raise_for_status()
             return await resp.json()
 
@@ -52,7 +52,7 @@ class Client:
             display_name = user_name
 
         async with self.session.post(
-            "/users",
+            "/users/",
             json={
                 "user_name": user_name,
                 "display_name": display_name,
@@ -65,7 +65,7 @@ class Client:
 
     @modal.method()
     async def delete_user_by_id(self, user_id: int):
-        async with self.session.delete(f"/users/{user_id}") as resp:
+        async with self.session.delete(f"/users/{user_id}/") as resp:
             resp.raise_for_status()
             return await resp.json()
 
@@ -79,7 +79,7 @@ class Client:
         views: Optional[int] = None,
     ):
         async with self.session.post(
-            "/tweet",
+            "/tweet/",
             json={
                 "author_id": author_id,
                 "text": text,
