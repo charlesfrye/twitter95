@@ -216,7 +216,7 @@ def api():
 
     @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
     async def read_timeline(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending=False
+        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
     ):
         sort = asc if ascending else desc
         async with new_session() as db:
@@ -247,7 +247,7 @@ def api():
 
     @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
     async def read_posts(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending=False
+        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
     ):
         sort = asc if ascending else desc
         async with new_session() as db:
