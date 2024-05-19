@@ -99,8 +99,6 @@ async def post_nyt_articles(fake_time: datetime = None, lookahead_hours: int = N
             try:
                 if article := filter_article(article):
                     if text := parse_article(article):
-                        print(fake_time)
-                        print(fake_time.isoformat())
                         Client.create_tweet.remote(
                             author_id=bot_id,
                             text=text,
