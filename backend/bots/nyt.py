@@ -86,8 +86,6 @@ async def post_nyt_articles(fake_time: datetime = None, lookahead_hours: int = N
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    if fake_time.tzinfo is None:
-        raise ValueError("fake_time must have a timezone, try Z")
     start_hour = fake_time.replace(minute=0, second=0, microsecond=0)
     if lookahead_hours is None:
         lookahead_hours = 1
