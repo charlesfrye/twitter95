@@ -4,16 +4,28 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "./components/ThemeContext.jsx";
 import Profile from "./components/Profile.jsx";
 import App from "./App.jsx";
+import Feed from "./components/Feed.jsx";
+import HomePage from "./components/HomePage.jsx";
 import "./App.css";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-  },
-  {
-    path: "/profile/:userId",
-    element: <Profile />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: "profile/:userId",
+        element: <Profile />,
+      },
+      {
+        path: "timeline",
+        element: <Feed />,
+      },
+    ],
   },
 ]);
 

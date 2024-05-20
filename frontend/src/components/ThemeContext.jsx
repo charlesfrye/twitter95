@@ -10,7 +10,6 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("default"); // default theme
 
   const toggleTheme = (themeName) => {
-    console.log(`Setting the theme to ${themeName}`);
     setTheme(themeName);
   };
 

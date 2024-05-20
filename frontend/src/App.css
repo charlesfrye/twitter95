@@ -17,7 +17,7 @@ body {
 	font-family: 'Helvetica Neue', sans-serif;
 	color: var(--text-color-default);
 	background-color: var(--background-default);
-	background-image: url("../public/space-background1.png");
+	background-image: url("/space-background1.png");
 	background-size: 100px;
 	background-repeat: repeat;
 	width: 100%;

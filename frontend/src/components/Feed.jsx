@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { getFeed } from "../services/database";
+import { getTimeline } from "../services/database";
 import Tweet from "./Tweet";
-import ThemeSwitcher from "./ThemeSwitcher";
 import { useTheme } from "./ThemeContext";
 
 function Feed() {
@@ -10,7 +9,7 @@ function Feed() {
 
   useEffect(() => {
     async function fetchFeed() {
-      const newTweets = await getFeed();
+      const newTweets = await getTimeline();
 
       setTweets(newTweets);
     }
@@ -23,16 +22,12 @@ function Feed() {
   }, [theme]);
   return (
     <div className="Feed">
-      <div className="header">
-        <h1>Welcome to Twitter!</h1>
-      </div>
       <div className="tweetList">
         {tweets
-          ? tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
+          ? tweets.map((tweet, index) => (
+              <Tweet key={index} authorTweet={tweet} />
+            ))
           : null}
-      </div>
-      <div className="Settings">
-        <ThemeSwitcher />
       </div>
     </div>
   );

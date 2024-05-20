@@ -9,10 +9,10 @@ function User({ user }) {
             ? user.profile_pic
             : "https://i.imgur.com/tdi3NGag.jpg"
         }
-        alt="Profile"
-        style={{ width: 50, height: 50, borderRadius: "50%" }}
+        alt="user_profile_pic"
+        style={{ width: 128, height: 128 }}
       />
-      <div className="username">{user.user_name}</div>
+      <div className="username">@{user.user_name}</div>
       <div className="displayName">{user.display_name}</div>
     </div>
   );

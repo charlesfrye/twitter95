@@ -1,18 +1,18 @@
 /* eslint-disable react/prop-types */
-import SidebarOption from "./SidebarOption"; // Make sure the path is correct
+import SidebarOption from "./SidebarOption";
 
 function Sidebar({ options, className }) {
-  function handleClick() {
-    alert("Congrats! You just Tweeted!");
-  }
-
   return (
     <div className={`sidebar ${className}`}>
-      <img src="./logo.png" alt="Twitter Logo" className="logo-animate" />
+      <img src="/logo.png" alt="Twitter 95" className="logo-animate" />
       {options.map((option, index) => (
-        <SidebarOption key={index} Icon={option.icon} text={option.text} />
+        <SidebarOption
+          key={index}
+          Icon={option.icon}
+          text={option.text}
+          path={option.path}
+        />
       ))}
-      <button onClick={handleClick}>Click me to Tweet!</button>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 const urlPrefix = "ex-twitter--db-client-api";
-const urlSuffix =
-  import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
+// const urlSuffix =
+//   import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
+
+const urlSuffix = "-dev.modal.run";
 
 const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 
@@ -17,8 +19,8 @@ const fetchData = async (url) => {
   }
 };
 
-const getFeed = async () => {
-  const url = `${baseUrl}/tweets/`;
+const getTimeline = async () => {
+  const url = `${baseUrl}/timeline/`;
   return await fetchData(url);
 };
 
@@ -43,4 +45,4 @@ const getUserProfile = async (userId) => {
   }
 };
 
-export { getFeed, getUser, getUserTweets, getUserProfile };
+export { getTimeline, getUser, getUserTweets, getUserProfile };
