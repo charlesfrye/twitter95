@@ -86,6 +86,101 @@ def api():
         allow_headers=["*"],
     )
 
+    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
+    async def read_timeline(
+        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
+    ):
+        """Read the timeline at a specific (fake) time."""
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            followed_users = select(
+                models.sql.followers_association.c.followed_id
+            ).where(models.sql.followers_association.c.follower_id == user_id)
+
+            # TODO: enrich with info about authors of tweets
+            result = await db.execute(
+                select(models.sql.Tweet)  # author here?
+                .where(models.sql.Tweet.author_id.in_(followed_users))
+                .filter(
+                    and_(
+                        or_(
+                            models.sql.Tweet.fake_time <= fake_time,
+                            models.sql.Tweet.fake_time == None,  # noqa: E711
+                        ),
+                    )
+                )
+                .order_by(
+                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
+                )
+                .limit(limit)
+            )
+
+            tweets = result.scalars()
+
+        return list(tweets)
+
+    @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
+    async def read_posts(
+        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
+    ):
+        """Read a specific user's tweets at a specific (fake) time."""
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            results = await db.execute(
+                select(models.sql.Tweet)
+                .filter(
+                    and_(
+                        or_(
+                            models.sql.Tweet.fake_time <= fake_time,
+                            models.sql.Tweet.fake_time == None,  # noqa: E711
+                        ),
+                    ),
+                    models.sql.Tweet.author_id == user_id,
+                )
+                .order_by(
+                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
+                )
+                .limit(limit)
+            )
+            posts = results.scalars()
+
+        return list(posts)
+
+    @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
+    async def read_profile(user_id: int):
+        """Read the profile information of a user."""
+        async with new_session() as db:
+            result = await db.execute(
+                select(models.sql.User).filter_by(user_id=user_id)
+            )
+            user = result.scalar_one_or_none()
+            if user is None:
+                return FastAPI.HTTPException(status_code=404, detail="User not found")
+            bio = await user.awaitable_attrs.bio
+
+        if bio is None:
+            return models.pydantic.ProfileRead(
+                user=user,
+                bio={"user_id": user_id},
+            )
+
+        return {"user": user, "bio": bio}
+
+    @api.get("/tweets/", response_model=List[models.pydantic.TweetRead])
+    async def read_tweets(limit=10, ascending: bool = False):
+        """Read multiple tweets."""
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            result = await db.execute(
+                select(models.sql.Tweet)
+                .order_by(
+                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
+                )
+                .limit(limit)
+            )
+            tweets = result.scalars()
+        return list(tweets)
+
     @api.post("/users/", response_model=models.pydantic.UserRead)
     async def create_user(user: models.pydantic.UserCreate):
         """Create a new User."""
@@ -218,100 +313,5 @@ def api():
             await db.refresh(tweet)
 
         return tweet
-
-    @api.get("/tweets/", response_model=List[models.pydantic.TweetRead])
-    async def read_tweets(limit=10, ascending: bool = False):
-        """Read multiple tweets."""
-        sort = asc if ascending else desc
-        async with new_session() as db:
-            result = await db.execute(
-                select(models.sql.Tweet)
-                .order_by(
-                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
-                )
-                .limit(limit)
-            )
-            tweets = result.scalars()
-        return list(tweets)
-
-    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
-    async def read_timeline(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
-    ):
-        """Read the timeline at a specific (fake) time."""
-        sort = asc if ascending else desc
-        async with new_session() as db:
-            followed_users = select(
-                models.sql.followers_association.c.followed_id
-            ).where(models.sql.followers_association.c.follower_id == user_id)
-
-            # TODO: enrich with info about authors of tweets
-            result = await db.execute(
-                select(models.sql.Tweet)  # author here?
-                .where(models.sql.Tweet.author_id.in_(followed_users))
-                .filter(
-                    and_(
-                        or_(
-                            models.sql.Tweet.fake_time <= fake_time,
-                            models.sql.Tweet.fake_time == None,  # noqa: E711
-                        ),
-                    )
-                )
-                .order_by(
-                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
-                )
-                .limit(limit)
-            )
-
-            tweets = result.scalars()
-
-        return list(tweets)
-
-    @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
-    async def read_posts(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
-    ):
-        """Read a specific user's tweets at a specific (fake) time."""
-        sort = asc if ascending else desc
-        async with new_session() as db:
-            results = await db.execute(
-                select(models.sql.Tweet)
-                .filter(
-                    and_(
-                        or_(
-                            models.sql.Tweet.fake_time <= fake_time,
-                            models.sql.Tweet.fake_time == None,  # noqa: E711
-                        ),
-                    ),
-                    models.sql.Tweet.author_id == user_id,
-                )
-                .order_by(
-                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
-                )
-                .limit(limit)
-            )
-            posts = results.scalars()
-
-        return list(posts)
-
-    @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
-    async def read_profile(user_id: int):
-        """Read the profile information of a user."""
-        async with new_session() as db:
-            result = await db.execute(
-                select(models.sql.User).filter_by(user_id=user_id)
-            )
-            user = result.scalar_one_or_none()
-            if user is None:
-                return FastAPI.HTTPException(status_code=404, detail="User not found")
-            bio = await user.awaitable_attrs.bio
-
-        if bio is None:
-            return models.pydantic.ProfileRead(
-                user=user,
-                bio={"user_id": user_id},
-            )
-
-        return {"user": user, "bio": bio}
 
     return api
