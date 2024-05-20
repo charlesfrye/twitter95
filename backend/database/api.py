@@ -29,7 +29,7 @@ app = modal.App(
     mounts=[common.mount],
 )
 @modal.asgi_app()
-def api():
+def api() -> FastAPI:
     """API for accessing the Twitter '95 database.
 
     The primary routes for the bot client and the frontend are:
