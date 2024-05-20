@@ -41,6 +41,11 @@ class TweetRead(TweetBase):
         orm_mode = True
 
 
+class AuthorTweetRead(BaseModel):
+    author: UserRead
+    tweet: TweetRead
+
+
 class BioBase(BaseModel):
     content: Optional[str] = ""
     location: Optional[str] = "Earth"

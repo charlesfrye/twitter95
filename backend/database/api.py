@@ -86,7 +86,7 @@ def api() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
+    @api.get("/timeline/", response_model=List[models.pydantic.AuthorTweetRead])
     async def read_timeline(
         fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
     ):
@@ -97,9 +97,12 @@ def api() -> FastAPI:
                 models.sql.followers_association.c.followed_id
             ).where(models.sql.followers_association.c.follower_id == user_id)
 
-            # TODO: enrich with info about authors of tweets
             result = await db.execute(
-                select(models.sql.Tweet)  # author here?
+                select(models.sql.Tweet, models.sql.User)
+                .join(
+                    models.sql.User,
+                    models.sql.Tweet.author_id == models.sql.User.user_id,
+                )
                 .where(models.sql.Tweet.author_id.in_(followed_users))
                 .filter(
                     and_(
@@ -115,9 +118,11 @@ def api() -> FastAPI:
                 .limit(limit)
             )
 
-            tweets = result.scalars()
+            tweets_with_authors = result.all()
 
-        return list(tweets)
+        return list(
+            {"tweet": tweet, "author": author} for tweet, author in tweets_with_authors
+        )
 
     @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
     async def read_posts(
