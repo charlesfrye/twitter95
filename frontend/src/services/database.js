@@ -23,7 +23,7 @@ const getFeed = async () => {
 };
 
 const getUser = async (userId) => {
-  const url = `${baseUrl}/users/${userId}`;
+  const url = `${baseUrl}/users/${userId}/`;
   return await fetchData(url);
 };
 
