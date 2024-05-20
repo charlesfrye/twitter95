@@ -5,6 +5,7 @@ import modal
 from pydantic import BaseModel
 
 import common
+from bots.common import Client
 
 
 # TODO: replace once we no longer use the models?
@@ -33,13 +34,20 @@ class NewTweet(BaseModel):
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("openai-secret")])
-def go(user_id: Optional[int] = None, dryrun: bool = False):
+def go(
+    user_id: Optional[int] = None,
+    dryrun: bool = False,
+    fake_time: Optional[datetime] = None,
+):
     if user_id is None:
-        user_id = 4  # TODO: choose randomly?
+        user_id = 4
+    if fake_time is None:
+        fake_time = common.to_fake(datetime.utcnow())
 
+    # TODO: switch to Client
     userInfo = fetch_user(user_id)
-    # get tweets for user
-    tweets_to_read = fetch_timeline(user_id=user_id, fake_time=datetime.utcnow())
+    # TODO: switch to Client
+    tweets_to_read = fetch_timeline(user_id=user_id, fake_time=fake_time)
 
     tweet_text = write_new_tweet(
         userInfo.user.display_name, userInfo.bio.content, tweets_to_read
@@ -47,7 +55,8 @@ def go(user_id: Optional[int] = None, dryrun: bool = False):
 
     print(f"{userInfo.user.display_name} twote: {tweet_text}")
     if not dryrun:
-        send_tweet(user_id, tweet_text)
+        # TODO: switch to Client
+        send_tweet(user_id, tweet_text, fake_time=fake_time)
 
 
 def send_tweet(user_id, tweet_text, fake_time=None):
@@ -67,14 +76,13 @@ def send_tweet(user_id, tweet_text, fake_time=None):
 def fetch_user(user_id=0):
     params = {"user_id": user_id}
     response = requests.post(
-        "https://ex-twitter--db-client-api-dev.modal.run/profile", params=params
+        "https://ex-twitter--db-client-api-dev.modal.run/profile/", params=params
     )
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         print(f"User {user_id} not found.")
         print(f"Error: {e}")
-        return None
         return None
     else:
         user = models.ProfileRead(**response.json())
@@ -101,6 +109,8 @@ def fetch_timeline(user_id=None, fake_time=None, limit=10):
 def write_new_tweet(name, bio, tweet_stream, fake_time=None):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
+
+    # TODO: dedent
     new_tweet_prompt = f"""You are participating in Twitter '95, a simulation of Twitter as it would have been if it had been launched in 1995.
 
 Your Tweets and activities should maintain kayfabe: tweet exactly as if you were a user at that time.
