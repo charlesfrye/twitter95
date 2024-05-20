@@ -30,6 +30,16 @@ app = modal.App(
 )
 @modal.asgi_app()
 def api():
+    """API for accessing the Twitter '95 database.
+
+    The primary routes for the bot client and the frontend are:
+        - GET /timeline/, which returns fake-time-limited tweets based on user follows
+        - GET /posts/, which returns fake-time-limited tweets from a specific user
+        - GET /profile/, which returns the user and their bio
+        - POST /tweet/, which creates a new tweet
+
+    The remaining routes are lower level (e.g. retrieving all tweets).
+    """
     from sqlalchemy import and_, asc, delete, desc, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
@@ -78,6 +88,7 @@ def api():
 
     @api.post("/users/", response_model=models.pydantic.UserRead)
     async def create_user(user: models.pydantic.UserCreate):
+        """Create a new User."""
         async with new_session() as db:
             user = models.sql.User(**user.dict())
             db.add(user)
@@ -90,20 +101,24 @@ def api():
         return user
 
     @api.get("/users/", response_model=List[models.pydantic.UserRead])
-    async def read_users(ascending: bool = False):
+    async def read_users(ascending: bool = False, limit: int = 10):
+        """Read multiple users."""
         async with new_session() as db:
             users = await db.scalars(
-                select(models.sql.User).order_by(
+                select(models.sql.User)
+                .order_by(
                     models.sql.User.user_id
                     if ascending
                     else desc(models.sql.User.user_id)
                 )
+                .limit(limit)
             )
 
         return list(users)
 
     @api.get("/users/{user_id}/")
     async def read_user(user_id: int) -> models.pydantic.UserRead:
+        """Read a specific user"""
         async with new_session() as db:
             result = await db.execute(
                 select(models.sql.User).filter_by(user_id=user_id)
@@ -117,6 +132,7 @@ def api():
 
     @api.delete("/users/{user_id}/")
     async def delete_user(user_id: int):
+        """Delete a user and all their data."""
         async with new_session() as db:
             result = await db.execute(
                 select(models.sql.User).filter_by(user_id=user_id)
@@ -154,6 +170,7 @@ def api():
 
     @api.get("/users/{user_id}/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_user_tweets(user_id: int, limit=10):
+        """Read all tweets by a user."""
         async with new_session() as db:
             result = await db.execute(
                 select(models.sql.User).filter_by(user_id=user_id)
@@ -178,6 +195,7 @@ def api():
 
     @api.get("/names/{user_name}/")
     async def read_user_by_name(user_name: str) -> Optional[models.pydantic.UserRead]:
+        """Read a specific user by their user_name."""
         async with new_session() as db:
             result = await db.execute(
                 select(models.sql.User).filter_by(user_name=user_name)
@@ -191,6 +209,7 @@ def api():
 
     @api.post("/tweet/", response_model=models.pydantic.TweetRead)
     async def create_tweet(tweet: models.pydantic.TweetCreate):
+        """Create a new tweet."""
         tweet = models.sql.Tweet(**tweet.dict())
 
         async with new_session() as db:
@@ -202,6 +221,7 @@ def api():
 
     @api.get("/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_tweets(limit=10, ascending: bool = False):
+        """Read multiple tweets."""
         sort = asc if ascending else desc
         async with new_session() as db:
             result = await db.execute(
@@ -218,14 +238,16 @@ def api():
     async def read_timeline(
         fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
     ):
+        """Read the timeline at a specific (fake) time."""
         sort = asc if ascending else desc
         async with new_session() as db:
             followed_users = select(
                 models.sql.followers_association.c.followed_id
             ).where(models.sql.followers_association.c.follower_id == user_id)
 
+            # TODO: enrich with info about authors of tweets
             result = await db.execute(
-                select(models.sql.Tweet)
+                select(models.sql.Tweet)  # author here?
                 .where(models.sql.Tweet.author_id.in_(followed_users))
                 .filter(
                     and_(
@@ -249,6 +271,7 @@ def api():
     async def read_posts(
         fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
     ):
+        """Read a specific user's tweets at a specific (fake) time."""
         sort = asc if ascending else desc
         async with new_session() as db:
             results = await db.execute(
@@ -273,6 +296,7 @@ def api():
 
     @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
     async def read_profile(user_id: int):
+        """Read the profile information of a user."""
         async with new_session() as db:
             result = await db.execute(
                 select(models.sql.User).filter_by(user_id=user_id)
