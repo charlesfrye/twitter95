@@ -88,22 +88,27 @@ def api() -> FastAPI:
 
     @api.get("/timeline/", response_model=List[models.pydantic.AuthorTweetRead])
     async def read_timeline(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
+        fake_time: Optional[datetime] = None,
+        user_id: Optional[int] = None,
+        limit: int = 10,
+        ascending: bool = False,
     ):
         """Read the timeline at a specific (fake) time."""
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
         sort = asc if ascending else desc
         async with new_session() as db:
-            followed_users = select(
-                models.sql.followers_association.c.followed_id
-            ).where(models.sql.followers_association.c.follower_id == user_id)
+            if user_id is not None:
+                followed_users = select(
+                    models.sql.followers_association.c.followed_id
+                ).where(models.sql.followers_association.c.follower_id == user_id)
 
-            result = await db.execute(
+            query = (
                 select(models.sql.Tweet, models.sql.User)
                 .join(
                     models.sql.User,
                     models.sql.Tweet.author_id == models.sql.User.user_id,
                 )
-                .where(models.sql.Tweet.author_id.in_(followed_users))
                 .filter(
                     and_(
                         or_(
@@ -117,6 +122,10 @@ def api() -> FastAPI:
                 )
                 .limit(limit)
             )
+            if user_id is not None:
+                query = query.where(models.sql.Tweet.author_id.in_(followed_users))
+
+            result = await db.execute(query)
 
             tweets_with_authors = result.all()
 
