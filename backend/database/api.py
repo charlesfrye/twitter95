@@ -135,9 +135,14 @@ def api() -> FastAPI:
 
     @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
     async def read_posts(
-        fake_time: datetime, user_id: int, limit: int = 10, ascending: bool = False
+        user_id: int,
+        fake_time: Optional[datetime] = None,
+        limit: int = 10,
+        ascending: bool = False,
     ):
         """Read a specific user's tweets at a specific (fake) time."""
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
         sort = asc if ascending else desc
         async with new_session() as db:
             results = await db.execute(
