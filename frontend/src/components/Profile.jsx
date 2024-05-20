@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Tweet from "./Tweet";
 import User from "./User";
-import { getUser, getUserTweets } from "../services/database";
+import { getProfile, getPosts } from "../services/database";
 
 function Profile() {
   const { userId } = useParams();
-  const [user, setUser] = useState({});
+  const [profile, setProfile] = useState({});
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const userData = await getUser(userId);
-        const userTweets = await getUserTweets(userId);
+        const [userData, userTweets] = await Promise.all([
+          getProfile(userId),
+          getPosts(userId),
+        ]);
 
-        setUser({ ...userData, tweets: userTweets });
+        setProfile({ ...userData, tweets: userTweets });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -25,11 +27,14 @@ function Profile() {
 
   return (
     <div className="profile">
-      <User user={user} />
+      {profile.user ? <User user={profile.user} bio={profile.bio} /> : null}
 
-      {user.tweets && user.tweets.length > 0 ? (
-        user.tweets.map((tweet, index) => (
-          <Tweet key={index} authorTweet={{ author: user, tweet: tweet }} />
+      {profile && profile.tweets && profile.tweets.length > 0 ? (
+        profile.tweets.map((tweet, index) => (
+          <Tweet
+            key={index}
+            authorTweet={{ author: profile.user, tweet: tweet }}
+          />
         ))
       ) : (
         <p>No tweets found.</p>

@@ -182,6 +182,7 @@ body.dark {
 	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
+	margin-right: 64px;
 }
 
 .sidebarLeft h2,
@@ -210,6 +211,7 @@ body.dark {
 	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
+	margin-left: 64px;
 }
 
 .sidebarOption {
