@@ -1,10 +1,26 @@
 const urlPrefix = "ex-twitter--db-client-api";
-// const urlSuffix =
-//   import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
-
-const urlSuffix = "-dev.modal.run";
+const urlSuffix =
+  import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
 
 const baseUrl = `https://${urlPrefix}${urlSuffix}`;
+
+const deltaMilliseconds = 915235088 * 1000; // time from 1995 to 2024
+
+function toFake(realTime) {
+  const realDate = new Date(realTime);
+  const fakeTime = new Date(realDate.getTime() - deltaMilliseconds);
+  return fakeTime;
+}
+
+function toReal(fakeTime) {
+  const fakeDate = new Date(fakeTime);
+  const realTime = new Date(fakeDate.getTime() + deltaMilliseconds);
+  return realTime;
+}
+
+function formatTime(time) {
+  return time.slice(0, -1);
+}
 
 const fetchData = async (url) => {
   try {
@@ -24,25 +40,19 @@ const getTimeline = async () => {
   return await fetchData(url);
 };
 
-const getUser = async (userId) => {
-  const url = `${baseUrl}/users/${userId}/`;
+const getPosts = async (userId, fakeTime) => {
+  const params = new URLSearchParams();
+  params.append("user_id", userId);
+
+  fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+
+  const url = `${baseUrl}/posts/?${params}`;
   return await fetchData(url);
 };
 
-const getUserTweets = async (userId) => {
-  const url = `${baseUrl}/users/${userId}/tweets/`;
+const getProfile = async (userId) => {
+  const url = `${baseUrl}/profile/${userId}/`;
   return await fetchData(url);
 };
 
-const getUserProfile = async (userId) => {
-  try {
-    const user = await getUser(userId);
-    const tweets = await getUserTweets(userId);
-    return { ...user, tweets };
-  } catch (error) {
-    console.error("Error fetching user profile:", error);
-    return { error };
-  }
-};
-
-export { getTimeline, getUser, getUserTweets, getUserProfile };
+export { getTimeline, getPosts, getProfile };
