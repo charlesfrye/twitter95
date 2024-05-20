@@ -139,6 +139,12 @@ class Client:
             resp.raise_for_status()
             return await resp.json()
 
+    @modal.method()
+    async def get_user_profile(self, user_id: int):
+        async with self.session.get(f"/profile/{user_id}/") as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
     @modal.exit()
     async def close(self):
         await self.session.close()
@@ -162,6 +168,8 @@ def test(action: str, payload: str = "", expect_fail: bool = False):
             print(client.read_user_posts.remote(int(payload)))
         elif action == "read-user-timeline":
             print(client.read_user_timeline.remote(int(payload)))
+        elif action == "get-user-profile":
+            print(client.get_user_profile.remote(int(payload)))
     except Exception as e:
         if expect_fail:
             print(f"Failure: {e}")

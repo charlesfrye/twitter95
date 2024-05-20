@@ -271,7 +271,7 @@ def api():
 
         return list(posts)
 
-    @api.post("/profile/", response_model=models.pydantic.ProfileRead)
+    @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
     async def read_profile(user_id: int):
         async with new_session() as db:
             result = await db.execute(
