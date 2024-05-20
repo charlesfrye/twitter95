@@ -102,7 +102,7 @@ def api():
 
         return list(users)
 
-    @api.get("/users/{user_id}")
+    @api.get("/users/{user_id}/")
     async def read_user(user_id: int) -> models.pydantic.UserRead:
         async with new_session() as db:
             result = await db.execute(
@@ -115,7 +115,7 @@ def api():
             )
         return user
 
-    @api.delete("/users/{user_id}")
+    @api.delete("/users/{user_id}/")
     async def delete_user(user_id: int):
         async with new_session() as db:
             result = await db.execute(
@@ -176,7 +176,7 @@ def api():
 
         return list(tweets)
 
-    @api.get("/names/{user_name}")
+    @api.get("/names/{user_name}/")
     async def read_user_by_name(user_name: str) -> Optional[models.pydantic.UserRead]:
         async with new_session() as db:
             result = await db.execute(
@@ -271,7 +271,7 @@ def api():
 
         return list(posts)
 
-    @api.post("/profile", response_model=models.pydantic.ProfileRead)
+    @api.post("/profile/", response_model=models.pydantic.ProfileRead)
     async def read_profile(user_id: int):
         async with new_session() as db:
             result = await db.execute(
