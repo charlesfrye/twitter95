@@ -47,6 +47,7 @@ class Client:
         display_name: Optional[str] = None,
         profile_pic: Optional[str] = None,
         banner_pic: Optional[str] = None,
+        bio: Optional[dict] = None,
     ):
         if display_name is None:
             display_name = user_name
@@ -58,6 +59,7 @@ class Client:
                 "display_name": display_name,
                 "profile_pic": profile_pic,
                 "banner_pic": banner_pic,
+                "bio": bio,
             },
         ) as resp:
             resp.raise_for_status()
