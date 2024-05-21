@@ -87,7 +87,7 @@ class Client:
         text: str,
         real_time: Optional[str] = None,
         fake_time: Optional[str] = None,
-        views: Optional[int] = None,
+        quoted: Optional[int] = None,
     ):
         async with self.session.post(
             "/tweet/",
@@ -96,7 +96,7 @@ class Client:
                 "text": text,
                 "real_time": real_time,
                 "fake_time": fake_time,
-                "views": views,
+                "quoted": quoted,
             },
         ) as resp:
             resp.raise_for_status()
@@ -183,12 +183,24 @@ def test(action: str, payload: str = "", expect_fail: bool = False):
             print(client.delete_user_by_name.remote(payload))
         elif action == "create-tweet":
             print(client.create_tweet.remote(int(payload), "setting up my twttr"))
+        elif action == "delete-tweet":
+            print(client.delete_tweet.remote(int(payload)))
+        elif action == "quote-tweet":
+            print(
+                client.create_tweet.remote(
+                    author_id=3,
+                    text="I ain't reading all that. I'm happy for u tho. Or sorry that happened.",
+                    quoted=int(payload),
+                )
+            )
         elif action == "read-user-posts":
             print(client.read_user_posts.remote(int(payload)))
         elif action == "read-user-timeline":
             print(client.read_user_timeline.remote(int(payload)))
         elif action == "get-user-profile":
             print(client.get_user_profile.remote(int(payload)))
+        else:
+            raise Exception(f"Unknown action: {action}")
     except Exception as e:
         if expect_fail:
             print(f"Failure: {e}")
