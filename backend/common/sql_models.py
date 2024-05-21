@@ -27,20 +27,6 @@ followers_association = Table(
     Column("followed_id", Integer, ForeignKey("users.user_id"), primary_key=True),
 )
 
-likes_association = Table(
-    "likes",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.user_id"), primary_key=True),
-    Column("tweet_id", Integer, ForeignKey("tweets.tweet_id"), primary_key=True),
-)
-
-replies_association = Table(
-    "replies",
-    Base.metadata,
-    Column("tweet_id", Integer, ForeignKey("tweets.tweet_id"), primary_key=True),
-    Column("reply_tweet_id", Integer, ForeignKey("tweets.tweet_id"), primary_key=True),
-)
-
 
 class Tweet(Base):
     __tablename__ = "tweets"
