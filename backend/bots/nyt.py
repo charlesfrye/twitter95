@@ -79,7 +79,7 @@ def connect_nyt():
     return nyt
 
 
-@app.function()
+@app.function(schedule=modal.Period(hours=1))
 async def post_nyt_articles(
     fake_time: datetime = None, lookahead_hours: int = None, dryrun: bool = False
 ):
