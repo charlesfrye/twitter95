@@ -40,6 +40,7 @@ def api() -> FastAPI:
 
     The remaining routes are lower level (e.g. retrieving all tweets).
     """
+    import sqlalchemy
     from sqlalchemy import and_, asc, delete, desc, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
@@ -185,6 +186,21 @@ def api() -> FastAPI:
 
         return {"user": user, "bio": bio}
 
+    @api.post("/tweet/", response_model=models.pydantic.TweetRead)
+    async def create_tweet(tweet: models.pydantic.TweetCreate):
+        """Create a new tweet."""
+        tweet = models.sql.Tweet(**tweet.dict())
+
+        async with new_session() as db:
+            try:
+                db.add(tweet)
+                await db.commit()
+                await db.refresh(tweet)
+            except sqlalchemy.exc.IntegrityError as e:
+                raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
+
+        return tweet
+
     @api.get("/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_tweets(limit=10, ascending: bool = False):
         """Read multiple tweets."""
@@ -204,10 +220,13 @@ def api() -> FastAPI:
     async def create_user(user: models.pydantic.UserCreate):
         """Create a new User."""
         async with new_session() as db:
-            user = models.sql.User(**user.dict())
-            db.add(user)
-            await db.commit()
-            await db.refresh(user)
+            try:
+                user = models.sql.User(**user.dict())
+                db.add(user)
+                await db.commit()
+                await db.refresh(user)
+            except sqlalchemy.exc.IntegrityError as e:
+                raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
 
         # TODO: from_orm
         user = models.pydantic.UserRead(**user.__dict__)
@@ -282,6 +301,24 @@ def api() -> FastAPI:
             # Commit transaction
             await db.commit()
 
+    @api.delete("/tweet/")
+    async def delete_tweet(tweet_id: int):
+        """Delete a tweet entirely.
+
+        Fails if any other tweet is quoting this tweet."""
+        async with new_session() as db:
+            try:
+                await db.execute(
+                    delete(models.sql.Tweet).where(
+                        models.sql.Tweet.tweet_id == tweet_id
+                    )
+                )
+            except sqlalchemy.exc.IntegrityError as e:
+                raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
+
+            # Commit transaction
+            await db.commit()
+
     @api.get("/users/{user_id}/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_user_tweets(user_id: int, limit=10):
         """Read all tweets by a user."""
@@ -320,17 +357,5 @@ def api() -> FastAPI:
                     status_code=404, detail=f"User {user_name} not found"
                 )
         return user
-
-    @api.post("/tweet/", response_model=models.pydantic.TweetRead)
-    async def create_tweet(tweet: models.pydantic.TweetCreate):
-        """Create a new tweet."""
-        tweet = models.sql.Tweet(**tweet.dict())
-
-        async with new_session() as db:
-            db.add(tweet)
-            await db.commit()
-            await db.refresh(tweet)
-
-        return tweet
 
     return api

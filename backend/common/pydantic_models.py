@@ -8,7 +8,6 @@ class UserBase(BaseModel):
     user_name: str
     display_name: str
     profile_pic: Optional[str] = None
-    banner_pic: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -27,7 +26,7 @@ class TweetBase(BaseModel):
     author_id: Optional[int] = None
     fake_time: Optional[datetime] = None
     real_time: Optional[datetime] = None
-    views: Optional[int] = 0
+    quoted: Optional[int] = None
 
 
 class TweetCreate(TweetBase):
@@ -49,8 +48,6 @@ class AuthorTweetRead(BaseModel):
 class BioBase(BaseModel):
     content: Optional[str] = ""
     location: Optional[str] = "Earth"
-    birthday: Optional[datetime] = None
-    joined_on: Optional[datetime] = None
 
 
 class BioRead(BioBase):

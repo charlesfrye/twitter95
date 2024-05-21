@@ -51,16 +51,7 @@ class Tweet(Base):
     text = Column(Text)
     fake_time = Column(DateTime, default=lambda: to_fake(datetime.datetime.utcnow()))
     real_time = Column(DateTime, default=datetime.datetime.utcnow)
-    replies = relationship(
-        "Tweet",
-        secondary=replies_association,
-        primaryjoin=tweet_id == replies_association.c.tweet_id,
-        secondaryjoin=tweet_id == replies_association.c.reply_tweet_id,
-        backref="replied_to",
-    )
     quoted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
-    retweeted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
-    views = Column(Integer, default=0)
 
 
 class User(Base):
@@ -70,14 +61,6 @@ class User(Base):
     user_name = Column(String, unique=True)
     display_name = Column(String)
     profile_pic = Column(String, default="")
-    banner_pic = Column(String, default="")
-    follows = relationship(
-        "User",
-        secondary=followers_association,
-        primaryjoin=user_id == followers_association.c.follower_id,
-        secondaryjoin=user_id == followers_association.c.followed_id,
-        backref="followers",
-    )
 
 
 class Bio(Base):
@@ -86,8 +69,6 @@ class Bio(Base):
     user_id = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
     content = Column(Text, default="")
     location = Column(String, default="Earth")
-    birthday = Column(DateTime)
-    joined_on = Column(DateTime)
 
     user = relationship("User", back_populates="bio", uselist=False)
 
