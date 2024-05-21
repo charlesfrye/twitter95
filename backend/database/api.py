@@ -345,7 +345,6 @@ def api() -> FastAPI:
             except sqlalchemy.exc.IntegrityError as e:
                 raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
 
-            # Commit transaction
             await db.commit()
 
     @api.get("/users/{user_id}/tweets/", response_model=List[models.pydantic.TweetRead])
