@@ -70,6 +70,17 @@ class Client:
             return await resp.json()
 
     @modal.method()
+    async def delete_user_by_name(self, user_name: str):
+        async with self.session.get(f"/names/{user_name}/") as resp:
+            resp.raise_for_status()
+            resp = await resp.json()
+            user_id = resp["user_id"]
+
+        async with self.session.delete(f"/users/{user_id}/") as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
+    @modal.method()
     async def create_tweet(
         self,
         author_id: int,
@@ -162,6 +173,8 @@ def test(action: str, payload: str = "", expect_fail: bool = False):
             print(client.create_user.remote(payload or str(uuid4())))
         elif action == "delete-user-by-id":
             print(client.delete_user_by_id.remote(int(payload)))
+        elif action == "delete-user-by-name":
+            print(client.delete_user_by_name.remote(payload))
         elif action == "create-tweet":
             print(client.create_tweet.remote(int(payload), "setting up my twttr"))
         elif action == "read-user-posts":
