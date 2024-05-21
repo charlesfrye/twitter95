@@ -103,6 +103,12 @@ class Client:
             return await resp.json()
 
     @modal.method()
+    async def delete_tweet(self, tweet_id: int):
+        async with self.session.delete(f"/tweet/{tweet_id}/") as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
+    @modal.method()
     async def read_user_posts(
         self,
         user_id: int,

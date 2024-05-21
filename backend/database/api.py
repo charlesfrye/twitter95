@@ -301,7 +301,7 @@ def api() -> FastAPI:
             # Commit transaction
             await db.commit()
 
-    @api.delete("/tweet/")
+    @api.delete("/tweet/{tweet_id}")
     async def delete_tweet(tweet_id: int):
         """Delete a tweet entirely.
 
