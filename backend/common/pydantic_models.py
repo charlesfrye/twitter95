@@ -10,10 +10,6 @@ class UserBase(BaseModel):
     profile_pic: Optional[str] = None
 
 
-class UserCreate(UserBase):
-    pass
-
-
 class UserRead(UserBase):
     user_id: int
 
@@ -55,6 +51,10 @@ class BioRead(BioBase):
 
     class Config:
         orm_mode = True
+
+
+class UserCreate(UserBase):
+    bio: Optional[BioBase] = None
 
 
 class ProfileRead(BaseModel):

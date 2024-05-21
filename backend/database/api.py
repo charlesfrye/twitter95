@@ -41,7 +41,7 @@ def api() -> FastAPI:
     The remaining routes are lower level (e.g. retrieving all tweets).
     """
     import sqlalchemy
-    from sqlalchemy import and_, asc, delete, desc, or_
+    from sqlalchemy import and_, asc, delete, desc, insert, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
     from sqlalchemy.orm import sessionmaker
@@ -175,7 +175,7 @@ def api() -> FastAPI:
             )
             user = result.scalar_one_or_none()
             if user is None:
-                return FastAPI.HTTPException(status_code=404, detail="User not found")
+                raise fastapi.HTTPException(status_code=404, detail="User not found")
             bio = await user.awaitable_attrs.bio
 
         if bio is None:
@@ -201,6 +201,21 @@ def api() -> FastAPI:
 
         return tweet
 
+    @api.post("/edge/")
+    async def create_edge(_from: int, _to: int):
+        """Add a directed "follows" edge to the social graph.
+
+        Tweets flow in the direction of arrows."""
+        async with new_session() as db:
+            try:
+                stmt = insert(models.sql.followers_association).values(
+                    follower_id=_to, followed_id=_from
+                )
+                await db.execute(stmt)
+                await db.commit()
+            except sqlalchemy.exc.IntegrityError as e:
+                raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
+
     @api.get("/tweets/", response_model=List[models.pydantic.TweetRead])
     async def read_tweets(limit=10, ascending: bool = False):
         """Read multiple tweets."""
@@ -219,12 +234,21 @@ def api() -> FastAPI:
     @api.post("/users/", response_model=models.pydantic.UserRead)
     async def create_user(user: models.pydantic.UserCreate):
         """Create a new User."""
+        if user.bio is not None:
+            bio = models.sql.Bio(**user.bio.dict())
+            del user.bio
+        else:
+            bio = None
         async with new_session() as db:
             try:
                 user = models.sql.User(**user.dict())
                 db.add(user)
                 await db.commit()
                 await db.refresh(user)
+                if bio is not None:
+                    bio.user_id = user.user_id
+                    db.add(bio)
+                    await db.commit()
             except sqlalchemy.exc.IntegrityError as e:
                 raise fastapi.HTTPException(status_code=422, detail=f"Error: {e.orig}")
 
@@ -293,6 +317,11 @@ def api() -> FastAPI:
                 delete(models.sql.followers_association).where(
                     models.sql.followers_association.c.followed_id == user_id
                 )
+            )
+
+            # remove bio
+            await db.execute(
+                delete(models.sql.Bio).where(models.sql.Bio.user_id == user_id)
             )
 
             # remove the user
