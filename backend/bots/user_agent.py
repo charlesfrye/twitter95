@@ -1,19 +1,17 @@
 from datetime import datetime
-from typing import Optional
+import textwrap
+from typing import Optional, Union
 
 import modal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 import common
 from bots.common import Client
 
 
-# TODO: replace once we no longer use the models?
 image = modal.Image.debian_slim(python_version="3.11").pip_install(
-    "asyncpg==0.29.0", "sqlalchemy[asyncio]==2.0.30"
+    "openai", "instructor"
 )
-
-image = image.pip_install("pandas", "requests", "openai", "instructor")
 
 app = modal.App(
     "user_agent",
@@ -24,13 +22,20 @@ app = modal.App(
 with image.imports():
     import instructor
     from openai import OpenAI
-    import requests
 
     import common.pydantic_models as models
 
 
-class NewTweet(BaseModel):
-    text: Optional[str]
+class Tweet(BaseModel):
+    text: str = Field(..., description="The text content of a tweet")
+
+
+class QuoteTweet(Tweet):
+    quoted: int = Field(..., description="The ID of the tweet being quoted")
+
+
+class DoNothing(BaseModel):
+    nothing: type(None) = Field(None, description="Do nothing")
 
 
 @app.function(image=image, secrets=[modal.Secret.from_name("openai-secret")])
@@ -38,121 +43,171 @@ def go(
     user_id: Optional[int] = None,
     dryrun: bool = False,
     fake_time: Optional[datetime] = None,
+    verbose: bool = False,
 ):
     if user_id is None:
-        user_id = 4
+        user_id = 5
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    # TODO: switch to Client
-    userInfo = fetch_user(user_id)
-    # TODO: switch to Client
-    tweets_to_read = fetch_timeline(user_id=user_id, fake_time=fake_time)
+    profile = get_profile(user_id)
+    timeline = get_timeline(user_id=user_id, fake_time=fake_time)
+    posts = get_posts(user_id=user_id, fake_time=fake_time)
 
-    tweet_text = write_new_tweet(
-        userInfo.user.display_name, userInfo.bio.content, tweets_to_read
-    )
-
-    print(f"{userInfo.user.display_name} twote: {tweet_text}")
-    if not dryrun:
-        # TODO: switch to Client
-        send_tweet(user_id, tweet_text, fake_time=fake_time)
-
-
-def send_tweet(user_id, tweet_text, fake_time=None):
-    if fake_time is None:
-        fake_time = common.to_fake(datetime.utcnow())
-    tweet = models.TweetCreate(
-        author_id=user_id,
-        text=tweet_text,
+    action = take_action(
+        profile.user.display_name,
+        profile.bio.content,
+        timeline,
+        posts,
         fake_time=fake_time,
+        verbose=verbose,
     )
-    response = requests.post(
-        "https://ex-twitter--db-client-api-dev.modal.run/tweet/", data=tweet.json()
-    )
-    response.raise_for_status()
+
+    print(f"{profile.user.user_name} chose action {type(action)}")
+    if verbose:
+        if isinstance(action, DoNothing):
+            print(f"{profile.user.user_name} did nothing")
+        if isinstance(action, Tweet):
+            print(f"{profile.user.user_name} twote: {action.text}")
+        if isinstance(action, QuoteTweet):
+            print(f"{profile.user.user_name} quoted tweet {action.quoted}:")
+            for tweet in timeline:
+                print(
+                    tweet.tweet.text
+                ) if tweet.tweet.tweet_id == action.quoted else None
+    if not dryrun:
+        send_tweet(user_id, action, fake_time=fake_time)
 
 
-def fetch_user(user_id=0):
-    params = {"user_id": user_id}
-    response = requests.post(
-        "https://ex-twitter--db-client-api-dev.modal.run/profile/", params=params
-    )
-    try:
-        response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
-        print(f"User {user_id} not found.")
-        print(f"Error: {e}")
-        return None
-    else:
-        user = models.ProfileRead(**response.json())
-        return user
-
-
-def fetch_timeline(user_id=None, fake_time=None, limit=10):
-    if fake_time is None:
-        fake_time = common.to_fake(datetime.utcnow())
-    params = {"user_id": user_id, "fake_time": fake_time, "limit": limit}
-    response = requests.get(
-        "https://ex-twitter--db-client-api-dev.modal.run/timeline/", params=params
-    )
-    response.raise_for_status()
-    data = response.json()
-    if data is None:
-        print(f"Timeline for user {user_id} not found. Returning None...")
-        return None
-    else:
-        timeline = [models.TweetRead(**tweet) for tweet in data]
-        return timeline
-
-
-def write_new_tweet(name, bio, tweet_stream, fake_time=None):
+def send_tweet(user_id, tweet, fake_time=None):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    # TODO: dedent
-    new_tweet_prompt = f"""You are participating in Twitter '95, a simulation of Twitter as it would have been if it had been launched in 1995.
+    Client.create_tweet.remote(user_id, fake_time=str(fake_time), **tweet.dict())
 
-Your Tweets and activities should maintain kayfabe: tweet exactly as if you were a user at that time.
 
-The current time in the simulation is {fake_time:%Y-%m-%d %H:%M}.
+def get_profile(user_id=5):
+    profile = Client.get_user_profile.remote(user_id)
 
-You are {name}, a Twitter user with this profile bio:
-```bio
-{bio}
-```
+    user = models.ProfileRead(**profile)
 
-You see this list of Tweets:
-```tweets
-"""
-    new_tweet_prompt += "\n".join(
+    return user
+
+
+def get_timeline(user_id=None, fake_time=None, limit=10):
+    if fake_time is None:
+        fake_time = common.to_fake(datetime.utcnow())
+
+    timeline = Client.read_user_timeline.remote(user_id, fake_time, limit)
+    timeline = [models.AuthorTweetRead(**tweet) for tweet in timeline]
+    return timeline
+
+
+def get_posts(user_id=None, fake_time=None, limit=10):
+    if fake_time is None:
+        fake_time = common.to_fake(datetime.utcnow())
+
+    posts = Client.read_user_posts.remote(user_id, fake_time, limit)
+    posts = [models.TweetRead(**post) for post in posts]
+    return posts
+
+
+def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
+    if fake_time is None:
+        fake_time = common.to_fake(datetime.utcnow())
+
+    prompt = f"""
+    You are participating in Twitter '95, a simulation of Twitter as it would have been if it had been launched in 1995.
+
+    Your Tweets and activities should maintain kayfabe: tweet exactly as if you were a user at that time.
+
+    The current time in the simulation is {fake_time:%Y-%m-%d %H:%M}.
+
+    You are {name}, a Twitter user with this profile bio:
+        ```bio
+        {bio}
+        ```
+
+    And here are some of your recent Tweets, so you don't repeat yourself:
+
+    ```tweets"""
+
+    prompt = textwrap.dedent(prompt)
+
+    prompt += "\n"
+    prompt += "\n".join(
         [
-            "```tweet\n" + f"{tweet.text} at {tweet.fake_time.isoformat()}" + "\n```"
-            for tweet in tweet_stream
+            f"\t```tweet {tweet.tweet_id}\n\t"
+            + tweet.text
+            + f"\n\t```\n\tposted by you at {tweet.fake_time.isoformat(timespec='minutes')} with TweetID# {tweet.tweet_id}"
+            + (f"quoting tweet with TweetID# {tweet.quoted}" if tweet.quoted else "")
+            + "\n\t"
+            for tweet in posts
         ]
     )
-    new_tweet_prompt += """
-```
+    prompt = textwrap.dedent(prompt)
+    prompt += "```"
 
-You may now decide what to next:
-- Write a Tweet in response to a Tweet you saw. Pick a Tweet you think the user would be interested in.
-- Write your own Tweet.
-- Do nothing, if you don't think your character would have anything to say right now.
+    prompt += """
 
-If you choose to write a Tweet:
-- Do NOT use emojis."""
+    You see this list of Tweets from others on your timeline:
+    ```tweets"""
+
+    prompt = textwrap.dedent(prompt)
+
+    prompt += "\n"
+    prompt += "\n".join(
+        [
+            f"\t```tweet {tweet.tweet.tweet_id}\n\t"
+            + tweet.tweet.text
+            + f"\n\t```\n\tby @{tweet.author.user_name} at {tweet.tweet.fake_time.isoformat(timespec='minutes')} with TweetID# {tweet.tweet.tweet_id}"
+            + "\n\t"
+            for tweet in timeline
+        ]
+    )
+    prompt = textwrap.dedent(prompt)
+    prompt += "```"
+    prompt += """
+    You are participating in the QuoteTweet phase of the simulation. In this phase, you can choose to do one of the following:
+        - Write a QuoteTweet in response to a tweet you saw if you think one of them would interest your character.
+        - DoNothing, if you think none of the tweets would interest your character.
+
+    If you choose to write a QuoteTweet:
+        - Pick a Tweet you think your character would be interested in. Include the TweetID# in your response.
+        - Do NOT use emojis.
+        - Do NOT write the content of the Tweet you are quoting. That would be a Retweet, different phase.
+        - You may quote your own tweet, not just others'.
+        - NEVER quote a tweet you've already quoted.
+        - Write a response in the voice and style of your character, maintaining kayfabe.
+        - Keep your Tweet short -- 140 characters or less.
+
+    If you choose to DoNothing:
+        - Don't worry, you can participate in the next phase of the simulation."""
+
+    prompt = textwrap.dedent(prompt)
+
+    if verbose:
+        print(prompt)
+
+    prompt = textwrap.dedent(prompt)
 
     client = instructor.from_openai(OpenAI())
 
-    new_tweet = client.chat.completions.create(
+    action = client.chat.completions.create(
         model="gpt-4o-2024-05-13",
-        response_model=NewTweet,
+        response_model=Union[QuoteTweet, DoNothing],
         temperature=0.3,
-        messages=[{"role": "user", "content": new_tweet_prompt}],
+        messages=[{"role": "user", "content": prompt}],
     )
-    return new_tweet.text
+
+    return action
 
 
 @app.local_entrypoint()
-def main(user_id: int = None, dryrun: bool = True):
-    go.remote(user_id, dryrun)
+def main(
+    user_id: int = None,
+    dryrun: bool = True,
+    fake_time: datetime = None,
+    verbose: bool = False,
+):
+    go.remote(user_id, dryrun, fake_time, verbose=verbose)
