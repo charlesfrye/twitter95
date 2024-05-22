@@ -37,7 +37,9 @@ const fetchData = async (url) => {
 
 const getTimeline = async () => {
   const url = `${baseUrl}/timeline/`;
-  return await fetchData(url);
+  const timeline = await fetchData(url);
+  console.log(timeline);
+  return timeline;
 };
 
 const getPosts = async (userId, fakeTime) => {
@@ -47,7 +49,9 @@ const getPosts = async (userId, fakeTime) => {
   fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
 
   const url = `${baseUrl}/posts/?${params}`;
-  return await fetchData(url);
+  const posts = await fetchData(url);
+  console.log(posts);
+  return posts;
 };
 
 const getProfile = async (userId) => {

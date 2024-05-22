@@ -31,10 +31,7 @@ function Profile() {
 
       {profile && profile.tweets && profile.tweets.length > 0 ? (
         profile.tweets.map((tweet, index) => (
-          <Tweet
-            key={index}
-            authorTweet={{ author: profile.user, tweet: tweet }}
-          />
+          <Tweet key={index} tweet={tweet} />
         ))
       ) : (
         <p>No tweets found.</p>
