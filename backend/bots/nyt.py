@@ -157,7 +157,8 @@ def filter_article(article):
             article["type_of_material"] in ["News", "Op-Ed"]
             and len(article["lead_paragraph"].strip()) >= 20
         ):
-            return article
+            if "was married" not in article["lead_paragraph"]:
+                return article
         else:
             print("article not of type News or Op-Ed or lead paragraph too short")
     except Exception as e:
