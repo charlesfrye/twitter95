@@ -45,7 +45,15 @@ function Tweet({ tweet }) {
               <img
                 src={author.profile_pic}
                 alt={author.user_name}
-                style={{ width: 30, height: 30 }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  border: "2px solid",
+                  borderTopColor: "rgb(132, 133, 132)",
+                  borderRightColor: "rgb(254, 254, 254)",
+                  borderBottomColor: "rgb(254, 254, 254)",
+                  borderLeftColor: "rgb(132, 133, 132)",
+                }}
               />
             )}
             {`@${author.user_name} on ${formatFakeTime(tweet.fake_time)}`}
