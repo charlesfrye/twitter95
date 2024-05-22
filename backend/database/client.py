@@ -164,6 +164,12 @@ class Client:
             resp.raise_for_status()
             return await resp.json()
 
+    @modal.method()
+    async def run_query(self, query: str):
+        async with self.session.post("/query/", json={"query": query}) as resp:
+            resp.raise_for_status()
+            return await resp.json()
+
     @modal.exit()
     async def close(self):
         await self.session.close()

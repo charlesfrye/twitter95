@@ -45,6 +45,7 @@ def api() -> FastAPI:
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
     from sqlalchemy.orm import joinedload, sessionmaker
+    from sqlalchemy.sql import text
 
     import common.models as models
 
@@ -412,5 +413,19 @@ def api() -> FastAPI:
                     status_code=404, detail=f"User {user_name} not found"
                 )
         return user
+
+    @api.post("/query/")
+    async def execute_query(request: dict):
+        """Execute a raw SQL query."""
+        query = request.get("query")
+        if not query:
+            raise fastapi.HTTPException(
+                status_code=400, detail="No SQL query provided."
+            )
+
+        async with new_session() as db:
+            result = await db.execute(text(query))
+            # no commit, so auto-rollback of anything destructive and this is "safe"
+            return {"result": [dict(row) for row in result.mappings()]}
 
     return api
