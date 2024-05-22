@@ -44,7 +44,7 @@ def api() -> FastAPI:
     from sqlalchemy import and_, asc, delete, desc, insert, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
-    from sqlalchemy.orm import aliased, joinedload, sessionmaker
+    from sqlalchemy.orm import joinedload, sessionmaker
 
     import common.models as models
 
