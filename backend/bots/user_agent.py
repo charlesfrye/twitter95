@@ -93,7 +93,9 @@ def go(
         if any(tweet.text.strip() == action.text.strip() for tweet in timeline):
             warnings.warn("repeating a quote tweet, skipping")
             return
-    if not dryrun:
+    if isinstance(action, DoNothing) or dryrun:
+        return
+    else:
         send_tweet(user_id, action, fake_time=fake_time)
 
 
