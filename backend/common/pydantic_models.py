@@ -31,17 +31,14 @@ class TweetCreate(TweetBase):
 
 class TweetRead(TweetBase):
     tweet_id: int
-    author: UserRead
-    quoted_tweet: Optional["TweetRead"] = None
 
     class Config:
         orm_mode = True
 
 
-# TODO: delete
-class AuthorTweetRead(BaseModel):
+class FullTweetRead(TweetRead):
     author: UserRead
-    tweet: TweetRead
+    quoted_tweet: Optional["TweetRead"] = None
 
 
 class BioBase(BaseModel):

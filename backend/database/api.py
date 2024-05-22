@@ -87,7 +87,7 @@ def api() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
+    @api.get("/timeline/", response_model=List[models.pydantic.FullTweetRead])
     async def read_timeline(
         fake_time: Optional[datetime] = None,
         user_id: Optional[int] = None,
@@ -138,7 +138,7 @@ def api() -> FastAPI:
 
         return list(tweets)
 
-    @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
+    @api.get("/posts/", response_model=List[models.pydantic.FullTweetRead])
     async def read_posts(
         user_id: int,
         fake_time: Optional[datetime] = None,
