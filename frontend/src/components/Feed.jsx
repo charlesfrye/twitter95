@@ -39,7 +39,7 @@ function Feed() {
           ? tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
           : null}
       </div>
-      <TweetCount />
+      {/* <TweetCount /> temporarily disabled */}
     </div>
   );
 }
