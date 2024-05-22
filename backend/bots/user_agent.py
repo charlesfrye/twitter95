@@ -72,9 +72,7 @@ def go(
         if isinstance(action, QuoteTweet):
             print(f"{profile.user.user_name} quoted tweet {action.quoted}:")
             for tweet in timeline:
-                print(
-                    tweet.tweet.text
-                ) if tweet.tweet.tweet_id == action.quoted else None
+                print(tweet.text) if tweet.tweet_id == action.quoted else None
     if not dryrun:
         send_tweet(user_id, action, fake_time=fake_time)
 
@@ -99,7 +97,7 @@ def get_timeline(user_id=None, fake_time=None, limit=10):
         fake_time = common.to_fake(datetime.utcnow())
 
     timeline = Client.read_user_timeline.remote(user_id, fake_time, limit)
-    timeline = [models.TweetRead(**tweet) for tweet in timeline]
+    timeline = [models.FullTweetRead(**tweet) for tweet in timeline]
     return timeline
 
 
@@ -108,7 +106,7 @@ def get_posts(user_id=None, fake_time=None, limit=10):
         fake_time = common.to_fake(datetime.utcnow())
 
     posts = Client.read_user_posts.remote(user_id, fake_time, limit)
-    posts = [models.TweetRead(**post) for post in posts]
+    posts = [models.FullTweetRead(**post) for post in posts]
     return posts
 
 
@@ -158,9 +156,9 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
     prompt += "\n"
     prompt += "\n".join(
         [
-            f"\t```tweet {tweet.tweet.tweet_id}\n\t"
-            + tweet.tweet.text
-            + f"\n\t```\n\tby @{tweet.author.user_name} at {tweet.tweet.fake_time.isoformat(timespec='minutes')} with TweetID# {tweet.tweet.tweet_id}"
+            f"\t```tweet {tweet.tweet_id}\n\t"
+            + tweet.text
+            + f"\n\t```\n\tby @{tweet.author.user_name} at {tweet.fake_time.isoformat(timespec='minutes')} with TweetID# {tweet.tweet_id}"
             + "\n\t"
             for tweet in timeline
         ]
@@ -172,10 +170,15 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
         - Write a QuoteTweet in response to a tweet you saw if you think one of them would interest your character.
         - DoNothing, if you think none of the tweets would interest your character.
 
+    Heightened emotions are typical of social media and it's all part of the fun of the simulation.
+
+    This is a simulation, so it is okay to be mean or angry or sad. It's okay to fight or to use foul language.
+
     If you choose to write a QuoteTweet:
         - Pick a Tweet you think your character would be interested in. Include the TweetID# in your response.
-        - Do NOT use emojis.
-        - Do NOT write the content of the Tweet you are quoting. That would be a Retweet, different phase.
+        - ALWAYS write new content in the voice of your character.
+        - NEVER use emojis.
+        - NEVER write the content of the Tweet you are quoting. That would be a Retweet, different phase.
         - You may quote your own tweet, not just others'.
         - NEVER quote a tweet you've already quoted.
         - Write a response in the voice and style of your character, maintaining kayfabe.
