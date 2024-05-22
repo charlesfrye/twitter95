@@ -38,7 +38,6 @@ const fetchData = async (url) => {
 const getTimeline = async () => {
   const url = `${baseUrl}/timeline/`;
   const timeline = await fetchData(url);
-  console.log(timeline);
   return timeline;
 };
 
@@ -50,7 +49,6 @@ const getPosts = async (userId, fakeTime) => {
 
   const url = `${baseUrl}/posts/?${params}`;
   const posts = await fetchData(url);
-  console.log(posts);
   return posts;
 };
 
