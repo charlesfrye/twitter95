@@ -35,17 +35,25 @@ const fetchData = async (url) => {
   }
 };
 
-const getTimeline = async () => {
-  const url = `${baseUrl}/timeline/`;
+const getTimeline = async (userId, fakeTime, limit) => {
+  const params = new URLSearchParams();
+
+  userId ? params.append("user_id", userId) : null;
+  fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+  limit ? params.append("limit", limit) : null;
+
+  const url = `${baseUrl}/timeline/?${params}`;
+
   const timeline = await fetchData(url);
   return timeline;
 };
 
-const getPosts = async (userId, fakeTime) => {
+const getPosts = async (userId, fakeTime, limit) => {
   const params = new URLSearchParams();
   params.append("user_id", userId);
 
   fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+  limit ? params.append("limit", limit) : null;
 
   const url = `${baseUrl}/posts/?${params}`;
   const posts = await fetchData(url);

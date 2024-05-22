@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { MenuList, MenuListItem, Separator } from "react95";
 
 function formatFakeTime(fakeTimeStr) {
@@ -18,10 +18,19 @@ function formatFakeTime(fakeTimeStr) {
 
 function Tweet({ tweet }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const author = tweet.author;
 
-  const handleClick = () => {
-    navigate(`/profile/${author.user_id}`);
+  const queryParams = new URLSearchParams(location.search);
+  let fakeTime = queryParams.get("fakeTime");
+
+  const handleProfileClick = () => {
+    fakeTime = tweet.fake_time;
+    navigate(`/profile/${author.user_id}?fakeTime=${fakeTime}`);
+  };
+
+  const handleTweetClick = () => {
+    navigate(`/timeline/?userId=${author.user_id}&fakeTime=${tweet.fake_time}`);
   };
 
   return (
@@ -30,7 +39,7 @@ function Tweet({ tweet }) {
         <MenuList className="!flex !flex-col text-ellipsis">
           <MenuListItem
             className="!cursor-pointer !text-sm !overflow-hidden !whitespace-nowrap !text-ellipsis"
-            onClick={handleClick}
+            onClick={handleProfileClick}
           >
             {author.profile_pic && (
               <img
@@ -44,7 +53,7 @@ function Tweet({ tweet }) {
           <Separator />
           <MenuListItem
             size="sm"
-            onClick={handleClick}
+            onClick={handleTweetClick}
             className="!whitespace-normal !text-left !cursor-pointer !min-h-24 !flex-1"
           >
             {tweet.text}
