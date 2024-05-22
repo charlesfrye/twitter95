@@ -1,4 +1,3 @@
-// import toFake util
 import { toFake } from "../services/database";
 
 function HomePage() {
@@ -34,7 +33,6 @@ function HomePage() {
           >
             Modal
           </a>
-          .
         </p>
       </div>
     </div>
