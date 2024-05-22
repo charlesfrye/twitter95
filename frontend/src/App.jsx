@@ -51,12 +51,10 @@ function App() {
       <ThemeProvider theme={original}>
         <GlobalStyles />
         <div className="app">
-          <Sidebar className="sidebarLeft" options={leftSidebarOptions}>
-            <div className="text-[#7FEE64]">
-              <a href="https://modal.com">Powered by Modal</a>
-            </div>
-          </Sidebar>
-          <Outlet />
+          <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
+          <div className="middle">
+            <Outlet />
+          </div>
           <Sidebar className="sidebarRight" options={rightSidebarOptions} />
         </div>
       </ThemeProvider>

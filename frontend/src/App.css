@@ -1,13 +1,4 @@
 :root {
-	--text-color-light: #333;
-	--background-light: #99e5e9;
-
-	--text-color-dim: #EEE;
-	--background-dim: #1B2A41;
-
-	--text-color-dark: #CCC;
-	--background-dark: #000;
-
 	--text-color-default: #ebcf00;
 	--background-default: #000;
 	--background-tweet-default: #333;
@@ -30,24 +21,6 @@ body {
 	text-overflow: wrap !important;
 }
 
-body.light {
-	--text-color-default: var(--text-color-light);
-	--background-default: var(--background-light);
-	background-image: none;
-}
-
-body.dim {
-	--text-color-default: var(--text-color-dim);
-	--background-default: var(--background-dim);
-	background-image: none;
-}
-
-body.dark {
-	--text-color-default: var(--text-color-dark);
-	--background-default: var(--background-dark);
-	background-image: none;
-}
-
 #root {
 	width: 100%;
 	text-align: center;
@@ -56,85 +29,19 @@ body.dark {
 .tweet {
 	max-width: 600px;
 	font-family: 'MS Sans Serif', Geneva, sans-serif;
-	/* font-size: 4px; */
 	color: #000000;
-	background: #c0c0c0;
-	border: 2px outset #ffffff;
-	padding: 10px;
-	margin: 20px auto;
+	padding: 0.5rem;
+	margin: 1rem auto;
 	overflow: wrap;
-	box-shadow: 2px 2px 0px #000000;
-	margin-left: auto;
-	margin-right: auto;
+}
+
+.tweet .tweet {
+	width: 100%;
 }
 
 .menuitem {
 	text-wrap: wrap;
 	overflow: wrap;
-
-}
-
-.tweetText,
-.tweetAuthor,
-.tweetfakeTime,
-.tweetRoot,
-.tweetQuoted,
-.tweetRetweeted,
-.tweetLikedBy {
-	padding: 5px;
-	border: 1px solid #000000;
-	margin: 5px 0;
-	background: white;
-	max-width: 500px;
-	overflow: visible;
-	white-space: normal;
-}
-
-
-.tweetTextReal {
-	overflow: visible;
-	white-space: normal;
-}
-
-.tweetMedia img {
-	display: block;
-	margin: 5px auto;
-}
-
-.tweetMedia,
-.tweetRoot,
-.tweetQuoted,
-.tweetRetweeted {
-	display: none;
-}
-
-.tweetMedia:has(img),
-.tweetRoot:has(p),
-.tweetQuoted:has(p),
-.tweetRetweeted:has(p) {
-	display: block;
-}
-
-.tweetAuthor:before {
-	content: '';
-	background: #000080;
-	display: block;
-	height: 18px;
-	color: white;
-	padding: 0px 0px;
-	margin: 0px 0px;
-	font-weight: bold;
-	width: 100%;
-}
-
-.tweetAuthor p,
-.tweetfakeTime p,
-.tweetRoot p,
-.tweetQuoted p,
-.tweetRetweeted p,
-.tweetLikedBy p {
-	margin: 0;
-	font-family: 'MS Sans Serif', Geneva, sans-serif;
 }
 
 .tweet:hover {
@@ -161,56 +68,45 @@ body.dark {
 	min-height: 100vh;
 }
 
+.middle {
+	min-width: 40%;
+	max-width: 60%;
+}
+
 .sidebar {
 	padding: 20px;
 	background-color: #008080;
-	display: flex;
-	flex: 1;
-	flex-direction: column;
-	align-items: center;
-	text-align: center;
 	font-family: 'Comic Sans MS', cursive, sans-serif;
 	font-size: 18px;
 	border: 3px outset #FFFFFF;
 	max-width: 200px;
+	background-image: url('https://modal-public-assets.s3.amazonaws.com/twitter95/vertical-banner.png');
+	background-repeat: repeat;
+	color: #FFFF00;
+	min-width: 20%;
+	max-width: 20%;
+	background-color: #008080;
+}
+
+.sidebar div,
+.sidebar img {
+	margin: auto;
 }
 
 .sidebarLeft {
-	background-color: #008080;
-	color: #FFFF00;
-	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
-	background-size: cover;
-	background-repeat: no-repeat;
-	margin-right: 64px;
+	margin-right: 4rem;
 }
 
-.sidebarLeft h2,
-.sidebarLeft p {
+.sidebar h2,
+.sidebar p {
 	margin: 10px 0;
-}
-
-.tweetButton {
-	background-color: #00ffe5;
-	color: #00ffe5;
-	border: 2px outset #FFFFFF;
-	padding: 10px;
-	font-weight: bold;
-	cursor: pointer;
-	border: 2px outset #a0fff6;
-}
-
-.sidebar button:hover {
-	background-color: #00ffe5;
-	color: #002521;
 }
 
 
 .sidebarRight {
-	color: rgb(238, 0, 255);
-	background-image: url('https://www.tacobellfoundation.org/files/LMS_Gradient_tealPurple2-1-1600x720.jpg');
-	background-size: cover;
-	background-repeat: no-repeat;
-	margin-left: 64px;
+	margin-left: 4rem;
+	min-width: 20%;
+	max-width: 20%;
 }
 
 .sidebarOption {
@@ -243,17 +139,8 @@ body.dark {
 
 .logo-animate {
 	display: block;
-	animation: tiltAnimation 1s infinite;
+	animation: tiltAnimation 2s infinite;
 	transition: transform 0.3s;
-}
-
-
-.feed {
-	flex: 3;
-	max-width: 600px;
-	min-width: 300px;
-	margin: auto;
-	background-color: #f0f0f0;
 }
 
 @tailwind base;

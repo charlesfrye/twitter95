@@ -45,7 +45,7 @@ function Tweet({ tweet }) {
           <MenuListItem
             size="sm"
             onClick={handleClick}
-            className="!whitespace-normal !text-left !cursor-pointer !min-h-48"
+            className="!whitespace-normal !text-left !cursor-pointer !min-h-24 !flex-1"
           >
             {tweet.text}
           </MenuListItem>
