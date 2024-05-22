@@ -99,7 +99,7 @@ def get_timeline(user_id=None, fake_time=None, limit=10):
         fake_time = common.to_fake(datetime.utcnow())
 
     timeline = Client.read_user_timeline.remote(user_id, fake_time, limit)
-    timeline = [models.AuthorTweetRead(**tweet) for tweet in timeline]
+    timeline = [models.TweetRead(**tweet) for tweet in timeline]
     return timeline
 
 

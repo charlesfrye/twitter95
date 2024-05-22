@@ -31,11 +31,14 @@ class TweetCreate(TweetBase):
 
 class TweetRead(TweetBase):
     tweet_id: int
+    author: UserRead
+    quoted_tweet: Optional["TweetRead"] = None
 
     class Config:
         orm_mode = True
 
 
+# TODO: delete
 class AuthorTweetRead(BaseModel):
     author: UserRead
     tweet: TweetRead

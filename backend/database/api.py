@@ -44,7 +44,7 @@ def api() -> FastAPI:
     from sqlalchemy import and_, asc, delete, desc, insert, or_
     from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
     from sqlalchemy.future import select
-    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy.orm import aliased, joinedload, sessionmaker
 
     import common.models as models
 
@@ -87,7 +87,7 @@ def api() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @api.get("/timeline/", response_model=List[models.pydantic.AuthorTweetRead])
+    @api.get("/timeline/", response_model=List[models.pydantic.TweetRead])
     async def read_timeline(
         fake_time: Optional[datetime] = None,
         user_id: Optional[int] = None,
@@ -122,17 +122,21 @@ def api() -> FastAPI:
                     sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
                 )
                 .limit(limit)
+                .options(
+                    joinedload(models.sql.Tweet.author),
+                    joinedload(models.sql.Tweet.quoted_tweet).joinedload(
+                        models.sql.Tweet.author
+                    ),
+                )
             )
             if user_id is not None:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
 
             result = await db.execute(query)
 
-            tweets_with_authors = result.all()
+            tweets = result.scalars().all()
 
-        return list(
-            {"tweet": tweet, "author": author} for tweet, author in tweets_with_authors
-        )
+        return list(tweets)
 
     @api.get("/posts/", response_model=List[models.pydantic.TweetRead])
     async def read_posts(
@@ -148,6 +152,10 @@ def api() -> FastAPI:
         async with new_session() as db:
             results = await db.execute(
                 select(models.sql.Tweet)
+                .join(
+                    models.sql.User,
+                    models.sql.Tweet.author_id == models.sql.User.user_id,
+                )
                 .filter(
                     and_(
                         or_(
@@ -161,8 +169,19 @@ def api() -> FastAPI:
                     sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
                 )
                 .limit(limit)
+                .options(
+                    joinedload(models.sql.Tweet.author),
+                    joinedload(models.sql.Tweet.quoted_tweet).joinedload(
+                        models.sql.Tweet.author
+                    ),
+                )
             )
-            posts = results.scalars()
+            posts = results.scalars().all()
+
+        # we only load one layer of quoted tweets; null them out
+        for post in posts:
+            if post.quoted_tweet is not None:
+                post.quoted_tweet.quoted_tweet = None
 
         return list(posts)
 

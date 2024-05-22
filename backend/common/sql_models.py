@@ -39,6 +39,9 @@ class Tweet(Base):
     real_time = Column(DateTime, default=datetime.datetime.utcnow)
     quoted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
 
+    author = relationship("User", foreign_keys=[author_id], back_populates="tweets")
+    quoted_tweet = relationship("Tweet", remote_side=[tweet_id])
+
 
 class User(Base):
     __tablename__ = "users"
@@ -47,6 +50,9 @@ class User(Base):
     user_name = Column(String, unique=True)
     display_name = Column(String)
     profile_pic = Column(String, default="")
+    tweets = relationship(
+        "Tweet", foreign_keys=[Tweet.author_id], back_populates="author"
+    )
 
 
 class Bio(Base):
