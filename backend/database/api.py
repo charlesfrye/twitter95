@@ -131,10 +131,19 @@ def api() -> FastAPI:
             )
             if user_id is not None:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
+            else:
+                query = query.where(
+                    models.sql.Tweet.author_id != 3
+                )  # drop NYT bot from timeline
 
             result = await db.execute(query)
 
             tweets = result.scalars().all()
+
+        # we only load one layer of quoted tweets; null them out
+        for tweet in tweets:
+            if tweet.quoted_tweet is not None:
+                tweet.quoted_tweet.quoted_tweet = None
 
         return list(tweets)
 
@@ -346,7 +355,6 @@ def api() -> FastAPI:
             # remove the user
             await db.delete(user)
 
-            # Commit transaction
             await db.commit()
 
     @api.delete("/tweet/{tweet_id}")
