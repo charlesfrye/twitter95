@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 import { useTheme } from "./components/ThemeContext";
 import Sidebar from "./components/Sidebar";
 import StartupSound from "./components/StartupSound";
-import { FaHome, FaUserAlt, FaSearch } from "react-icons/fa";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { styleReset } from "react95";
 import original from "react95/dist/themes/original";
@@ -35,11 +34,11 @@ const GlobalStyles = createGlobalStyle`
 function App() {
   const { theme } = useTheme();
   const leftSidebarOptions = [
-    { icon: FaHome, text: "Home", path: "/timeline" },
-    { icon: FaUserAlt, text: "Profile" },
+    { text: "Home", path: "/timeline" },
+    { text: "About", path: "/" },
   ];
 
-  const rightSidebarOptions = [{ icon: FaSearch, text: "Search" }];
+  const rightSidebarOptions = [];
 
   useEffect(() => {
     document.body.className = theme;
@@ -55,7 +54,21 @@ function App() {
           <div className="middle">
             <Outlet />
           </div>
-          <Sidebar className="sidebarRight" options={rightSidebarOptions} />
+          <Sidebar className="sidebarRight" options={rightSidebarOptions}>
+            <div className="text-[#7FEE64] text-2xl">
+              <a href="/">Twitter &apos;95</a>
+              <br />
+              <img
+                src="/logo.png"
+                alt="Twitter 95"
+                className="logo-animate pt-4"
+              />
+              <a className="text-sm" href="https://modal.com">
+                {" "}
+                Powered by Modal
+              </a>
+            </div>
+          </Sidebar>
         </div>
       </ThemeProvider>
     </ErrorBoundary>

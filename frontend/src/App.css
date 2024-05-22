@@ -21,6 +21,11 @@ body {
 	text-overflow: wrap !important;
 }
 
+.banner a {
+	color: #008080;
+	text-decoration: underline;
+}
+
 #root {
 	width: 100%;
 	text-align: center;

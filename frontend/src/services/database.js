@@ -65,4 +65,4 @@ const getProfile = async (userId) => {
   return await fetchData(url);
 };
 
-export { getTimeline, getPosts, getProfile };
+export { getTimeline, getPosts, getProfile, toFake };
