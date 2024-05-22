@@ -42,7 +42,7 @@ class DoNothing(BaseModel):
 @app.function(
     image=image,
     secrets=[modal.Secret.from_name("openai-secret")],
-    schedule=modal.Period(minutes=1),
+    schedule=modal.Period(minutes=10),
 )
 def go(
     user_id: Optional[int] = None,
@@ -55,9 +55,15 @@ def go(
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
+    if verbose:
+        print(f"running user {user_id} at {fake_time}")
     profile = get_profile(user_id)
+    if verbose:
+        print(f"user:  {profile.user.display_name}")
     timeline = get_timeline(user_id=user_id, fake_time=fake_time)
     posts = get_posts(user_id=user_id, fake_time=fake_time)
+    if verbose:
+        print("context retrieved")
 
     action = take_action(
         profile.user.display_name,
