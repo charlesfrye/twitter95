@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import SidebarOption from "./SidebarOption";
 
-function Sidebar({ options, className }) {
+function Sidebar({ options, className, children }) {
   return (
     <div className={`sidebar ${className}`}>
       <img src="/logo.png" alt="Twitter 95" className="logo-animate" />
@@ -13,6 +13,7 @@ function Sidebar({ options, className }) {
           path={option.path}
         />
       ))}
+      {children}
     </div>
   );
 }

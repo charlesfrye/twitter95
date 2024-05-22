@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useTheme } from "./components/ThemeContext";
 import Sidebar from "./components/Sidebar";
+import StartupSound from "./components/StartupSound";
 import { FaHome, FaUserAlt, FaSearch } from "react-icons/fa";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { styleReset } from "react95";
@@ -46,10 +47,15 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <StartupSound />
       <ThemeProvider theme={original}>
         <GlobalStyles />
         <div className="app">
-          <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
+          <Sidebar className="sidebarLeft" options={leftSidebarOptions}>
+            <div className="text-[#7FEE64]">
+              <a href="https://modal.com">Powered by Modal</a>
+            </div>
+          </Sidebar>
           <Outlet />
           <Sidebar className="sidebarRight" options={rightSidebarOptions} />
         </div>

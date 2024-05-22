@@ -27,7 +27,7 @@ function Tweet({ tweet }) {
   return (
     <div className="tweet">
       <MenuList className="!flex !flex-col text-ellipsis">
-        <MenuListItem className="!cursor-pointer gap-4" onClick={handleClick}>
+        <MenuListItem className="!cursor-pointer !text-sm !overflow-hidden !whitespace-nowrap !text-ellipsis" onClick={handleClick}>
           {author.profile_pic && (
             <img
               src={author.profile_pic}
@@ -41,7 +41,7 @@ function Tweet({ tweet }) {
         <MenuListItem
           size="sm"
           onClick={handleClick}
-          className="!whitespace-normal !text-left !cursor-pointer !h-48"
+          className="!whitespace-normal !text-left !cursor-pointer !min-h-48"
         >
           {tweet.text}
         </MenuListItem>
