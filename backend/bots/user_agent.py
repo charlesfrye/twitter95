@@ -1,6 +1,7 @@
 from datetime import datetime
 import textwrap
 from typing import Optional, Union
+import warnings
 
 import modal
 from pydantic import BaseModel, Field
@@ -38,15 +39,19 @@ class DoNothing(BaseModel):
     nothing: type(None) = Field(None, description="Do nothing")
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("openai-secret")])
+@app.function(
+    image=image,
+    secrets=[modal.Secret.from_name("openai-secret")],
+    schedule=modal.Period(minutes=1),
+)
 def go(
     user_id: Optional[int] = None,
     dryrun: bool = False,
     fake_time: Optional[datetime] = None,
-    verbose: bool = False,
+    verbose: bool = True,
 ):
     if user_id is None:
-        user_id = 5
+        user_id = get_random_user_id()
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
@@ -73,6 +78,15 @@ def go(
             print(f"{profile.user.user_name} quoted tweet {action.quoted}:")
             for tweet in timeline:
                 print(tweet.text) if tweet.tweet_id == action.quoted else None
+
+    if isinstance(action, Tweet):
+        if any(tweet.text.strip() == action.text.strip() for tweet in posts):
+            warnings.warn("repeating a recent tweet, skipping")
+            return
+    if isinstance(action, QuoteTweet):
+        if any(tweet.text.strip() == action.text.strip() for tweet in timeline):
+            warnings.warn("repeating a quote tweet, skipping")
+            return
     if not dryrun:
         send_tweet(user_id, action, fake_time=fake_time)
 
@@ -108,6 +122,12 @@ def get_posts(user_id=None, fake_time=None, limit=10):
     posts = Client.read_user_posts.remote(user_id, fake_time, limit)
     posts = [models.FullTweetRead(**post) for post in posts]
     return posts
+
+
+def get_random_user_id():
+    query = 'SELECT * FROM "users" WHERE user_id != 3 ORDER BY RANDOM() LIMIT 1;'
+    random_user = Client.run_query.remote(query)["result"][0]
+    return random_user["user_id"]
 
 
 def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
@@ -173,6 +193,8 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
     Heightened emotions are typical of social media and it's all part of the fun of the simulation.
 
     This is a simulation, so it is okay to be mean or angry or sad. It's okay to fight or to use foul language.
+
+    Triggering a debate or a discussion is good. It's okay to be controversial. Make sure your character is consistent with the profile you've been given.
 
     If you choose to write a QuoteTweet:
         - Pick a Tweet you think your character would be interested in. Include the TweetID# in your response.
