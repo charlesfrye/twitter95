@@ -24,8 +24,6 @@ function Tweet({ tweet }) {
     navigate(`/profile/${author.user_id}`);
   };
 
-  console.log(tweet);
-
   return (
     tweet && (
       <div className="tweet">
