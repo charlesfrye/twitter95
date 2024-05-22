@@ -24,9 +24,7 @@ function Feed() {
     <div className="Feed">
       <div className="tweetList">
         {tweets
-          ? tweets.map((tweet, index) => (
-              <Tweet key={index} authorTweet={tweet} />
-            ))
+          ? tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
           : null}
       </div>
     </div>
