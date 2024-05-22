@@ -38,7 +38,7 @@ class TweetRead(TweetBase):
 
 class FullTweetRead(TweetRead):
     author: UserRead
-    quoted_tweet: Optional["TweetRead"] = None
+    quoted_tweet: Optional["FullTweetRead"] = None
 
 
 class BioBase(BaseModel):
