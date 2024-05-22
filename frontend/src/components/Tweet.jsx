@@ -24,30 +24,39 @@ function Tweet({ tweet }) {
     navigate(`/profile/${author.user_id}`);
   };
 
+  console.log(tweet);
+
   return (
-    <div className="tweet">
-      <MenuList className="!flex !flex-col text-ellipsis">
-        <MenuListItem className="!cursor-pointer !text-sm !overflow-hidden !whitespace-nowrap !text-ellipsis" onClick={handleClick}>
-          {author.profile_pic && (
-            <img
-              src={author.profile_pic}
-              alt={author.user_name}
-              style={{ width: 30, height: 30 }}
-            />
+    tweet && (
+      <div className="tweet">
+        <MenuList className="!flex !flex-col text-ellipsis">
+          <MenuListItem
+            className="!cursor-pointer !text-sm !overflow-hidden !whitespace-nowrap !text-ellipsis"
+            onClick={handleClick}
+          >
+            {author.profile_pic && (
+              <img
+                src={author.profile_pic}
+                alt={author.user_name}
+                style={{ width: 30, height: 30 }}
+              />
+            )}
+            {`@${author.user_name} on ${formatFakeTime(tweet.fake_time)}`}
+          </MenuListItem>
+          <Separator />
+          <MenuListItem
+            size="sm"
+            onClick={handleClick}
+            className="!whitespace-normal !text-left !cursor-pointer !min-h-48"
+          >
+            {tweet.text}
+          </MenuListItem>
+          {tweet.quoted && tweet.quoted_tweet && (
+            <Tweet tweet={tweet.quoted_tweet} />
           )}
-          {`@${author.user_name} on ${formatFakeTime(tweet.fake_time)}`}
-        </MenuListItem>
-        <Separator />
-        <MenuListItem
-          size="sm"
-          onClick={handleClick}
-          className="!whitespace-normal !text-left !cursor-pointer !min-h-48"
-        >
-          {tweet.text}
-        </MenuListItem>
-        {tweet.quoted && <Tweet tweet={tweet.quoted_tweet} />}
-      </MenuList>
-    </div>
+        </MenuList>
+      </div>
+    )
   );
 }
 
