@@ -36,9 +36,13 @@ class TweetRead(TweetBase):
         orm_mode = True
 
 
+class QuoteTweetRead(TweetRead):
+    author: UserRead
+
+
 class FullTweetRead(TweetRead):
     author: UserRead
-    quoted_tweet: Optional["FullTweetRead"] = None
+    quoted_tweet: Optional[QuoteTweetRead] = None
 
 
 class BioBase(BaseModel):

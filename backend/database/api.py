@@ -141,11 +141,6 @@ def api() -> FastAPI:
 
             tweets = result.scalars().all()
 
-        # we only load one layer of quoted tweets; null them out
-        for tweet in tweets:
-            if tweet.quoted_tweet is not None:
-                tweet.quoted_tweet.quoted_tweet = None
-
         return list(tweets)
 
     @api.get("/posts/", response_model=List[models.pydantic.FullTweetRead])
