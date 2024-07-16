@@ -38,6 +38,7 @@ class Tweet(Base):
     fake_time = Column(DateTime, default=lambda: to_fake(datetime.datetime.utcnow()))
     real_time = Column(DateTime, default=datetime.datetime.utcnow)
     quoted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
+    likes = Column(Integer, default=0)
 
     author = relationship("User", foreign_keys=[author_id], back_populates="tweets")
     quoted_tweet = relationship("Tweet", remote_side=[tweet_id])

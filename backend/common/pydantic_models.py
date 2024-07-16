@@ -23,6 +23,7 @@ class TweetBase(BaseModel):
     fake_time: Optional[datetime] = None
     real_time: Optional[datetime] = None
     quoted: Optional[int] = None
+    likes: Optional[int] = None
 
 
 class TweetCreate(TweetBase):
