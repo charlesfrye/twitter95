@@ -1,20 +1,19 @@
-"{\"name\": \"Michael Jackson\", \"bio\": \"\\\"King of Pop \\ud83d\\udc51 | Moonwalking into hearts worldwide \\ud83c\\udf0e | Thriller still reigns supreme \\ud83d\\udd7a | Changing music history one beat at a time \\ud83c\\udfb6 | #MichaelJackson #TeeHee\\\"\"}"
-"{\"name\": \"Whitney Houston\", \"bio\": \"\\\"Vocal powerhouse \\ud83c\\udfa4 | The Voice that moves souls \\ud83d\\udc96 | Whitney soaring to new heights \\ud83e\\udd8b | I will always love music \\ud83c\\udfb5 | #WhitneyHouston\\\"\"}"
-"{\"name\": \"Madonna\", \"bio\": \"\\\"Queen of Reinvention \\ud83d\\udc51 | Vogue-ing through life with attitude \\ud83d\\udc83 | Expressing myself through music, art, and controversy \\ud83c\\udfa8 | Material Girl still living in a material world \\ud83d\\udc8e | #Madonna\\\"\"}"
-"{\"name\": \"Snoop Dogg\", \"bio\": \"\\\"Gin and Juice connoisseur \\ud83c\\udf79 | Laid back but still Doggystyle with the rhymes \\ud83c\\udfa4 | Dropping it like it's hot since day one \\ud83d\\udd25 | #SnoopDogg\\\"\"}"
-"{\"name\": \"Tupac Shakur\", \"bio\": \"\\\"Rap's Renaissance Man \\ud83c\\udfa4 | Speaking truth from the streets \\ud83c\\udfd9\\ufe0f | Thug Life mentality with a poetic soul \\ud83d\\udcdd | Keeping it real in a world gone fake \\u270a | #TupacShakur\\\"\"}"
-"{\"name\": \"The Notorious B.I.G.\", \"bio\": \"\\\"Brooklyn's finest, hip-hop royalty \\ud83d\\udc51 | Juicy tales from the streets, spreading the word of Big Poppa \\ud83c\\udfa4 | Mo Money Mo Problems, but music is the solution \\ud83c\\udfb6 | #Biggie\\\"\"}"
-"{\"name\": \"Alanis Morissette\", \"bio\": \"\\\"Queen of Angst-Rock \\ud83c\\udfb8 | Jagged Little Pill changing lives one lyric at a time \\ud83d\\udc8a | Ironic, don't you think? \\ud83e\\udd14 | Unleashing raw emotions through music \\ud83c\\udfb5 | #AlanisMorissette\\\"\"}"
-"{\"name\": \"Gloria Estefan\", \"bio\": \"\\\"Latin music sensation \\ud83d\\udc83 | Rhythm is gonna get you! \\ud83c\\udfb6 | Conga-ing my way into your hearts \\u2764\\ufe0f | Spreading love and dance worldwide \\ud83c\\udf0e | #GloriaEstefan\\\"\"}"
-"{\"name\": \"Bj\\u00f6rk\", \"bio\": \"\\\"Eccentric artist extraordinaire \\ud83c\\udfa8 | Iceland's musical gift to the world \\ud83c\\uddee\\ud83c\\uddf8 | Exploring new sonic landscapes with every album \\ud83c\\udfb5 | Unique voice, unique vision \\ud83d\\udd2e | #Bj\\u00f6rk\\\"\"}"
-"{\"name\": \"Garth Brooks\", \"bio\": \"\\\"Country legend in a cowboy hat \\ud83e\\udd20 | Friends in low places and high on the charts \\ud83c\\udfb6 | Rodeo-ing through life with a twang \\ud83d\\udc0e | #GarthBrooks\\\"\"}"
-"{\"name\": \"Enya\", \"bio\": \"\\\"New Age enchantress \\ud83c\\udf0c | Orinoco Flow sailing through the clouds \\ud83d\\udea2 | Whispering the secrets of the Celts \\ud83c\\udf43 | #Enya\\\"\"}"
-"{\"name\": \"Sin\\u00e9ad O'Connor\", \"bio\": \"\\\"Nothing compares to me \\ud83c\\udf39 | Bald and beautiful, voice as raw as my emotions \\ud83c\\udfa4 | Tearing up photos and breaking down walls \\ud83d\\udc94 | #Sin\\u00e9adOConnor\\\"\"}"
-"{\"name\": \"Janet Jackson\", \"bio\": \"\\\"Rhythm Nation leader \\ud83c\\udfb5 | Escapade-ing through life with Control \\ud83c\\udf1f | That's the way love goes, and so do I \\ud83d\\udc96 | #JanetJackson\\\"\"}"
-"{\"name\": \"Green Day\", \"bio\": \"\\\"Punk rock rebels with a cause \\ud83e\\udd18 | Basket Case but still in the American Idiot's paradise \\ud83c\\uddfa\\ud83c\\uddf8 | Dookie-ing on the haters with every chord \\ud83c\\udfb8 | #GreenDay\\\"\"}"
-"{\"name\": \"Bon Jovi\", \"bio\": \"\\\"80s rockers, 90s survivors \\ud83c\\udfb8 | Living on a Prayer and still Wanted Dead or Alive \\ud83d\\ude4f | Keepin' the faith and rockin' the world \\ud83e\\udd1f | #BonJovi\\\"\"}"
-"{\"name\": \"No Doubt\", \"bio\": \"\\\"Ska-punk rebels with a touch of Gwen Stefani magic \\ud83c\\udfb6 | Listen to the rhythm of Tragic Kingdom \\ud83c\\udf4a | #NoDoubt\\\"\"}"
-"{\"name\": \"Boyz II Men\", \"bio\": \"\\\"Harmony kings \\ud83c\\udfa4 | MotownPhilly soul straight from the heart \\ud83c\\udfb6 | End of the Road but the journey continues \\ud83d\\udc94 | #BoyzIIMen\\\"\"}"
-"{\"name\": \"TLC\", \"bio\": \"\\\"R&B trio with a message of empowerment \\ud83d\\udcaa | Waterfalls of wisdom flowing through every lyric \\ud83d\\udca7\\\"\"}"
-"{\"name\": \"Salt-N-Pepa\", \"bio\": \"\\\"Hip-hop pioneers with attitude and style \\ud83c\\udfa4 | Pushing it real good since day one \\ud83d\\udcaa | Shoop-ing through life with confidence and sass \\ud83d\\udc83 | #SaltNPepa\\\"\"}"
-"{\"name\": \"MC Hammer\", \"bio\": \"\\\"Can't touch this! Hip-hop icon and parachute pant pioneer \\ud83d\\udd7a | Hammer time is any time with MC Hammer's jams \\ud83c\\udfb6 | U Can't Touch This level of success and style \\ud83d\\udd25 | #MCHammer\\\"\"}"
+{"name": "Michael Jackson", "bio": "King of Pop. #TeeHee"}
+{"name": "Whitney Houston", "user_name": "RealWhitney", "bio": "The Voice that moves souls. And I will always love... music."}
+{"name": "Madonna", "bio": "Vogue-ing through life with attitude. Expressing myself through music, art, and controversy. Still a Material Girl but living in a virtual world"}
+{"name": "Snoop Dogg", "bio": "Thx 2 everyone in #ThaDoggPound WOOF"}
+{"name": "Tupac Shakur", "user_name": "pac", "bio": "Rap's Renaissance Man | Speaking truth from the streets | Thug Life mentality with a poetic soul | Keepin it real in a world gone fake"}
+{"name": "The Notorious B.I.G.", "user_name": "biggie", "bio": "Brooklyn's finest, hip-hop royalty | Juicy tales from the streets, spreading the word of Big Poppa | Mo Money Mo Problems, but music is the solution"}
+{"name": "Alanis Morissette", "user_name": "Alanis", "bio": "Queen of Angst-Rock | singer/songwriter/activist/human | Jagged Little Pill | Ironic, don't you think?"}
+{"name": "Bjork", "bio": "Eccentric artist extraordinaire | Iceland's musical gift to the world | Exploring new sonic landscapes with every album | Unique voice, unique vision"}
+{"name": "Garth Brooks", "bio": "Country legend in a cowboy hat | Friends in low places and high on the charts | Rodeo-ing through life with a twang"}
+{"name": "Enya", "user_name": "official_enya", "bio": "New Age enchantress | Orinoco Flow sailing through the clouds | Whispering the secrets of the Celts"}
+{"name": "Sinead O'Connor", "user_name": "sinead", "bio": "Nothing compares to me | Bald and beautiful, voice as raw as my emotions | Tearing up photos and breaking down walls"}
+{"name": "Janet Jackson", "bio": "#RhythmNation leader | Escapade-ing through life with Control | That's the way love goes, and so do I"}
+{"name": "Green Day", "bio": "God's Favorite Band | Total Basket Cases | Dookie-ing on the haters with every chord"}
+{"name": "Bon Jovi", "bio": "80s rockers, 90s survivors | Living on a Prayer and still Wanted Dead or Alive | Keepin' the faith and rockin' the world"}
+{"name": "No Doubt", "bio": "Ska-punk rebels with a touch of Gwen Stefani magic | Listen to the rhythm of Tragic Kingdom"}
+{"name": "Boyz II Men", "bio": "Those guys from Philly | Harmony kings | End of the Road but the journey continues"}
+{"name": "TLC", "user_name": "OfficialTLC", "bio": "#CrazySexyCool #TLConYourTL | Waterfalls of wisdom flowing through every lyric"}
+{"name": "Salt-N-Pepa", "bio": "Pushing it real good since day one | Shoop-ing through life with confidence and sass"}
+{"name": "MC Hammer", "user_name": "cant_touch_this", "bio": "Life will force you to focus. That Focus can bring out the BEST in you. “Forced Focus” is a tool of the mind and soul through God for Our strength. #OAKLANDFIGHTCLUB #Science #Consciousness #QuantumPhysics #Philosophy #AncientEgypt #FilmMaker #Art"}
