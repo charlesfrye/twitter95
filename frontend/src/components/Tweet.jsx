@@ -16,7 +16,7 @@ function formatFakeTime(fakeTimeStr) {
   return formattedDateTime;
 }
 
-function Tweet({ tweet }) {
+function Tweet({ tweet, showStats }) {
   const navigate = useNavigate();
   const location = useLocation();
   const author = tweet.author;
@@ -67,8 +67,9 @@ function Tweet({ tweet }) {
             {tweet.text}
           </MenuListItem>
           {tweet.quoted && tweet.quoted_tweet && (
-            <Tweet tweet={tweet.quoted_tweet} />
+            <Tweet tweet={tweet.quoted_tweet} showStats={false} />
           )}
+          {showStats && <p>QTs: {tweet.quotes}</p>}
         </MenuList>
       </div>
     )
@@ -85,6 +86,8 @@ Tweet.propTypes = {
     }),
     tweet_id: PropTypes.number,
     text: PropTypes.string,
+    likes: PropTypes.number,
+    quotes: PropTypes.number,
     fake_time: PropTypes.string,
     author_id: PropTypes.number,
     quoted: PropTypes.number,

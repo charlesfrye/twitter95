@@ -217,6 +217,10 @@ def api() -> FastAPI:
 
         async with new_session() as db:
             try:
+                if tweet.quoted:
+                    quoted_tweet = await db.get(models.sql.Tweet, tweet.quoted)
+                    if quoted_tweet:
+                        quoted_tweet.quotes += 1
                 db.add(tweet)
                 await db.commit()
                 await db.refresh(tweet)

@@ -36,7 +36,9 @@ function Feed() {
       {isLoading && <Loading />}
       <div className="tweetList">
         {tweets
-          ? tweets.map((tweet, index) => <Tweet key={index} tweet={tweet} />)
+          ? tweets.map((tweet, index) => (
+              <Tweet key={index} tweet={tweet} showStats={true} />
+            ))
           : null}
       </div>
       {/* <TweetCount /> temporarily disabled */}

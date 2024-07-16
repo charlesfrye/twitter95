@@ -40,7 +40,7 @@ function Profile() {
 
       {profile && profile.tweets && profile.tweets.length > 0 ? (
         profile.tweets.map((tweet, index) => (
-          <Tweet key={index} tweet={tweet} />
+          <Tweet key={index} tweet={tweet} showStats={true} />
         ))
       ) : (
         <p>No tweets found.</p>
