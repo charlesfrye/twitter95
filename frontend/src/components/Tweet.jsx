@@ -40,11 +40,7 @@ function Tweet({ tweet, showStats }) {
 
   const handleProfileClick = () => {
     fakeTime = tweet.fake_time;
-    navigate(`/profile/${author.user_id}?fakeTime=${fakeTime}`);
-  };
-
-  const handleTweetClick = () => {
-    navigate(`/timeline/?userId=${author.user_id}&fakeTime=${tweet.fake_time}`);
+    navigate(`/profile/${author.user_name}?fakeTime=${fakeTime}`);
   };
 
   return (
@@ -75,8 +71,7 @@ function Tweet({ tweet, showStats }) {
           <Separator />
           <MenuListItem
             size="sm"
-            onClick={handleTweetClick}
-            className="!whitespace-normal !text-left !cursor-pointer !min-h-24 !flex-1"
+            className="!whitespace-normal !text-left !min-h-24 !flex-1"
           >
             <TweetContent tweet={tweet} />
           </MenuListItem>

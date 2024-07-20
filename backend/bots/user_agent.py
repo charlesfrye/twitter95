@@ -45,23 +45,23 @@ class DoNothing(BaseModel):
     schedule=modal.Period(minutes=10),
 )
 def go(
-    user_id: Optional[int] = None,
+    user_name: Optional[int] = None,
     dryrun: bool = False,
     fake_time: Optional[datetime] = None,
     verbose: bool = True,
 ):
-    if user_id is None:
-        user_id = get_random_user_id()
+    if user_name is None:
+        user_name = get_random_user_name()
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
     if verbose:
-        print(f"running user {user_id} at {fake_time}")
-    profile = get_profile(user_id)
+        print(f"running user {user_name} at {fake_time}")
+    profile = get_profile(user_name)
     if verbose:
         print(f"user:  {profile.user.display_name}")
-    timeline = get_timeline(user_id=user_id, fake_time=fake_time)
-    posts = get_posts(user_id=user_id, fake_time=fake_time)
+    timeline = get_timeline(user_name=user_name, fake_time=fake_time)
+    posts = get_posts(user_name=user_name, fake_time=fake_time)
     if verbose:
         print("context retrieved")
 
@@ -96,7 +96,7 @@ def go(
     if isinstance(action, DoNothing) or dryrun:
         return
     else:
-        send_tweet(user_id, action, fake_time=fake_time)
+        send_tweet(profile.user.user_id, action, fake_time=fake_time)
 
 
 def send_tweet(user_id, tweet, fake_time=None):
@@ -106,36 +106,36 @@ def send_tweet(user_id, tweet, fake_time=None):
     Client.create_tweet.remote(user_id, fake_time=str(fake_time), **tweet.dict())
 
 
-def get_profile(user_id=5):
-    profile = Client.get_user_profile.remote(user_id)
+def get_profile(user_name="NewYorkTimes"):
+    profile = Client.get_user_profile.remote(user_name)
 
     user = models.ProfileRead(**profile)
 
     return user
 
 
-def get_timeline(user_id=None, fake_time=None, limit=10):
+def get_timeline(user_name=None, fake_time=None, limit=10):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    timeline = Client.read_user_timeline.remote(user_id, fake_time, limit)
+    timeline = Client.read_user_timeline.remote(user_name, fake_time, limit)
     timeline = [models.FullTweetRead(**tweet) for tweet in timeline]
     return timeline
 
 
-def get_posts(user_id=None, fake_time=None, limit=10):
+def get_posts(user_name=None, fake_time=None, limit=10):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    posts = Client.read_user_posts.remote(user_id, fake_time, limit)
+    posts = Client.read_user_posts.remote(user_name, fake_time, limit)
     posts = [models.FullTweetRead(**post) for post in posts]
     return posts
 
 
-def get_random_user_id():
+def get_random_user_name():
     query = 'SELECT * FROM "users" WHERE user_id != 3 ORDER BY RANDOM() LIMIT 1;'
     random_user = Client.run_query.remote(query)["result"][0]
-    return random_user["user_id"]
+    return random_user["user_name"]
 
 
 def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
@@ -238,9 +238,9 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
 
 @app.local_entrypoint()
 def main(
-    user_id: int = None,
+    user_name: str = None,
     dryrun: bool = True,
     fake_time: datetime = None,
     verbose: bool = False,
 ):
-    go.remote(user_id, dryrun, fake_time, verbose=verbose)
+    go.remote(user_name, dryrun, fake_time, verbose=verbose)
