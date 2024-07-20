@@ -65,4 +65,16 @@ const getProfile = async (userId) => {
   return await fetchData(url);
 };
 
-export { getTimeline, getPosts, getProfile, toFake };
+const getHashtag = async (hashtagText, fakeTime, limit) => {
+  const params = new URLSearchParams();
+
+  fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+  limit ? params.append("limit", limit) : null;
+
+  const url = `${baseUrl}/hashtag/${hashtagText}?${params}`;
+
+  const hashtagTweets = await fetchData(url);
+  return hashtagTweets;
+};
+
+export { getTimeline, getPosts, getProfile, getHashtag, toFake };
