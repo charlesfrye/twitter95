@@ -1,7 +1,6 @@
 import datetime
 
 from sqlalchemy import (
-    CheckConstraint,
     Column,
     Integer,
     String,
@@ -30,7 +29,6 @@ followers_association = Table(
 
 class Tweet(Base):
     __tablename__ = "tweets"
-    __table_args__ = (CheckConstraint("views >= 0", name="check_views_non_negative"),)
 
     tweet_id = Column(Integer, primary_key=True, autoincrement=True)
     author_id = Column(Integer, ForeignKey("users.user_id"))
