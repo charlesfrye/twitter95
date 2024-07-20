@@ -36,6 +36,7 @@ def api() -> FastAPI:
         - GET /timeline/, which returns fake-time-limited tweets based on user follows
         - GET /posts/, which returns fake-time-limited tweets from a specific user
         - GET /profile/, which returns the user and their bio
+        - GET /hashtag/, which returns fake-time-limited tweets based on hashtag
         - POST /tweet/, which creates a new tweet
 
     The remaining routes are lower level (e.g. retrieving all tweets).
@@ -190,6 +191,60 @@ def api() -> FastAPI:
 
         return list(posts)
 
+    @api.get(
+        "/hashtag/{hashtag_text}", response_model=List[models.pydantic.FullTweetRead]
+    )
+    async def read_hashtag(
+        hashtag_text: str,
+        fake_time: Optional[datetime] = None,
+        limit: int = 10,
+        ascending: bool = False,
+    ):
+        """Read a specific hashtag's tweets at a specific (fake) time."""
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
+        hashtag_text = f"#{hashtag_text}"
+        sort = asc if ascending else desc
+        async with new_session() as db:
+            results = await db.execute(
+                select(models.sql.Tweet)
+                .join(
+                    models.sql.TweetHashtag,
+                    models.sql.Tweet.tweet_id == models.sql.TweetHashtag.tweet_id,
+                )
+                .join(
+                    models.sql.Hashtag,
+                    models.sql.TweetHashtag.hashtag_id == models.sql.Hashtag.hashtag_id,
+                )
+                .filter(
+                    and_(
+                        or_(
+                            models.sql.Tweet.fake_time <= fake_time,
+                            models.sql.Tweet.fake_time == None,  # noqa: E711
+                        ),
+                    ),
+                    models.sql.Hashtag.text == hashtag_text,
+                )
+                .order_by(
+                    sort(models.sql.Tweet.fake_time), sort(models.sql.Tweet.tweet_id)
+                )
+                .limit(limit)
+                .options(
+                    joinedload(models.sql.Tweet.author),
+                    joinedload(models.sql.Tweet.quoted_tweet).joinedload(
+                        models.sql.Tweet.author
+                    ),
+                )
+            )
+            posts = results.scalars().all()
+
+        # we only load one layer of quoted tweets; null them out
+        for post in posts:
+            if post.quoted_tweet is not None:
+                post.quoted_tweet.quoted_tweet = None
+
+        return list(posts)
+
     @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
     async def read_profile(user_id: int):
         """Read the profile information of a user."""
@@ -214,14 +269,40 @@ def api() -> FastAPI:
     async def create_tweet(tweet: models.pydantic.TweetCreate):
         """Create a new tweet."""
         tweet = models.sql.Tweet(**tweet.dict())
+        hashtags = common.utils.extract_hashtags(tweet.text)
 
         async with new_session() as db:
             try:
+                # count quote tweets
                 if tweet.quoted:
                     quoted_tweet = await db.get(models.sql.Tweet, tweet.quoted)
                     if quoted_tweet:
                         quoted_tweet.quotes += 1
                 db.add(tweet)
+                await db.flush()
+
+                # handle hashtags
+                for hashtag_text in hashtags:
+                    hashtag = (
+                        await db.execute(
+                            select(models.sql.Hashtag).where(
+                                models.sql.Hashtag.text == hashtag_text
+                            )
+                        )
+                    ).scalar_one_or_none()
+
+                    # if new hashtag, add to table
+                    if not hashtag:
+                        hashtag = models.sql.Hashtag(text=hashtag_text)
+                        db.add(hashtag)
+                        await db.flush()
+
+                    # update tweet-hashtag mapping table
+                    tweet_hashtag = models.sql.TweetHashtag(
+                        tweet_id=tweet.tweet_id, hashtag_id=hashtag.hashtag_id
+                    )
+                    db.add(tweet_hashtag)
+
                 await db.commit()
                 await db.refresh(tweet)
             except sqlalchemy.exc.IntegrityError as e:

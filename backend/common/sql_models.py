@@ -43,6 +43,18 @@ class Tweet(Base):
     quoted_tweet = relationship("Tweet", remote_side=[tweet_id])
 
 
+class Hashtag(Base):
+    __tablename__ = "hashtags"
+    hashtag_id = Column(Integer, primary_key=True, autoincrement=True)
+    text = Column(String, unique=True, nullable=False)
+
+
+class TweetHashtag(Base):
+    __tablename__ = "tweet_hashtags"
+    tweet_id = Column(Integer, ForeignKey("tweets.tweet_id"), primary_key=True)
+    hashtag_id = Column(Integer, ForeignKey("hashtags.hashtag_id"), primary_key=True)
+
+
 class User(Base):
     __tablename__ = "users"
 
