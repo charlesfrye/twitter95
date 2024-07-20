@@ -113,7 +113,7 @@ class Client:
     @modal.method()
     async def read_user_posts(
         self,
-        user_id: int,
+        user_name: str,
         fake_time: Optional[datetime] = None,
         limit: int = 10,
         ascending: bool = False,
@@ -125,7 +125,7 @@ class Client:
         async with self.session.get(
             "/posts/",
             params={
-                "user_id": user_id,
+                "user_name": user_name,
                 "fake_time": str(fake_time),
                 "limit": limit,
                 "ascending": str(ascending).lower(),
@@ -137,7 +137,7 @@ class Client:
     @modal.method()
     async def read_user_timeline(
         self,
-        user_id: int,
+        user_name: int,
         fake_time: Optional[datetime] = None,
         limit: int = 10,
         ascending: bool = False,
@@ -149,7 +149,7 @@ class Client:
         async with self.session.get(
             "/timeline/",
             params={
-                "user_id": user_id,
+                "user_name": user_name,
                 "fake_time": str(fake_time),
                 "limit": limit,
                 "ascending": str(ascending).lower(),
@@ -159,8 +159,8 @@ class Client:
             return await resp.json()
 
     @modal.method()
-    async def get_user_profile(self, user_id: int):
-        async with self.session.get(f"/profile/{user_id}/") as resp:
+    async def get_user_profile(self, user_name: str):
+        async with self.session.get(f"/profile/{user_name}/") as resp:
             resp.raise_for_status()
             return await resp.json()
 
@@ -202,11 +202,11 @@ def test(action: str, payload: str = "", expect_fail: bool = False):
                 )
             )
         elif action == "read-user-posts":
-            print(client.read_user_posts.remote(int(payload)))
+            print(client.read_user_posts.remote(payload))
         elif action == "read-user-timeline":
-            print(client.read_user_timeline.remote(int(payload)))
+            print(client.read_user_timeline.remote(payload))
         elif action == "get-user-profile":
-            print(client.get_user_profile.remote(int(payload)))
+            print(client.get_user_profile.remote(payload))
         else:
             raise Exception(f"Unknown action: {action}")
     except Exception as e:
