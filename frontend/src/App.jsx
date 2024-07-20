@@ -32,7 +32,6 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 function App() {
-  // const { theme } = useTheme();
   const leftSidebarOptions = [
     { text: "Timeline", path: "/timeline" },
     { text: "About", path: "/" },
