@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Profile from "./components/Profile.jsx";
 import App from "./App.jsx";
 import Feed from "./components/Feed.jsx";
+import HashtagFeed from "./components/HashtagFeed.jsx";
 import HomePage from "./components/HomePage.jsx";
 import "./App.css";
 
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "timeline",
         element: <Feed />,
+      },
+      {
+        path: "hashtag/:hashtagText",
+        element: <HashtagFeed />,
       },
     ],
   },
