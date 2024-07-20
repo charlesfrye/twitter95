@@ -35,10 +35,10 @@ const fetchData = async (url) => {
   }
 };
 
-const getTimeline = async (userId, fakeTime, limit) => {
+const getTimeline = async (userName, fakeTime, limit) => {
   const params = new URLSearchParams();
 
-  userId ? params.append("user_id", userId) : null;
+  userName ? params.append("user_name", userName) : null;
   fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
   limit ? params.append("limit", limit) : null;
 
@@ -48,9 +48,9 @@ const getTimeline = async (userId, fakeTime, limit) => {
   return timeline;
 };
 
-const getPosts = async (userId, fakeTime, limit) => {
+const getPosts = async (userName, fakeTime, limit) => {
   const params = new URLSearchParams();
-  params.append("user_id", userId);
+  params.append("user_name", userName);
 
   fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
   limit ? params.append("limit", limit) : null;
@@ -60,8 +60,8 @@ const getPosts = async (userId, fakeTime, limit) => {
   return posts;
 };
 
-const getProfile = async (userId) => {
-  const url = `${baseUrl}/profile/${userId}/`;
+const getProfile = async (userName) => {
+  const url = `${baseUrl}/profile/${userName}/`;
   return await fetchData(url);
 };
 
