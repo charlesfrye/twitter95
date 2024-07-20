@@ -1,0 +1,20 @@
+.tweet {
+	max-width: 600px;
+	font-family: 'MS Sans Serif', Geneva, sans-serif;
+	color: #000000;
+	padding: 0.5rem;
+	margin: 1rem auto;
+}
+
+.tweet .tweet {
+	width: 100%;
+}
+
+.tweet:hover {
+	border-color: #808080;
+}
+
+.menuitem {
+	text-wrap: wrap;
+	overflow: wrap;
+}

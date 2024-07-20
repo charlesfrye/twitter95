@@ -1,3 +1,4 @@
+import "./Tweet.css";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MenuList, MenuListItem, Separator } from "react95";
