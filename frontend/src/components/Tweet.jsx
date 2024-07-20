@@ -1,8 +1,20 @@
 import "./Tweet.css";
 import PropTypes from "prop-types";
+import styled from "styled-components";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MenuList, MenuListItem, Separator } from "react95";
+import {
+  MenuList,
+  MenuListItem as React95MenuListItem,
+  Separator,
+} from "react95";
 import TweetContent from "./TweetContent";
+
+const MenuListItem = styled(React95MenuListItem)`
+  &:hover {
+    color: inherit;
+    background: none;
+  }
+`;
 
 function formatFakeTime(fakeTimeStr) {
   const date = new Date(fakeTimeStr);

@@ -13,7 +13,7 @@ function TweetContent({ tweet }) {
           <a
             key={index}
             href={`/hashtag/${hashtag}`}
-            className="text-[#008080] underline hover:text-[#888888]"
+            className="text-[#008080] underline hover:text-[#00abab]"
           >
             {part}
           </a>
