@@ -5,20 +5,15 @@
 }
 
 body {
-	font-family: 'Helvetica Neue', sans-serif;
-	color: var(--text-color-default);
 	background-color: var(--background-default);
 	background-image: url("/space-background1.png");
 	background-size: 100px;
 	background-repeat: repeat;
 	width: 100%;
 	height: 100%;
-	margin: 0;
-	padding: 0;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	text-overflow: wrap !important;
 }
 
 .banner a {
@@ -37,7 +32,6 @@ body {
 	color: #000000;
 	padding: 0.5rem;
 	margin: 1rem auto;
-	overflow: wrap;
 }
 
 .tweet .tweet {
@@ -59,8 +53,6 @@ body {
 	justify-content: space-around;
 	padding: 10px;
 	border-bottom: 1px solid var(--background-default);
-	font-family: 'Comic Sans MS', cursive, sans-serif;
-	font-size: 18px;
 	color: var(--text-color-default);
 	border: 3px outset #FFFFFF;
 }
@@ -84,7 +76,6 @@ body {
 	font-family: 'Comic Sans MS', cursive, sans-serif;
 	font-size: 18px;
 	border: 3px outset #FFFFFF;
-	max-width: 200px;
 	background-image: url('https://modal-public-assets.s3.amazonaws.com/twitter95/vertical-banner.png');
 	background-repeat: repeat;
 	color: #FFFF00;
