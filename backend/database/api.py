@@ -245,12 +245,12 @@ def api() -> FastAPI:
 
         return list(posts)
 
-    @api.get("/profile/{user_id}/", response_model=models.pydantic.ProfileRead)
-    async def read_profile(user_id: int):
+    @api.get("/profile/{user_name}/", response_model=models.pydantic.ProfileRead)
+    async def read_profile(user_name: str):
         """Read the profile information of a user."""
         async with new_session() as db:
             result = await db.execute(
-                select(models.sql.User).filter_by(user_id=user_id)
+                select(models.sql.User).filter_by(user_name=user_name)
             )
             user = result.scalar_one_or_none()
             if user is None:
@@ -260,7 +260,7 @@ def api() -> FastAPI:
         if bio is None:
             return models.pydantic.ProfileRead(
                 user=user,
-                bio={"user_id": user_id},
+                bio={"user_id": user.user_id},
             )
 
         return {"user": user, "bio": bio}
@@ -481,7 +481,7 @@ def api() -> FastAPI:
         return list(tweets)
 
     @api.get("/names/{user_name}/")
-    async def read_user_by_name(user_name: str) -> Optional[models.pydantic.UserRead]:
+    async def read_user_by_name(user_name: str) -> models.pydantic.UserRead:
         """Read a specific user by their user_name."""
         async with new_session() as db:
             result = await db.execute(
