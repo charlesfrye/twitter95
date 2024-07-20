@@ -1,7 +1,6 @@
 import "./App.css";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useTheme } from "./components/ThemeContext";
 import Sidebar from "./components/Sidebar";
 import StartupSound from "./components/StartupSound";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
@@ -33,17 +32,13 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 function App() {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const leftSidebarOptions = [
     { text: "Timeline", path: "/timeline" },
     { text: "About", path: "/" },
   ];
 
   const rightSidebarOptions = [];
-
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
 
   return (
     <ErrorBoundary>
