@@ -2,6 +2,7 @@ import "./Tweet.css";
 import PropTypes from "prop-types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MenuList, MenuListItem, Separator } from "react95";
+import TweetContent from "./TweetContent";
 
 function formatFakeTime(fakeTimeStr) {
   const date = new Date(fakeTimeStr);
@@ -65,7 +66,7 @@ function Tweet({ tweet, showStats }) {
             onClick={handleTweetClick}
             className="!whitespace-normal !text-left !cursor-pointer !min-h-24 !flex-1"
           >
-            {tweet.text}
+            <TweetContent tweet={tweet} />
           </MenuListItem>
           {tweet.quoted && tweet.quoted_tweet && (
             <Tweet tweet={tweet.quoted_tweet} showStats={false} />
