@@ -4,7 +4,9 @@ import PropTypes from "prop-types";
 function TweetContent({ tweet }) {
   const renderText = (text) => {
     const hashtagRegex = /(#\w+)/g; // match on # followed by 1 or more letters, numbers, or underscores
-    const parts = text.split(/(#[\w]+)/);
+    const usernameRegex = /(@[\w]+)/g; // match on @ followed by 1 or more letters, numbers, or underscores
+
+    const parts = text.split(/(#\w+|@\w+)/);
 
     return parts.map((part, index) => {
       if (part.match(hashtagRegex)) {
@@ -13,6 +15,17 @@ function TweetContent({ tweet }) {
           <a
             key={index}
             href={`/hashtag/${hashtag}`}
+            className="text-[#008080] underline hover:text-[#00abab]"
+          >
+            {part}
+          </a>
+        );
+      } else if (part.match(usernameRegex)) {
+        const username = part.slice(1);
+        return (
+          <a
+            key={index}
+            href={`/profile/${username}`}
             className="text-[#008080] underline hover:text-[#00abab]"
           >
             {part}
