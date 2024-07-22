@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from typing import List, Optional
 
@@ -36,6 +36,7 @@ def api() -> FastAPI:
         - GET /timeline/, which returns fake-time-limited tweets based on user follows
         - GET /posts/, which returns fake-time-limited tweets from a specific user
         - GET /profile/, which returns the user and their bio
+        - GET /trending/, which returns popular recent hashtags
         - GET /hashtag/, which returns fake-time-limited tweets based on hashtag
         - POST /tweet/, which creates a new tweet
 
@@ -253,6 +254,48 @@ def api() -> FastAPI:
                 post.quoted_tweet.quoted_tweet = None
 
         return list(posts)
+
+    @api.post("/trending/", response_model=List[str])
+    async def read_trending(
+        fake_time: Optional[datetime] = None,
+        limit: int = 10,
+    ):
+        """Return popular recent hashtags."""
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
+
+        start_time = fake_time - timedelta(hours=24)
+
+        async with new_session() as db:
+            results = await db.execute(
+                select(
+                    models.sql.Hashtag.text,
+                    sqlalchemy.func.count(models.sql.TweetHashtag.hashtag_id).label(
+                        "count"
+                    ),
+                )
+                .join(
+                    models.sql.TweetHashtag,
+                    models.sql.Hashtag.hashtag_id == models.sql.TweetHashtag.hashtag_id,
+                )
+                .join(
+                    models.sql.Tweet,
+                    models.sql.TweetHashtag.tweet_id == models.sql.Tweet.tweet_id,
+                )
+                .filter(
+                    and_(
+                        models.sql.Tweet.fake_time <= fake_time,
+                        models.sql.Tweet.fake_time >= start_time,
+                    )
+                )
+                .group_by(models.sql.Hashtag.text)
+                .order_by(desc("count"))
+                .limit(limit)
+            )
+
+        hashtags = [row.text for row in results]
+
+        return hashtags
 
     @api.get("/profile/{user_name}/", response_model=models.pydantic.ProfileRead)
     async def read_profile(user_name: str):
