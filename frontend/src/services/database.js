@@ -77,4 +77,16 @@ const getHashtag = async (hashtagText, fakeTime, limit) => {
   return hashtagTweets;
 };
 
-export { getTimeline, getPosts, getProfile, getHashtag, toFake };
+const getTrending = async (fakeTime, limit) => {
+  const params = new URLSearchParams();
+
+  fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+  limit ? params.append("limit", limit) : null;
+
+  const url = `${baseUrl}/trending/?${params}`;
+
+  const trendingHashtags = await fetchData(url);
+  return trendingHashtags;
+};
+
+export { getTimeline, getPosts, getProfile, getHashtag, getTrending, toFake };

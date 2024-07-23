@@ -6,6 +6,7 @@ import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { styleReset } from "react95";
 import original from "react95/dist/themes/original";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Trending from "./components/Trending";
 import MetaTags from "./components/MetaTags";
 
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
@@ -60,9 +61,10 @@ function App() {
               />
               <a className="text-sm" href="https://modal.com">
                 {" "}
-                Powered by Modal
+                #PoweredByModal
               </a>
             </div>
+            <Trending />
           </Sidebar>
         </div>
       </ThemeProvider>
