@@ -255,7 +255,7 @@ def api() -> FastAPI:
 
         return list(posts)
 
-    @api.post("/trending/", response_model=List[str])
+    @api.get("/trending/", response_model=List[str])
     async def read_trending(
         fake_time: Optional[datetime] = None,
         limit: int = 10,
