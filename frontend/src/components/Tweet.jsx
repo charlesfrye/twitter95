@@ -6,6 +6,7 @@ import {
   MenuList,
   MenuListItem as React95MenuListItem,
   Separator,
+  Button
 } from "react95";
 import TweetContent from "./TweetContent";
 
@@ -39,14 +40,16 @@ function Tweet({ tweet, showStats }) {
   let fakeTime = queryParams.get("fakeTime");
 
   const handleProfileClick = () => {
-    fakeTime = tweet.fake_time;
+    fakeTime = tweet.fake_time + 1000;
     navigate(`/profile/${author.user_name}?fakeTime=${fakeTime}`);
   };
 
   const handleRetweetClick = () => {
+
     fakeTime = tweet.fake_time + 1000;
     const url = `https://twitter-95.com/profile/${author.user_name}?fakeTime=${fakeTime}`
-    const tweetContent = `https://x.com/intent/post?text=${url}`
+    const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`
+    const tweetContent = `https://x.com/intent/post?text=${text}`
     window.open(tweetContent, '_blank');``
   }
 
@@ -86,10 +89,11 @@ function Tweet({ tweet, showStats }) {
             <Tweet tweet={tweet.quoted_tweet} showStats={false} />
           )}
 
-          @b center below div in its parent using tailwind
-          <div className="flex space-x-10">
-            {showStats && <p>QTs: {tweet.quotes}</p>}
-            <h1 onClick={handleRetweetClick}>Retweet</h1> 
+          <div className="flex items-center justify-center">
+            <div className="flex space-x-10">
+              {showStats && <p className="py-[5px]">QTs: {tweet.quotes}</p>}
+              <Button onClick={handleRetweetClick}>Retweet</Button> 
+            </div>
           </div>
         </MenuList>
       </div>
