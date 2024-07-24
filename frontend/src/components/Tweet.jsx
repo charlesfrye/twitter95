@@ -6,6 +6,7 @@ import {
   MenuList,
   MenuListItem as React95MenuListItem,
   Separator,
+  Button
 } from "react95";
 import TweetContent from "./TweetContent";
 
@@ -39,9 +40,18 @@ function Tweet({ tweet, showStats }) {
   let fakeTime = queryParams.get("fakeTime");
 
   const handleProfileClick = () => {
-    fakeTime = tweet.fake_time;
+    fakeTime = tweet.fake_time + 1000;
     navigate(`/profile/${author.user_name}?fakeTime=${fakeTime}`);
   };
+
+  const handleRetweetClick = () => {
+
+    fakeTime = tweet.fake_time + 1000;
+    const url = `https://twitter-95.com/profile/${author.user_name}?fakeTime=${fakeTime}`
+    const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`
+    const tweetContent = `https://x.com/intent/post?text=${text}`
+    window.open(tweetContent, '_blank');``
+  }
 
   return (
     tweet && (
@@ -78,7 +88,13 @@ function Tweet({ tweet, showStats }) {
           {tweet.quoted && tweet.quoted_tweet && (
             <Tweet tweet={tweet.quoted_tweet} showStats={false} />
           )}
-          {showStats && <p>QTs: {tweet.quotes}</p>}
+
+          <div className="flex items-center justify-center">
+            <div className="flex space-x-10">
+              {showStats && <p className="py-[5px]">QTs: {tweet.quotes}</p>}
+              <Button onClick={handleRetweetClick}>Retweet</Button> 
+            </div>
+          </div>
         </MenuList>
       </div>
     )
