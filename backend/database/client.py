@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 from typing import Optional
 from uuid import uuid4
 
@@ -7,15 +8,14 @@ import modal
 import common
 
 DB_URL_PREFIX = "ex-twitter--db-client-api"
-DB_URL_SUFFIX = ".modal.run"
+DB_URL_SUFFIX = "-dev.modal.run"
 
 DB_BASE_URL = f"https://{DB_URL_PREFIX}{DB_URL_SUFFIX}"
 
 image = modal.Image.debian_slim(python_version="3.11").pip_install("aiohttp==3.9.5")
 
 app = modal.App(
-    "db-client-sdk",
-    image=image,
+    "db-client-sdk", image=image, secrets=[modal.Secret.from_name("api-key")]
 )
 
 with image.imports():
@@ -26,7 +26,9 @@ with image.imports():
 class Client:
     @modal.enter()
     async def connect(self):
-        self.session = aiohttp.ClientSession(base_url=DB_BASE_URL)
+        headers = {"Authorization": f"Bearer {os.environ['TWITTER95_API_KEY']}"}
+
+        self.session = aiohttp.ClientSession(base_url=DB_BASE_URL, headers=headers)
 
     @modal.method()
     async def get_user_by_name(self, user_name):
