@@ -18,7 +18,7 @@ image = modal.Image.debian_slim(python_version="3.11").pip_install(
 app = modal.App(
     "db-client",
     image=image,
-    secrets=[modal.Secret.from_name("pgsql-secret")],
+    secrets=[modal.Secret.from_name("pgsql-secret"), modal.Secret.from_name("api-key")],
 )
 
 
@@ -89,6 +89,21 @@ def api() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    token = os.environ["TWITTER95_API_KEY"]
+    http_bearer = fastapi.security.HTTPBearer(
+        scheme_name="Bearer Token",
+        description="Authentication required for write/delete routes.",
+    )
+
+    # security: inject dependency on authed routes
+    async def is_authenticated(api_key: str = fastapi.Security(http_bearer)):
+        if api_key.credentials != token:
+            raise fastapi.HTTPException(
+                status_code=fastapi.status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials",
+            )
+        return {"username": "authenticated_user"}
 
     @api.get("/timeline/", response_model=List[models.pydantic.FullTweetRead])
     async def read_timeline(
@@ -317,7 +332,11 @@ def api() -> FastAPI:
 
         return {"user": user, "bio": bio}
 
-    @api.post("/tweet/", response_model=models.pydantic.TweetRead)
+    @api.post(
+        "/tweet/",
+        response_model=models.pydantic.TweetRead,
+        dependencies=[fastapi.Depends(is_authenticated)],
+    )
     async def create_tweet(tweet: models.pydantic.TweetCreate):
         """Create a new tweet."""
         tweet = models.sql.Tweet(**tweet.dict())
@@ -362,7 +381,7 @@ def api() -> FastAPI:
 
         return tweet
 
-    @api.post("/edge/")
+    @api.post("/edge/", dependencies=[fastapi.Depends(is_authenticated)])
     async def create_edge(_from: int, _to: int):
         """Add a directed "follows" edge to the social graph.
 
@@ -392,7 +411,11 @@ def api() -> FastAPI:
             tweets = result.scalars()
         return list(tweets)
 
-    @api.post("/users/", response_model=models.pydantic.UserRead)
+    @api.post(
+        "/users/",
+        response_model=models.pydantic.UserRead,
+        dependencies=[fastapi.Depends(is_authenticated)],
+    )
     async def create_user(user: models.pydantic.UserCreate):
         """Create a new User."""
         if user.bio is not None:
@@ -448,7 +471,7 @@ def api() -> FastAPI:
             )
         return user
 
-    @api.delete("/users/{user_id}/")
+    @api.delete("/users/{user_id}/", dependencies=[fastapi.Depends(is_authenticated)])
     async def delete_user(user_id: int):
         """Delete a user and all their data."""
         async with new_session() as db:
@@ -490,7 +513,7 @@ def api() -> FastAPI:
 
             await db.commit()
 
-    @api.delete("/tweet/{tweet_id}")
+    @api.delete("/tweet/{tweet_id}", dependencies=[fastapi.Depends(is_authenticated)])
     async def delete_tweet(tweet_id: int):
         """Delete a tweet entirely.
 
@@ -546,7 +569,7 @@ def api() -> FastAPI:
                 )
         return user
 
-    @api.post("/query/")
+    @api.post("/query/", dependencies=[fastapi.Depends(is_authenticated)])
     async def execute_query(request: dict):
         """Execute a raw SQL query."""
         query = request.get("query")
