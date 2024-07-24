@@ -43,6 +43,13 @@ function Tweet({ tweet, showStats }) {
     navigate(`/profile/${author.user_name}?fakeTime=${fakeTime}`);
   };
 
+  const handleRetweetClick = () => {
+    fakeTime = tweet.fake_time + 1000;
+    const url = `https://twitter-95.com/profile/${author.user_name}?fakeTime=${fakeTime}`
+    const tweetContent = `https://x.com/intent/post?text=${url}`
+    window.open(tweetContent, '_blank');``
+  }
+
   return (
     tweet && (
       <div className="tweet">
@@ -78,7 +85,12 @@ function Tweet({ tweet, showStats }) {
           {tweet.quoted && tweet.quoted_tweet && (
             <Tweet tweet={tweet.quoted_tweet} showStats={false} />
           )}
-          {showStats && <p>QTs: {tweet.quotes}</p>}
+
+          @b center below div in its parent using tailwind
+          <div className="flex space-x-10">
+            {showStats && <p>QTs: {tweet.quotes}</p>}
+            <h1 onClick={handleRetweetClick}>Retweet</h1> 
+          </div>
         </MenuList>
       </div>
     )
