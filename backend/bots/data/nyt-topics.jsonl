@@ -1,0 +1,8 @@
+{"user": {"name": "New York Times - Sports", "user_name": "NewYorkTimesSports",  "bio": "All the sports that's fit to print."}, "desks": ["Sports Desk"]}
+{"user": {"name": "New York Times - US", "user_name": "NewYorkTimesUSNews",  "bio": "News and events across the United States of America."}, "desks": ["National Desk"]}
+{"user": {"name": "New York Times - Foreign", "user_name": "NewYorkTimesForeignNews",  "bio": "Follow the latest in our increasingly interconnected world."}, "desks": ["Foreign Desk"]}
+{"user": {"name": "New York Times - Science", "user_name": "NewYorkTimesScience",  "bio": "Missives on science and technology from the bleeding edge."}, "desks": ["Science Desk"]}
+{"user": {"name": "New York Times - Business", "user_name": "NewYorkTimesBiz",  "bio": "The business of NYT Business is business."}, "desks": ["Business Desk", "Financial Desk", "Money and Business", "Business/Financial Desk", "Money and Busines/Financial Desk", "Money and Business/Financial Desk"]}
+{"user": {"name": "New York Times - Culture", "user_name": "NewYorkTimesCulture",  "bio": "Cultivate a cultured outlook."}, "desks": ["Style Desk", "Cultural Desk"]}
+{"user": {"name": "New York Times - Pop Culture", "user_name": "NewYorkTimesPop",  "bio": "Stay on trend and up with The Times."}, "desks": ["Arts and Leisure Desk", "Movies / Movies Special", "Television"]}
+{"user": {"name": "New York Times - Books", "user_name": "NewYorkTimesBooks",  "bio": "Read on-line what you can read in real life."}, "desks": ["Books", "Book Review Desk"]}
