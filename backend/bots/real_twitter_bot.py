@@ -55,18 +55,16 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
 
     return virality_scores
 
-@app.function()
+@app.function(
+    schedule=modal.Period(minutes=10),
+)
 def go(
     dryrun: bool = False,
     fake_time: datetime|None = None,
     verbose: bool = True,
 ):
-    print("we're here")
-    print("we have the client", Client)
     if fake_time is None:
-        print("common module", common)
         # list exports on common module
-        print(dir(common))
         fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
     tweets = Client.read_all_tweets.remote(limit=100)
@@ -76,19 +74,21 @@ def go(
 
     # find most viral tweet
     max_viral_tweet = max(virality.items(), key=lambda x: x[1])
-    print(f"Most viral tweet: {max_viral_tweet[0]}")
+    print(f"Most viral tweet ID: {max_viral_tweet[0]}")
     
     for tweet in tweets:
         if tweet["tweet_id"] == max_viral_tweet[0]:
             if dryrun:
-                print(f"would have reposted {tweet['text']}")
+                if verbose:
+                    print(f"would have reposted the following tweet:\n{tweet['text']}")
             else:
-                print(f"oh, a hit tweet:\n{tweet}")
+                if verbose:
+                    print(f"oh, a hit tweet:\n{tweet}")
 
 @app.local_entrypoint()
 def main(
     dryrun: bool = True,
     fake_time: datetime|None = None,
-    verbose: bool = False,
+    verbose: bool = True,
 ):
     go.remote(dryrun=dryrun, fake_time=fake_time, verbose=verbose)
