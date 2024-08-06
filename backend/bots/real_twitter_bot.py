@@ -55,6 +55,8 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
 
     return virality_scores
 
+prev_tweets = modal.Dict.from_name("repost-bot-tweet-log", create_if_missing=True)
+
 @app.function(
     schedule=modal.Period(minutes=60),
 )
@@ -74,10 +76,17 @@ def go(
 
     # find most viral tweet
     max_viral_tweet = max(virality.items(), key=lambda x: x[1])
-    print(f"Most viral tweet ID: {max_viral_tweet[0]}")
+    viral_tweet = max_viral_tweet[0]
+    print(f"Most viral tweet ID: {viral_tweet}")
+
+    if viral_tweet in prev_tweets:
+        print(f"Already reposted. Skipping.")
+        return
+    
+    prev_tweets[viral_tweet] = True
     
     for tweet in tweets:
-        if tweet["tweet_id"] == max_viral_tweet[0]:
+        if tweet["tweet_id"] == viral_tweet:
             if dryrun:
                 print(f"would have reposted the following tweet:\n{tweet['text']}")
             else:
