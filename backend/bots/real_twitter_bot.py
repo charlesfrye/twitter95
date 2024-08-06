@@ -61,7 +61,12 @@ def go(
     fake_time: datetime|None = None,
     verbose: bool = True,
 ):
+    print("we're here")
+    print("we have the client", Client)
     if fake_time is None:
+        print("common module", common)
+        # list exports on common module
+        print(dir(common))
         fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
     tweets = Client.read_all_tweets.remote(limit=100)
