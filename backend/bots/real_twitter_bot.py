@@ -56,7 +56,7 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
     return virality_scores
 
 @app.function(
-    schedule=modal.Period(minutes=10),
+    schedule=modal.Period(minutes=60),
 )
 def go(
     dryrun: bool = False,
@@ -79,11 +79,14 @@ def go(
     for tweet in tweets:
         if tweet["tweet_id"] == max_viral_tweet[0]:
             if dryrun:
-                if verbose:
-                    print(f"would have reposted the following tweet:\n{tweet['text']}")
+                print(f"would have reposted the following tweet:\n{tweet['text']}")
             else:
-                if verbose:
-                    print(f"oh, a hit tweet:\n{tweet}")
+                repost_tweet(tweet["tweet_id"], tweet, dryrun, verbose)
+
+def repost_tweet(tweet_id, tweet, dryrun, verbose):
+    if verbose:
+        print(f"oh, a hit tweet:\n{tweet}")
+
 
 @app.local_entrypoint()
 def main(
