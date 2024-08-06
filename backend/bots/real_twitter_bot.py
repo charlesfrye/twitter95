@@ -1,8 +1,4 @@
 import modal
-DB_URL_PREFIX = "ex-twitter--db-client-api"
-DB_URL_SUFFIX = ".modal.run"
-DB_BASE_URL = f"https://{DB_URL_PREFIX}{DB_URL_SUFFIX}"
-
 import common
 from bots.common import Client
 from datetime import datetime
@@ -62,9 +58,11 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
 @app.function()
 def go(
     dryrun: bool = False,
-    fake_time: datetime = common.to_fake(datetime.utcnow()),
+    fake_time: datetime|None = None,
     verbose: bool = True,
 ):
+    if fake_time is None:
+        fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
     tweets = Client.read_all_tweets.remote(limit=100)
     if verbose:
@@ -85,6 +83,7 @@ def go(
 @app.local_entrypoint()
 def main(
     dryrun: bool = True,
+    fake_time: datetime|None = None,
     verbose: bool = False,
 ):
-    go.remote(dryrun=dryrun, verbose=verbose)
+    go.remote(dryrun=dryrun, fake_time=fake_time, verbose=verbose)
