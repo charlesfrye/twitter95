@@ -45,16 +45,12 @@ function App() {
   if (render_as_og) {
     // twitter renders 1600 px X 900 px, we'l halve that
     return (
-      <div className="absolute top-0 left-0 w-[800px] h-[450px]">
-        <ThemeProvider theme={original}>
-          <GlobalStyles />
-          <div className="app">
-            <Sidebar className="mr-2" options={[]} />
-            <Outlet />
-            <Sidebar className="ml-2" options={rightSidebarOptions}/>
-          </div>
-        </ThemeProvider>
-      </div>
+      <ThemeProvider theme={original}>
+        <GlobalStyles />
+        <div className="app">
+          <Outlet />
+        </div>
+      </ThemeProvider>
     );
   }
 
