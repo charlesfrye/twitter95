@@ -60,7 +60,6 @@ def get_articles_at_hour(hour: datetime, sort=False):
                 continue
         try:
             if posted_time == hour:
-                print(article["lead_paragraph"][:20])
                 articles.append(article)
         except KeyError:
             continue
