@@ -48,6 +48,12 @@ const getTimeline = async (userName, fakeTime, limit) => {
   return timeline;
 };
 
+const getTweet = async (tweetId) => {
+  const url = `${baseUrl}/tweet/${tweetId}/`;
+  const tweet = await fetchData(url);
+  return tweet;
+};
+
 const getPosts = async (userName, fakeTime, limit) => {
   const params = new URLSearchParams();
   params.append("user_name", userName);
@@ -89,4 +95,4 @@ const getTrending = async (fakeTime, limit) => {
   return trendingHashtags;
 };
 
-export { getTimeline, getPosts, getProfile, getHashtag, getTrending, toFake };
+export { getTimeline, getTweet, getPosts, getProfile, getHashtag, getTrending, toFake };

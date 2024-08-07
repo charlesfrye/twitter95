@@ -6,6 +6,7 @@ import App from "./App.jsx";
 import Feed from "./components/Feed.jsx";
 import HashtagFeed from "./components/HashtagFeed.jsx";
 import HomePage from "./components/HomePage.jsx";
+import TweetPage from "./components/TweetPage.jsx";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
         path: "hashtag/:hashtagText",
         element: <HashtagFeed />,
       },
+      {
+        path: "tweet/:tweetId",
+        element: <TweetPage />,
+      }
     ],
   },
 ]);

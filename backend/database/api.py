@@ -38,6 +38,7 @@ def api() -> FastAPI:
         - GET /profile/, which returns the user and their bio
         - GET /trending/, which returns popular recent hashtags
         - GET /hashtag/, which returns fake-time-limited tweets based on hashtag
+        - GET /tweet/{tweet_id}, which returns a specific tweet
         - POST /tweet/, which creates a new tweet
 
     The remaining routes are lower level (e.g. retrieving all tweets).
@@ -168,6 +169,33 @@ def api() -> FastAPI:
             tweets = result.scalars().all()
 
         return list(tweets)
+    
+    @api.get("/tweet/{tweet_id}/", response_model=models.pydantic.FullTweetRead)
+    async def read_tweet(tweet_id: int):
+        """Read a specific tweet."""
+        async with new_session() as db:
+            tweet_query = select(models.sql.Tweet, models.sql.User) \
+                .join(
+                    models.sql.User,
+                    models.sql.Tweet.author_id == models.sql.User.user_id,
+                ) \
+                .where(models.sql.Tweet.tweet_id == tweet_id) \
+                .options(
+                    joinedload(models.sql.Tweet.author),
+                    joinedload(models.sql.Tweet.quoted_tweet).joinedload(
+                        models.sql.Tweet.author
+                    ),
+                )
+            
+            result = await db.execute(tweet_query)
+            tweet = result.scalar_one_or_none()
+            
+        if tweet is None:
+            raise fastapi.HTTPException(
+                status_code=404, detail=f"Tweet {tweet_id} not found"
+            )
+        
+        return tweet
 
     @api.get("/posts/", response_model=List[models.pydantic.FullTweetRead])
     async def read_posts(
