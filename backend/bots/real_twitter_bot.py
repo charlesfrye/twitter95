@@ -69,28 +69,52 @@ def go(
         # list exports on common module
         fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
-    tweets = Client.read_all_tweets.remote(limit=100)
+    tweets = Client.read_all_tweets.remote(limit=500)
     if verbose:
         print(f"Read last {len(tweets)} tweets")
     virality = calculate_virality(tweets, current_fake_time)
 
-    # find most viral tweet
-    max_viral_tweet = max(virality.items(), key=lambda x: x[1])
-    viral_tweet = max_viral_tweet[0]
-    print(f"Most viral tweet ID: {viral_tweet}")
 
-    if viral_tweet in prev_tweets:
+    # todo this code is fucked
+    # for all virality scores, we want to find the "parent" tweet
+    # we want to find the highest virality score tweet where the parent tweet is also a quote
+    # that parent tweet may not exist in our limited scan of tweets
+
+    # ok supermaven ai model, implement this
+    def get_tweet_by_id(tweet_id, tweets):
+        for tweet in tweets:
+            if tweet["tweet_id"] == tweet_id:
+                return tweet
+        return None
+
+    # sort by virality score
+    virality = sorted(virality.items(), key=lambda x: x[1], reverse=True)
+
+    viral_tweet = None
+    viral_tweet_id = None
+    for tweet_id, virality_score in virality:
+        quoted_tweet = get_tweet_by_id(tweet_id, tweets)
+        if quoted_tweet is None:
+            # tweet doesn't exist in our limited scan of tweets
+            continue
+
+        if quoted_tweet["quoted"] is None:
+            # quoted_tweet is not a quote itself, meaning it's from a news source and not a personality
+            continue
+
+        viral_tweet = quoted_tweet
+        viral_tweet_id = tweet_id
+        break
+
+    print("Found most viral tweet:", viral_tweet)
+
+    if viral_tweet_id in prev_tweets:
         print(f"Already reposted. Skipping.")
         return
-    
-    prev_tweets[viral_tweet] = True
-    
-    for tweet in tweets:
-        if tweet["tweet_id"] == viral_tweet:
-            if dryrun:
-                print(f"would have reposted the following tweet:\n{tweet['text']}")
-            else:
-                repost_tweet(tweet["tweet_id"], tweet, dryrun, verbose)
+    if dryrun:
+        print(f"would have reposted the following tweet:\n{viral_tweet['text']}")
+    else:
+        repost_tweet(viral_tweet_id, viral_tweet, dryrun, verbose)
 
 def repost_tweet(tweet_id, tweet, dryrun, verbose):
     if verbose:
