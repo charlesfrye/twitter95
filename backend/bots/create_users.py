@@ -15,16 +15,20 @@ app = modal.App(
 )
 
 
-def read_jsonl(path):
+def read_jsonl(path, key=None):
     with open(path, "r", encoding="utf-8") as f:
         lines = f.readlines()
 
     results = []
     for line in lines:
         try:
-            results.append(json.loads(line))
+            raw_json = json.loads(line)
         except json.JSONDecodeError:
             print(f"Error decoding line: {line}")
+        if key:
+            results.append(raw_json[key])
+        else:
+            results.append(raw_json)
 
     return results
 
@@ -49,15 +53,16 @@ def create_from_spec(user_spec, allow_errors=False, dryrun=True):
     if not dryrun:
         try:
             user = Client.create_user.remote(**user.dict())
+            return user["user_id"]
         except Exception as e:
             if allow_errors:
                 print(f"Error creating user: {e}")
-                return 0
+                return -1
             else:
                 raise e
     else:
         print(f"Would create user: {user.dict()}")
-    return 1
+        return 0
 
 
 def slugify(text):
@@ -65,16 +70,16 @@ def slugify(text):
 
 
 @app.local_entrypoint()
-def main(path: str, allow_errors: bool = False, dryrun: bool = True):
-    user_specs = read_jsonl(Path(path))
+def main(path: str, allow_errors: bool = False, dryrun: bool = True, key=None):
+    user_specs = read_jsonl(Path(path), key=key)
 
     print(f"Creating {len(user_specs)} users...")
-    count = 0
+    results = []
     for result in create_from_spec.map(
         user_specs, kwargs={"allow_errors": allow_errors, "dryrun": dryrun}
     ):
-        count += result
+        results.append(result)
     if not dryrun:
-        print(f"Created {count} users.")
+        print(f"Created {len(filter(lambda uid: uid > 0, results))} users.")
     else:
-        print(f"Would've created {count} users.")
+        print(f"Would've created {len(filter(lambda uid: uid == 0, results))} users.")
