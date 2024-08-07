@@ -133,7 +133,8 @@ def get_posts(user_name=None, fake_time=None, limit=10):
 
 
 def get_random_user_name():
-    query = 'SELECT * FROM "users" WHERE user_id != 3 ORDER BY RANDOM() LIMIT 1;'
+    source_bots = (3, 144, 145, 146, 147, 148, 149, 150, 151)
+    query = f'SELECT * FROM "users" WHERE user_id NOT IN {source_bots} ORDER BY RANDOM() LIMIT 1;'
     random_user = Client.run_query.remote(query)["result"][0]
     return random_user["user_name"]
 
