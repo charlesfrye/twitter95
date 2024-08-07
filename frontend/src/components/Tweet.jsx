@@ -31,7 +31,7 @@ function formatFakeTime(fakeTimeStr) {
   return formattedDateTime;
 }
 
-function Tweet({ tweet, showStats }) {
+function Tweet({ tweet, showStats, showQuoted = true }) {
   const navigate = useNavigate();
   const location = useLocation();
   const author = tweet.author;
@@ -85,7 +85,7 @@ function Tweet({ tweet, showStats }) {
           >
             <TweetContent tweet={tweet} />
           </MenuListItem>
-          {tweet.quoted && tweet.quoted_tweet && (
+          {tweet.quoted && tweet.quoted_tweet && showQuoted && (
             <Tweet tweet={tweet.quoted_tweet} showStats={false} />
           )}
 

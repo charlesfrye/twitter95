@@ -171,6 +171,18 @@ class Client:
         async with self.session.post("/query/", json={"query": query}) as resp:
             resp.raise_for_status()
             return await resp.json()
+        
+    @modal.method()
+    async def read_all_tweets(self, limit: int = 10):
+        async with self.session.get(
+            "/tweets/",
+            params={
+                "limit": str(limit),
+            },
+        ) as resp:
+            resp.raise_for_status()
+            return await resp.json()
+        
 
     @modal.exit()
     async def close(self):
