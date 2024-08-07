@@ -29,8 +29,12 @@ function TweetPage() {
 
     if (render_as_og) {
         return (
-            <div className="banner align-middle mt-4">
-                {tweet ? <Tweet tweet={tweet} showStats={true} showQuoted={false} /> : <p>Loading...</p>}
+            <div className="absolute top-0 left-0 w-[800px] h-[450px]">
+                <div className="flex justify-center items-center h-full">
+                    <div className="h-fit scale-125">
+                        {tweet ? <Tweet tweet={tweet} showStats={true} showQuoted={false} /> : <p>Loading...</p>}
+                    </div>
+                </div>
             </div>
         );
     }
