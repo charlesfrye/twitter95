@@ -6,12 +6,17 @@ import modal
 
 import common
 from . import common as nyt_common
-from .common import app as common_app
 
 
-app = modal.App("nyt_etl")
-app.include(common_app)
-
+app = modal.App(
+    "nyt_etl",
+    image=modal.Image.debian_slim(python_version="3.11").pip_install(
+        "pynytimes==0.10.0"
+    ),
+    secrets=[modal.Secret.from_name("nyt-api-secret")],
+    volumes=nyt_common.volumes,
+    mounts=[common.mount],
+)
 
 with nyt_common.image.imports():
     import json
