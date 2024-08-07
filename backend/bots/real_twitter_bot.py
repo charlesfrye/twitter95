@@ -117,8 +117,7 @@ def go(
         repost_tweet(viral_tweet_id, viral_tweet, dryrun, verbose)
 
 def repost_tweet(tweet_id, tweet, dryrun, verbose):
-    if verbose:
-        print(f"oh, a hit tweet:\n{tweet}")
+    print(f"oh, a hit tweet:\n{tweet}")
 
 
 @app.local_entrypoint()
