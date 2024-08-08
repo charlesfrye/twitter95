@@ -4,6 +4,7 @@ from bots.common import Client
 from datetime import datetime
 import math
 import requests
+import os
 from bots.real_twitter.client import post_to_real_twitter
 
 image = modal.Image.debian_slim(python_version="3.11")\
@@ -114,18 +115,18 @@ def go(
     if dryrun:
         print(f"Would have reposted the following tweet:\n{viral_tweet['text']}")
     else:
-        image_bytes = screenshot_tweet(viral_tweet_id, viral_tweet)
+        image_bytes = screenshot_tweet(viral_tweet_id)
         post_to_real_twitter(viral_tweet, author, image_bytes)
         tweet_cache[viral_tweet_id] = True
     
 
-def screenshot_tweet(tweet_id, tweet):
+def screenshot_tweet(tweet_id):
     # Take screenshot or use cached screenshot
     image_cache_id = f"screenshot-{tweet_id}.jpg"
     image_bytes = tweet_cache.get(image_cache_id)
     if image_bytes is None:
         print("No image cache found, fetching from screenshotone")
-        api_key = "Etdghs8VqhU5IQ"
+        api_key = os.getenv("SCREENSHOTONE_API_KEY")
         screenshot_url = f"https://api.screenshotone.com/take?access_key={api_key}&url=https%3A%2F%2Fwww.twitter-95.com%2Ftweet%2F{tweet_id}%3Frender_as_og%3Dtrue&full_page=false&viewport_width=800&viewport_height=450&device_scale_factor=3&format=jpg&image_quality=80&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=false&block_trackers=true&delay=3&timeout=60"
         response = requests.get(screenshot_url)
         if response.status_code == 200:
