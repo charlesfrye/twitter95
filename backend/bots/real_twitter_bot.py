@@ -13,7 +13,7 @@ image = modal.Image.debian_slim(python_version="3.11")\
 app = modal.App(
     "repost-bot",
     image=image,
-    secrets=[modal.Secret.from_name("twitter-api")]
+    secrets=[modal.Secret.from_name("twitter-api"), modal.Secret.from_name("screenshotone-api")]
 )
 
 from datetime import datetime
