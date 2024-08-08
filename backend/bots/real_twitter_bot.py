@@ -3,12 +3,16 @@ import common
 from bots.common import Client
 from datetime import datetime
 import math
+import requests
+from bots.real_twitter.client import post_to_real_twitter
 
-image = modal.Image.debian_slim(python_version="3.11").pip_install("aiohttp==3.9.5")
+image = modal.Image.debian_slim(python_version="3.11")\
+    .pip_install("aiohttp==3.9.5", "requests==2.32.3", "tweepy==4.14.0")
 
 app = modal.App(
     "repost-bot",
-    image=image
+    image=image,
+    secrets=[modal.Secret.from_name("twitter-api")]
 )
 
 from datetime import datetime
@@ -55,7 +59,7 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
 
     return virality_scores
 
-prev_tweets = modal.Dict.from_name("repost-bot-tweet-log", create_if_missing=True)
+tweet_cache = modal.Dict.from_name("repost-bot-tweet-log", create_if_missing=True)
 
 @app.function(
     schedule=modal.Period(minutes=60),
@@ -63,22 +67,16 @@ prev_tweets = modal.Dict.from_name("repost-bot-tweet-log", create_if_missing=Tru
 def go(
     dryrun: bool = False,
     fake_time: datetime|None = None,
-    verbose: bool = True,
 ):
     if fake_time is None:
         # list exports on common module
         fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
+    
     tweets = Client.read_all_tweets.remote(limit=500)
-    if verbose:
-        print(f"Read last {len(tweets)} tweets")
+    
+    print(f"Read last {len(tweets)} tweets")
     virality = calculate_virality(tweets, current_fake_time)
-
-
-    # todo this code is fucked
-    # for all virality scores, we want to find the "parent" tweet
-    # we want to find the highest virality score tweet where the parent tweet is also a quote
-    # that parent tweet may not exist in our limited scan of tweets
 
     # ok supermaven ai model, implement this
     def get_tweet_by_id(tweet_id, tweets):
@@ -90,9 +88,9 @@ def go(
     # sort by virality score
     virality = sorted(virality.items(), key=lambda x: x[1], reverse=True)
 
-    viral_tweet = None
-    viral_tweet_id = None
-    for tweet_id, virality_score in virality:
+    viral_tweet = {}
+    viral_tweet_id = {}
+    for tweet_id, _ in virality:
         quoted_tweet = get_tweet_by_id(tweet_id, tweets)
         if quoted_tweet is None:
             # tweet doesn't exist in our limited scan of tweets
@@ -107,23 +105,42 @@ def go(
         break
 
     print("Found most viral tweet:", viral_tweet)
+    author = Client.get_user_by_id.remote(viral_tweet["author_id"])
 
-    if viral_tweet_id in prev_tweets:
+    if viral_tweet_id in tweet_cache:
         print(f"Already reposted. Skipping.")
         return
+    
     if dryrun:
-        print(f"would have reposted the following tweet:\n{viral_tweet['text']}")
+        print(f"Would have reposted the following tweet:\n{viral_tweet['text']}")
     else:
-        repost_tweet(viral_tweet_id, viral_tweet, dryrun, verbose)
+        image_bytes = screenshot_tweet(viral_tweet_id, viral_tweet)
+        post_to_real_twitter(viral_tweet, author, image_bytes)
+        tweet_cache[viral_tweet_id] = True
+    
 
-def repost_tweet(tweet_id, tweet, dryrun, verbose):
-    print(f"oh, a hit tweet:\n{tweet}")
+def screenshot_tweet(tweet_id, tweet):
+    # Take screenshot or use cached screenshot
+    image_cache_id = f"screenshot-{tweet_id}.jpg"
+    image_bytes = tweet_cache.get(image_cache_id)
+    if image_bytes is None:
+        print("No image cache found, fetching from screenshotone")
+        api_key = "Etdghs8VqhU5IQ"
+        screenshot_url = f"https://api.screenshotone.com/take?access_key={api_key}&url=https%3A%2F%2Fwww.twitter-95.com%2Ftweet%2F{tweet_id}%3Frender_as_og%3Dtrue&full_page=false&viewport_width=800&viewport_height=450&device_scale_factor=3&format=jpg&image_quality=80&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=false&block_trackers=true&delay=3&timeout=60"
+        response = requests.get(screenshot_url)
+        if response.status_code == 200:
+            image_bytes = response.content
+            tweet_cache[image_cache_id] = image_bytes
+        else:
+            raise Exception(f"Error fetching image: {response.status_code}")
+    else: 
+        print("Image cache found, not fetching from screenshotone")
 
+    return image_bytes
 
 @app.local_entrypoint()
 def main(
     dryrun: bool = True,
     fake_time: datetime|None = None,
-    verbose: bool = True,
 ):
-    go.remote(dryrun=dryrun, fake_time=fake_time, verbose=verbose)
+    go.remote(dryrun=dryrun, fake_time=fake_time)
