@@ -34,9 +34,10 @@ const GlobalStyles = createGlobalStyle`
 function App() {
   const leftSidebarOptions = [
     { text: "Timeline", path: "/timeline" },
+    { text: "Time Travel", path: "/time-travel" },
     { text: "About", path: "/" },
   ];
-
+  
   const rightSidebarOptions = [];
 
   // we hack in a query param to render images in fixed dimensions for use by url screenshotting api as a pseudo og image
@@ -54,7 +55,6 @@ function App() {
     );
   }
 
-
   return (
     <ErrorBoundary>
       <MetaTags />
@@ -62,7 +62,7 @@ function App() {
       <ThemeProvider theme={original}>
         <GlobalStyles />
         <div className="app">
-          <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
+          <Sidebar className="sidebarLeft" options={leftSidebarOptions}/>
           <div className="middle">
             <Outlet />
           </div>

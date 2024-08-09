@@ -7,6 +7,7 @@ import Feed from "./components/Feed.jsx";
 import HashtagFeed from "./components/HashtagFeed.jsx";
 import HomePage from "./components/HomePage.jsx";
 import TweetPage from "./components/TweetPage.jsx";
+import TimeTravel from "./components/TimeTravel.jsx";
 import "./App.css";
 
 const router = createBrowserRouter([
@@ -25,6 +26,9 @@ const router = createBrowserRouter([
       {
         path: "timeline",
         element: <Feed />,
+      },
+      { path: "time-travel", 
+        element: <TimeTravel /> 
       },
       {
         path: "hashtag/:hashtagText",
