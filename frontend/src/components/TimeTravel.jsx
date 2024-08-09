@@ -23,7 +23,7 @@ function TimeTravel() {
     if (attemptedFakeTime > maxFakeTime) {
       setError("Sorry, the simulation has only run until " + maxFakeTime.toDateString());
       
-      // clear after a second
+      // clear after a bit
       setTimeout(() => {
         setError(null);
       }, 5000);
