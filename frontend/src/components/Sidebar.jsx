@@ -2,7 +2,7 @@ import "./Sidebar.css";
 /* eslint-disable react/prop-types */
 import SidebarOption from "./SidebarOption";
 
-function Sidebar({ options, className, children }) {
+function Sidebar({ options, className, children}) {
   return (
     <div className={`sidebar ${className}`}>
       {children}
