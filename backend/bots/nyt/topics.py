@@ -56,7 +56,12 @@ async def post_nyt_articles(
                                 bots.common.Client.create_tweet.remote(
                                     author_id=bot_id,
                                     text=text,
-                                    fake_time=fake_time.isoformat(),
+                                    fake_time=(
+                                        fake_time
+                                        + timedelta(
+                                            hours=12
+                                        )  # offset topics bots from frontpage by 12 hours
+                                    ).isoformat(),
                                 )
                                 print("posted", text)
                             posted += 1
