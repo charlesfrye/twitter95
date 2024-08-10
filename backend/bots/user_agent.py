@@ -124,7 +124,7 @@ def get_timeline(user_name=None, fake_time=None, limit=10):
     return timeline
 
 
-def get_posts(user_name=None, fake_time=None, limit=10):
+def get_posts(user_name=None, fake_time=None, limit=5):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
