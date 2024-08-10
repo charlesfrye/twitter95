@@ -1,3 +1,4 @@
+import BioContent from "./BioContent";
 import PropTypes from "prop-types";
 
 function User({ user, bio }) {
@@ -13,9 +14,7 @@ function User({ user, bio }) {
         style={{ width: 128, height: 128 }}
       />
       <div className="user-info">
-        {bio ? (
-          <div className="user-bio text-white text-xl">{bio.content}</div>
-        ) : null}
+        {bio ? <BioContent bio={bio} /> : null}
         <div className="block text-left m-4">
           <div className="username text-white">@{user.user_name}</div>
           <div className="displayName text-white">{user.display_name}</div>
