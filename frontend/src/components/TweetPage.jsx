@@ -4,45 +4,48 @@ import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
 
 function TweetPage() {
-    // pull tweetID from url /tweet/:tweetId?render_as_og=true
-    const tweetId = useParams().tweetId;
-    
-    const queryParams = new URLSearchParams(location.search);
-    const render_as_og = queryParams.get("render_as_og");
+  // pull tweetID from url /tweet/:tweetId?render_as_og=true
+  const tweetId = useParams().tweetId;
 
-    // fetch tweet from backend
-    const [tweet, setTweet] = useState(undefined);
-    
-    useEffect(() => {
-        async function fetchTweet() {
-            if (tweetId) {
-                const fetched_tweet = await getTweet(tweetId);
-                setTweet(fetched_tweet);
-                console.log(fetched_tweet);
-            } else {
-                // redirect to home page
-                window.location.href = "/timeline";
-            }
-        }
-        fetchTweet();
-    }, [tweetId]);
+  const queryParams = new URLSearchParams(location.search);
+  const render_as_og = queryParams.get("render_as_og");
 
-    if (render_as_og) {
-        return (
-            <div className="absolute top-0 left-0 w-[800px] h-[450px]">
-                <div className="flex justify-center items-center h-full">
-                    <div className="h-fit scale-125">
-                        {tweet ? <Tweet tweet={tweet} showStats={true} showQuoted={false} /> : <p>Loading...</p>}
-                    </div>
-                </div>
-            </div>
-        );
+  // fetch tweet from backend
+  const [tweet, setTweet] = useState(undefined);
+
+  useEffect(() => {
+    async function fetchTweet() {
+      if (tweetId) {
+        const fetched_tweet = await getTweet(tweetId);
+        setTweet(fetched_tweet);
+      } else {
+        // redirect to home page
+        window.location.href = "/timeline";
+      }
     }
+    fetchTweet();
+  }, [tweetId]);
 
+  if (render_as_og) {
     return (
-        <div className="banner align-middle mt-4">
-            {tweet ? <Tweet tweet={tweet} showStats={true} /> : <p>Loading...</p>}
+      <div className="absolute top-0 left-0 w-[800px] h-[450px]">
+        <div className="flex justify-center items-center h-full">
+          <div className="h-fit scale-125">
+            {tweet ? (
+              <Tweet tweet={tweet} showStats={true} showQuoted={false} />
+            ) : (
+              <p>Loading...</p>
+            )}
+          </div>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="banner align-middle mt-4">
+      {tweet ? <Tweet tweet={tweet} showStats={true} /> : <p>Loading...</p>}
+    </div>
+  );
 }
 export default TweetPage;
