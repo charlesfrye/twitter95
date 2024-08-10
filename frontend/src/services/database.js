@@ -54,6 +54,11 @@ const getTweet = async (tweetId) => {
   return tweet;
 };
 
+const getOgImageUrl = (tweetId) => {
+  console.log("OG Image URL", `${baseUrl}/tweet/${tweetId}/og.jpg`);
+  return `${baseUrl}/tweet/${tweetId}/og.jpg`;
+}
+
 const getPosts = async (userName, fakeTime, limit) => {
   const params = new URLSearchParams();
   params.append("user_name", userName);
@@ -95,4 +100,4 @@ const getTrending = async (fakeTime, limit) => {
   return trendingHashtags;
 };
 
-export { getTimeline, getTweet, getPosts, getProfile, getHashtag, getTrending, toFake };
+export { getTimeline, getTweet, getPosts, getProfile, getHashtag, getTrending, toFake, getOgImageUrl };
