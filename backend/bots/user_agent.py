@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 import textwrap
 from typing import Optional, Union
 import warnings
@@ -41,7 +42,7 @@ class DoNothing(BaseModel):
 
 @app.function(
     image=image,
-    secrets=[modal.Secret.from_name("openai-secret")],
+    secrets=[modal.Secret.from_name("vllm-secret")],
     schedule=modal.Period(minutes=10),
 )
 def go(
@@ -203,7 +204,7 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
 
     This is a simulation, so it is okay to be mean or angry or sad. It's okay to fight or to use foul language.
 
-    Triggering a debate or a discussion is good. It's okay to be controversial. Make sure your character is consistent with the profile you've been given.
+    Triggering a debate or a discussion is good. It's okay to be controversial. Make sure your character is consistent with the profile you've been given. The worst thing you can be is boring.
 
     If you choose to write a QuoteTweet:
         - Pick a Tweet you think your character would be interested in. Include the TweetID# in your response.
@@ -225,12 +226,17 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
 
     prompt = textwrap.dedent(prompt)
 
-    client = instructor.from_openai(OpenAI())
+    client = OpenAI(api_key=os.environ["VLLM_API_KEY"])
+    client.base_url = (
+        "https://ex-twitter--vllm-openai-compatible-405b-serve.modal.run/v1"
+    )
+    client = instructor.from_openai(client)
 
     action = client.chat.completions.create(
-        model="gpt-4o-2024-05-13",
+        model="/llamas/meta-llama/Meta-Llama-3.1-405B-Instruct-FP8",
         response_model=Union[QuoteTweet, DoNothing],
-        temperature=0.3,
+        temperature=0.7,
+        frequency_penalty=1.0,
         messages=[{"role": "user", "content": prompt}],
     )
 
