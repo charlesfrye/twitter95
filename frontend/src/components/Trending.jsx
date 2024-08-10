@@ -24,8 +24,6 @@ function Trending() {
     fetchTrending();
   }, [fakeTime]);
 
-  console.log(trending);
-
   return (
     <div className="Trending">
       {isLoading && <Loading />}
