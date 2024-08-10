@@ -65,11 +65,15 @@ def accept_article(article):
     try:
         if (
             article["type_of_material"] in ["News", "Op-Ed"]  # news
-            and article["print_section"] == "A"  # front section
+            and article["print_section"] in ["A", "1"]  # front section
             and len(article["lead_paragraph"].strip()) >= 20
             and "was married" not in article["lead_paragraph"]
         ):
-            if article["headline"]["main"].strip().upper() != "NO HEADLINE":
+            if article["headline"]["main"].strip().upper() not in [
+                "NO HEADLINE",
+                "INSIDE",
+                "NEWS SUMMARY",
+            ]:
                 return True
         else:
             print("article skipped")
@@ -79,4 +83,6 @@ def accept_article(article):
 
 @app.local_entrypoint()
 def main(fake_time: str = None, lookahead_hours: int = None, dryrun: bool = True):
-    post_nyt_articles.remote(fake_time, lookahead_hours, dryrun=dryrun)
+    post_nyt_articles.remote(
+        datetime.fromisoformat(fake_time), lookahead_hours, dryrun=dryrun
+    )
