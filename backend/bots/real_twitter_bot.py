@@ -1,28 +1,31 @@
-import modal
-import common
-from bots.common import Client
 from datetime import datetime
 import math
-import requests
-import os
+
+import modal
+
+import common
+from bots.common import Client
 from bots.real_twitter.client import post_to_real_twitter
 
-image = modal.Image.debian_slim(python_version="3.11")\
-    .pip_install("aiohttp==3.9.5", "requests==2.32.3", "tweepy==4.14.0")
+
+image = modal.Image.debian_slim(python_version="3.11").pip_install(
+    "aiohttp==3.9.5", "requests==2.32.3", "tweepy==4.14.0"
+)
 
 app = modal.App(
     "repost-bot",
     image=image,
-    secrets=[modal.Secret.from_name("twitter-api"), modal.Secret.from_name("screenshotone-api")]
+    secrets=[
+        modal.Secret.from_name("twitter-api"),
+        modal.Secret.from_name("screenshotone-api"),
+    ],
 )
 
-from datetime import datetime
-import math
 
 def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
-    """"
+    """ "
     Calculates the virality score for each tweet in the list of tweets.
-    
+
     decay_factor: how much we decay the weight of each quoted tweet per hour since it was quoted.
     """
     virality_scores = {}
@@ -46,8 +49,12 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
         score = 0
         for fake_time in fake_times:
             # the more recent the time, the higher we weight it in the score
-            time_diff = (current_fake_time - fake_time).total_seconds() / 3600 # hours since
-            weight = math.exp(-decay_factor * time_diff) # the higher the diff, the lower the weight
+            time_diff = (
+                current_fake_time - fake_time
+            ).total_seconds() / 3600  # hours since
+            weight = math.exp(
+                -decay_factor * time_diff
+            )  # the higher the diff, the lower the weight
             score += weight
 
         virality_scores[tweet_id] = score
@@ -60,22 +67,24 @@ def calculate_virality(tweets, current_fake_time, decay_factor=0.05):
 
     return virality_scores
 
+
 tweet_cache = modal.Dict.from_name("repost-bot-tweet-log", create_if_missing=True)
+
 
 @app.function(
     schedule=modal.Period(minutes=60),
 )
 def go(
     dryrun: bool = False,
-    fake_time: datetime|None = None,
+    fake_time: datetime | None = None,
 ):
     if fake_time is None:
         # list exports on common module
         fake_time = common.to_fake(datetime.utcnow())
     current_fake_time = fake_time
-    
+
     tweets = Client.read_all_tweets.remote(limit=500)
-    
+
     print(f"Read last {len(tweets)} tweets")
     virality = calculate_virality(tweets, current_fake_time)
 
@@ -111,7 +120,7 @@ def go(
     if viral_tweet_id in tweet_cache:
         print(f"Already reposted. Skipping.")
         return
-    
+
     if dryrun:
         print(f"Would have reposted the following tweet:\n{viral_tweet['text']}")
     else:
@@ -119,9 +128,10 @@ def go(
         post_to_real_twitter(viral_tweet, author, image_bytes)
         tweet_cache[viral_tweet_id] = True
 
+
 @app.local_entrypoint()
 def main(
     dryrun: bool = True,
-    fake_time: datetime|None = None,
+    fake_time: datetime | None = None,
 ):
     go.remote(dryrun=dryrun, fake_time=fake_time)
