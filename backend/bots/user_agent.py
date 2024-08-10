@@ -11,6 +11,9 @@ import common
 from bots.common import Client
 
 
+MINUTES = 60
+
+
 image = modal.Image.debian_slim(python_version="3.11").pip_install(
     "openai", "instructor"
 )
@@ -44,6 +47,7 @@ class DoNothing(BaseModel):
     image=image,
     secrets=[modal.Secret.from_name("vllm-secret")],
     schedule=modal.Period(minutes=10),
+    timeout=60 * MINUTES,
 )
 def go(
     user_name: Optional[int] = None,
