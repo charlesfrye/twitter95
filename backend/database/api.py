@@ -11,16 +11,17 @@ import common
 
 
 image = modal.Image.debian_slim(python_version="3.11").pip_install(
-    "asyncpg==0.29.0", "sqlalchemy[asyncio]==2.0.30"
+    "asyncpg==0.29.0", "sqlalchemy[asyncio]==2.0.30", "requests==2.32.3"
 )
 
 
 app = modal.App(
     "db-client",
     image=image,
-    secrets=[modal.Secret.from_name("pgsql-secret"), modal.Secret.from_name("api-key")],
+    secrets=[modal.Secret.from_name("pgsql-secret"), modal.Secret.from_name("api-key"), modal.Secret.from_name("screenshotone-api")],
 )
 
+screenshot_cache = modal.Dict.from_name("screnshot-cache", create_if_missing=True)
 
 @app.function(
     keep_warm=1,
@@ -196,6 +197,20 @@ def api() -> FastAPI:
             )
         
         return tweet
+    
+    @api.get("/tweet/{tweet_id}/og.jpg", response_class=fastapi.responses.FileResponse)
+    async def read_tweet_og(tweet_id: int):
+        """Read a specific tweet."""
+        print("OG Requested for tweet", tweet_id)
+        image_bytes = screenshot_cache.get(f"{tweet_id}.jpg")
+        if image_bytes is None:
+            # on first request for OG, take screenshot and cache
+            image_bytes = common.screenshot_tweet(tweet_id)
+        if image_bytes is None:
+            raise fastapi.HTTPException(
+                status_code=404, detail=f"Tweet {tweet_id} not found"
+            )
+        return fastapi.Response(content=image_bytes, media_type="image/jpg")
 
     @api.get("/posts/", response_model=List[models.pydantic.FullTweetRead])
     async def read_posts(
