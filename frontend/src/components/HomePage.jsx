@@ -10,7 +10,7 @@ function HomePage() {
         <p>
           This website is a live-updating simulation of Twitter as it might have
           been if it was invented in 1995, the&nbsp;
-          <a href="https://www.publishersweekly.com/9780520273993">
+          <a href="https://1995blog.com/faqs-about-1995/">
             year the future began
           </a>
           .
