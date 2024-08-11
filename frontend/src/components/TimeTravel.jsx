@@ -1,11 +1,20 @@
 import { DatePicker__UNSTABLE } from "react95";
-import { useState, useEffect } from "react";
-import { toFake } from "../services/database";
+import { useState, useEffect, useContext } from "react";
+import { fakeNow, formatTime } from "../services/database";
+import { FakeTimeContext } from './FakeTimeContext';
+import { useNavigate } from "react-router-dom";
 
 function TimeTravel() {
+  const navigate = useNavigate();
+
+  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+  // any url param will set the fakeTime in the browsing session
   const queryParams = new URLSearchParams(location.search);
-  let fakeTime = queryParams.get("fakeTime");
-  const maxFakeTime = toFake(new Date());
+  if (queryParams.get("fakeTime")) {
+    setFakeTime(queryParams.get("fakeTime"));
+  }
+
+  const maxFakeTime = fakeNow();
 
   const startingDate = fakeTime
     ? fakeTime.split("T")[0]
@@ -34,8 +43,12 @@ function TimeTravel() {
       return;
     }
 
-    const newFakeTime = new Date(date);
-    window.location.href = "/timeline?fakeTime=" + newFakeTime.toISOString();
+    // date is UTC like 1995-08-06
+    // add 23hr, 59min, 59sec, 999ms to the end of the day
+    let newFakeTime = new Date(`${date}T00:00:00.000Z`);
+    newFakeTime.setUTCHours(23, 59, 59, 999);
+    setFakeTime(formatTime(newFakeTime.toISOString()));
+    navigate("/timeline");
   }
 
   return (

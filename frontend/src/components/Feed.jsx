@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { getTimeline } from "../services/database";
+import { FakeTimeContext } from './FakeTimeContext';
 import { useLocation } from "react-router-dom";
 import Tweet from "./Tweet";
-import TweetCount from "./TweetCount";
 import Loading from "./Loading";
 
 function Feed() {
@@ -10,8 +10,14 @@ function Feed() {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+
+  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+  // any url param will set the fakeTime in the browsing session
   const queryParams = new URLSearchParams(location.search);
-  const fakeTime = queryParams.get("fakeTime");
+  if (queryParams.get("fakeTime")) {
+    setFakeTime(queryParams.get("fakeTime"));
+  }
+
   const userId = queryParams.get("userId");
 
   useEffect(() => {

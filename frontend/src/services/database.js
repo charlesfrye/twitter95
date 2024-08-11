@@ -6,6 +6,10 @@ const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 
 const deltaMilliseconds = 915235088 * 1000; // time from 1995 to 2024
 
+function fakeNow() {
+  return toFake(formatTime(new Date().toISOString()));
+}
+
 function toFake(realTime) {
   const realDate = new Date(realTime);
   const fakeTime = new Date(realDate.getTime() - deltaMilliseconds);
@@ -19,7 +23,10 @@ function toReal(fakeTime) {
 }
 
 function formatTime(time) {
-  return time.slice(0, -1);
+  if (time.slice(-1) === "Z") {
+    return time.slice(0, -1);
+  }
+  return time;
 }
 
 const fetchData = async (url) => {
@@ -108,4 +115,6 @@ export {
   getTrending,
   toFake,
   getOgImageUrl,
+  fakeNow,
+  formatTime
 };

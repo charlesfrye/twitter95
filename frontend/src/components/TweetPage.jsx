@@ -2,8 +2,10 @@ import { useParams } from "react-router-dom";
 import Tweet from "./Tweet";
 import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function TweetPage() {
+  const navigate = useNavigate();
   // pull tweetID from url /tweet/:tweetId?render_as_og=true
   const tweetId = useParams().tweetId;
 
@@ -20,7 +22,7 @@ function TweetPage() {
         setTweet(fetched_tweet);
       } else {
         // redirect to home page
-        window.location.href = "/timeline";
+        navigate("/timeline");
       }
     }
     fetchTweet();
