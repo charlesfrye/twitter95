@@ -40,7 +40,7 @@ function App() {
 
   const leftSidebarOptions = [
     { text: "Timeline", path: "/timeline" },
-    { text: "Time Travel", path: "/time-travel" },
+    { text: "Search", path: "/time-travel" },
     { text: "About", path: "/" },
   ];
 
