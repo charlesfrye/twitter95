@@ -90,7 +90,10 @@ def parallel_backfill(
         ]
 
         for handle in handles:
-            handle.get()
+            try:
+                handle.get()
+            except Exception as e:
+                print(f"error: {e}")
     else:
         if verbose:
             print(
