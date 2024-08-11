@@ -43,7 +43,7 @@ function TimeTravel() {
       return;
     }
 
-    console.log("date", date); // treat this as UTC
+    // date is UTC like 1995-08-06
     // add 23hr, 59min, 59sec, 999ms to the end of the day
     let newFakeTime = new Date(`${date}T00:00:00.000Z`);
     newFakeTime.setUTCHours(23, 59, 59, 999);

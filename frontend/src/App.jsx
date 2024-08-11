@@ -82,7 +82,6 @@ function App() {
         <div className="app">
           <Sidebar className="sidebarLeft" options={leftSidebarOptions}/>
           <div className="middle">
-            {/* /* make this a sticky footer  */}
             {displayTimeTravel && <div className="fixed bottom-0 left-0 w-full z-50">
               <p className="bg-[#7FEE64] py-1 text-black ">
                 Currently viewing from {new Date(formatTime(fakeTime)).toDateString()}, 
