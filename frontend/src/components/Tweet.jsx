@@ -6,11 +6,11 @@ import {
   MenuList,
   MenuListItem as React95MenuListItem,
   Separator,
-  Button
+  Button,
 } from "react95";
 import TweetContent from "./TweetContent";
 import { useContext } from "react";
-import { FakeTimeContext } from './FakeTimeContext';
+import { FakeTimeContext } from "./FakeTimeContext";
 
 const MenuListItem = styled(React95MenuListItem)`
   &:hover {
@@ -46,17 +46,20 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
   }
 
   const handleProfileClick = () => {
-    fakeTime = tweet.fake_time + 1000;
-    navigate(`/profile/${author.user_name}?fakeTime=${fakeTime}`);
+    const date = new Date(`${tweet.fake_time}Z`);
+    date.setUTCSeconds(date.getUTCSeconds() + 1);
+    const newFakeTime = date.toISOString().replace("Z", "");
+    navigate(`/profile/${author.user_name}?fakeTime=${newFakeTime}`);
   };
 
   const handleRetweetClick = () => {
     fakeTime = tweet.fake_time + 1000;
-    const url = `https://twitter-95.com/tweet/${tweet.tweet_id}`
-    const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`
-    const tweetContent = `https://x.com/intent/post?text=${text}`
-    window.open(tweetContent, '_blank');``
-  }
+    const url = `https://twitter-95.com/tweet/${tweet.tweet_id}`;
+    const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`;
+    const tweetContent = `https://x.com/intent/post?text=${text}`;
+    window.open(tweetContent, "_blank");
+    ``;
+  };
 
   return (
     tweet && (
@@ -97,7 +100,7 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
           <div className="flex items-center justify-center">
             <div className="flex space-x-10">
               {showStats && <p className="py-[5px]">QTs: {tweet.quotes}</p>}
-              <Button onClick={handleRetweetClick}>Retweet</Button> 
+              <Button onClick={handleRetweetClick}>Retweet</Button>
             </div>
           </div>
         </MenuList>
