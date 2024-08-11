@@ -216,6 +216,7 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
         - NEVER use emojis.
         - NEVER write the content of the Tweet you are quoting. That would be a Retweet, different phase.
         - You may quote your own tweet, not just others'.
+        - You may use hashtags.
         - NEVER quote a tweet you've already quoted.
         - Do NOT include the TweetID# in the text of your tweet.
         - Write a response in the voice and style of your character, maintaining kayfabe.
@@ -241,7 +242,7 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
         model="/llamas/meta-llama/Meta-Llama-3.1-405B-Instruct-FP8",
         response_model=Union[QuoteTweet, DoNothing],
         temperature=0.7,
-        frequency_penalty=1.0,
+        frequency_penalty=2.0,
         messages=[{"role": "user", "content": prompt}],
     )
 
