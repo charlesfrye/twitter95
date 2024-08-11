@@ -8,8 +8,8 @@ import original from "react95/dist/themes/original";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Trending from "./components/Trending";
 import MetaTags from "./components/MetaTags";
-import { FakeTimeContext } from './components/FakeTimeContext';
-import { useContext, useEffect} from "react";
+import { FakeTimeContext } from "./components/FakeTimeContext";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ms_sans_serif from "react95/dist/fonts/ms_sans_serif.woff2";
@@ -43,7 +43,7 @@ function App() {
     { text: "Time Travel", path: "/time-travel" },
     { text: "About", path: "/" },
   ];
-  
+
   const rightSidebarOptions = [];
 
   // we hack in a query param to render images in fixed dimensions for use by url screenshotting api as a pseudo og image
@@ -65,7 +65,7 @@ function App() {
   const currentFakeTime = fakeNow();
   let displayTimeTravel = false;
   const hr = 60 * 60 * 1000;
-  if (new Date(fakeTime) < currentFakeTime - hr){
+  if (new Date(fakeTime) < currentFakeTime - hr) {
     displayTimeTravel = true;
   }
 
@@ -78,13 +78,14 @@ function App() {
   // cmd+k to go to time travel
   useEffect(() => {
     const handleKeyDown = (event) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
         navigate("/time-travel");
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -95,17 +96,22 @@ function App() {
       <ThemeProvider theme={original}>
         <GlobalStyles />
         <div className="app">
-          <Sidebar className="sidebarLeft" options={leftSidebarOptions}/>
+          <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
           <div className="middle">
-            {displayTimeTravel && <div className="fixed bottom-0 left-0 w-full z-50">
-              <p className="bg-[#7FEE64] py-1 text-black ">
-                Currently viewing from {new Date(formatTime(fakeTime)).toDateString()}, 
-                <a className="underline cursor-pointer hover:text-gray-500 ml-1" onClick={resetTimeTravel}>
-                click here to reset
-                </a>
-              </p>
-            </div> 
-            }
+            {displayTimeTravel && (
+              <div className="fixed bottom-0 left-0 w-full z-50">
+                <p className="bg-[#7FEE64] py-1 text-black ">
+                  Currently viewing from{" "}
+                  {new Date(formatTime(fakeTime)).toDateString()},
+                  <a
+                    className="underline cursor-pointer hover:text-gray-500 ml-1"
+                    onClick={resetTimeTravel}
+                  >
+                    click here to reset
+                  </a>
+                </p>
+              </div>
+            )}
             <Outlet />
           </div>
           <Sidebar className="sidebarRight" options={rightSidebarOptions}>
