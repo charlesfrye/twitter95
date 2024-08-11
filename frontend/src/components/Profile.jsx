@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import Tweet from "./Tweet";
 import User from "./User";
 import { getProfile, getPosts } from "../services/database";
 import Loading from "./Loading";
+import { FakeTimeContext } from './FakeTimeContext';
 
 function Profile() {
   const location = useLocation();
@@ -11,8 +12,13 @@ function Profile() {
   const [profile, setProfile] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+
+  // any url param will set the fakeTime in the browsing session
   const queryParams = new URLSearchParams(location.search);
-  const fakeTime = queryParams.get("fakeTime");
+  if (queryParams.get("fakeTime")) {
+    setFakeTime(queryParams.get("fakeTime"));
+  }
 
   useEffect(() => {
     async function fetchData() {

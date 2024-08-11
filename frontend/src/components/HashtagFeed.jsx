@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { getHashtag } from "../services/database";
 import Tweet from "./Tweet";
-import TweetCount from "./TweetCount";
+import { FakeTimeContext } from './FakeTimeContext';
 import Loading from "./Loading";
 
 function HashtagFeed() {
@@ -11,8 +11,13 @@ function HashtagFeed() {
   const [tweets, setTweets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+  // any url param will set the fakeTime in the browsing session
   const queryParams = new URLSearchParams(location.search);
-  const fakeTime = queryParams.get("fakeTime");
+  if (queryParams.get("fakeTime")) {
+    setFakeTime(queryParams.get("fakeTime"));
+  }
+
   const limit = queryParams.get("limit");
 
   useEffect(() => {

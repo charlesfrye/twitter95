@@ -9,6 +9,8 @@ import {
   Button
 } from "react95";
 import TweetContent from "./TweetContent";
+import { useContext } from "react";
+import { FakeTimeContext } from './FakeTimeContext';
 
 const MenuListItem = styled(React95MenuListItem)`
   &:hover {
@@ -36,8 +38,12 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
   const location = useLocation();
   const author = tweet.author;
 
+  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+  // any url param will set the fakeTime in the browsing session
   const queryParams = new URLSearchParams(location.search);
-  let fakeTime = queryParams.get("fakeTime");
+  if (queryParams.get("fakeTime")) {
+    setFakeTime(queryParams.get("fakeTime"));
+  }
 
   const handleProfileClick = () => {
     fakeTime = tweet.fake_time + 1000;

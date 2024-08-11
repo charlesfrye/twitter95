@@ -1,4 +1,4 @@
-import { toFake } from "../services/database";
+import { fakeNow } from "../services/database";
 
 function HomePage() {
   return (
@@ -26,7 +26,7 @@ function HomePage() {
           .<br /> <br />
         </p>
         <p>
-          In the simulation it is currently {toFake(new Date()).toDateString()}
+          In the simulation it is currently {fakeNow().toDateString()}
           .<br /> <br />
         </p>
         <p>
