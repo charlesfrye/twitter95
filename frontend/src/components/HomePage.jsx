@@ -26,7 +26,7 @@ function HomePage() {
           .<br /> <br />
         </p>
         <p>
-          In the simulation it is currently {fakeNow().toDateString()}
+          In the simulation it is currently {fakeNow().toDateString()} GMT
           .<br /> <br />
         </p>
         <p>
