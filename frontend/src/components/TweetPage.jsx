@@ -1,5 +1,5 @@
 "use client";
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from "next/navigation";
 import Tweet from "./Tweet";
 import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ function TweetPage({ tweetID }) {
       }
     }
     fetchTweet();
-  }, [tweetID]);
+  }, [tweetID, router]);
 
   if (render_as_og) {
     return (
