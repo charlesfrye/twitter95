@@ -10,9 +10,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "next": "^14.2.5",
     "react": "^18",
     "react-dom": "^18",
-    "next": "14.2.5",
     "react-helmet": "^6.1.0",
     "react-icons": "^5.0.1",
     "react-router-dom": "^6.22.3",
@@ -20,9 +20,8 @@
     "styled-components": "^6.1.8"
   },
   "devDependencies": {
+    "eslint-config-next": "14.2.5",
     "postcss": "^8",
-    "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5"
+    "tailwindcss": "^3.4.1"
   }
 }
