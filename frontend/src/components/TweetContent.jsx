@@ -1,3 +1,5 @@
+"use client";
+
 import "./Tweet.css";
 import RichText from "./RichText";
 import PropTypes from "prop-types";

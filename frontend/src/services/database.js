@@ -1,6 +1,6 @@
 const urlPrefix = "ex-twitter--db-client-api";
-const urlSuffix =
-  import.meta.env.VITE_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
+
+const urlSuffix = process.env.NEXT_PUBLIC_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
 
 const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 

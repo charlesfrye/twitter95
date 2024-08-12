@@ -1,3 +1,5 @@
+"use client";
+
 import BioContent from "./BioContent";
 import PropTypes from "prop-types";
 

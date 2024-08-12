@@ -1,10 +1,12 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useRouter } from 'next/navigation';
 
 function SidebarOption({ Icon, text, path }) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function handleClick() {
-    navigate(path);
+    router.push(path);
   }
 
   return (

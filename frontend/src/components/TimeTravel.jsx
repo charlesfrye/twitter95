@@ -1,11 +1,13 @@
+"use client";
+
 import { DatePicker__UNSTABLE } from "react95";
 import { useState, useEffect, useContext } from "react";
 import { fakeNow, formatTime } from "../services/database";
 import { FakeTimeContext } from './FakeTimeContext';
-import { useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
 
 function TimeTravel() {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
   // any url param will set the fakeTime in the browsing session
@@ -48,7 +50,7 @@ function TimeTravel() {
     let newFakeTime = new Date(`${date}T00:00:00.000Z`);
     newFakeTime.setUTCHours(23, 59, 59, 999);
     setFakeTime(formatTime(newFakeTime.toISOString()));
-    navigate("/timeline");
+    router.push("/timeline");
   }
 
   return (

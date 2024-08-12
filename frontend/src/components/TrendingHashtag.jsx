@@ -1,10 +1,12 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+
+import { useRouter } from 'next/navigation';
 
 function TrendingHashtag({ text }) {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   function handleClick() {
-    navigate(`/hashtag/${text.slice(1)}`);
+    router.push(`/hashtag/${text.slice(1)}`);
   }
 
   return (

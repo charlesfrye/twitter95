@@ -1,18 +1,19 @@
+"use client";
+
 import { useEffect, useState, useContext } from "react";
 import { getTrending } from "../services/database";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from 'next/navigation';
 import TrendingHashtag from "./TrendingHashtag";
 import Loading from "./Loading";
 import { FakeTimeContext } from './FakeTimeContext';
 
 function Trending() {
-  const location = useLocation();
   const [trending, setTrending] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
   // any url param will set the fakeTime in the browsing session
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = useSearchParams();
   if (queryParams.get("fakeTime")) {
     setFakeTime(queryParams.get("fakeTime"));
   }
