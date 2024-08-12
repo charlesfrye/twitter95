@@ -1,16 +1,16 @@
-'use client';
-
+"use client";
+import { Suspense } from "react";
 import ErrorBoundary from "./ErrorBoundary";
 import { ThemeProvider } from "styled-components";
-import { FakeTimeProvider } from './FakeTimeContext';
+import { FakeTimeProvider } from "./FakeTimeContext";
 import StartupSound from "./StartupSound";
 import original from "react95/dist/themes/original";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Trending from "./Trending";
 import MetaTags from "./MetaTags";
-import { FakeTimeContext } from './FakeTimeContext';
+import { FakeTimeContext } from "./FakeTimeContext";
 import { formatTime, fakeNow } from "../services/database";
 
 function LayoutContent({ children }) {
@@ -18,12 +18,26 @@ function LayoutContent({ children }) {
   const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
 
   const queryParams = useSearchParams();
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+        event.preventDefault();
+        router.push("/search");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   const render_as_og = queryParams.get("render_as_og");
   if (render_as_og) {
     // twitter renders 1600 px X 900 px, we'll halve that
     return (
       <ThemeProvider theme={original}>
-        <div className="app" style={{ width: '800px', height: '450px' }}>
+        <div className="app" style={{ width: "800px", height: "450px" }}>
           {children}
         </div>
       </ThemeProvider>
@@ -50,19 +64,6 @@ function LayoutContent({ children }) {
     setFakeTime(newFakeTime.toISOString());
     router.push("/timeline");
   }
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        event.preventDefault();
-        router.push("/search");
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   return (
     <>
@@ -113,7 +114,9 @@ export default function ClientLayout({ children }) {
       <FakeTimeProvider>
         <ThemeProvider theme={original}>
           <StartupSound />
-          <LayoutContent>{children}</LayoutContent>
+          <Suspense fallback={<div>Loading layout...</div>}>
+            <LayoutContent>{children}</LayoutContent>
+          </Suspense>
         </ThemeProvider>
       </FakeTimeProvider>
     </ErrorBoundary>
