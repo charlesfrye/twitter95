@@ -1,4 +1,10 @@
 import localFont from "next/font/local";
+
+export const viewport = {
+  width: "1024",
+  initialScale: 1,
+};
+
 import "./globals.css";
 import ClientLayout from "../components/ClientLayout";
 
