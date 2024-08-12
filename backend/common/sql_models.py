@@ -9,6 +9,7 @@ from sqlalchemy import (
     Table,
     Text,
 )
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, relationship
 
@@ -38,6 +39,12 @@ class Tweet(Base):
     quoted = Column(Integer, ForeignKey("tweets.tweet_id"), nullable=True)
     likes = Column(Integer, default=0)
     quotes = Column(Integer, default=0)
+
+    text_fts = Column(  # full-text search term count vector
+        TSVECTOR,
+        nullable=False,
+        default=None,
+    )
 
     author = relationship("User", foreign_keys=[author_id], back_populates="tweets")
     quoted_tweet = relationship("Tweet", remote_side=[tweet_id])

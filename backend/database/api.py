@@ -27,6 +27,20 @@ app = modal.App(
 
 screenshot_cache = modal.Dict.from_name("screnshot-cache", create_if_missing=True)
 
+NYT_BOTS = (
+    [3]  # NYT frontpage bot
+    + [  # topics bots
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+    ]
+)
+
 
 @app.function(
     keep_warm=1,
@@ -166,21 +180,7 @@ def api() -> FastAPI:
             if user_name is not None:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
             else:
-                query = query.where(
-                    models.sql.Tweet.author_id.notin_(
-                        [3]  # drop NYT frontpage bot from timeline
-                        + [  # drop topics bots too
-                            144,
-                            145,
-                            146,
-                            147,
-                            148,
-                            149,
-                            150,
-                            151,
-                        ]
-                    )
-                )
+                query = query.where(models.sql.Tweet.author_id.notin_(NYT_BOTS))
 
             result = await db.execute(query)
 
@@ -644,5 +644,42 @@ def api() -> FastAPI:
             result = await db.execute(text(query))
             # no commit, so auto-rollback of anything destructive and this is "safe"
             return {"result": [dict(row) for row in result.mappings()]}
+
+    @api.post(
+        "/search/",
+        dependencies=[fastapi.Depends(is_authenticated)],
+        response_model=List[models.pydantic.TweetRead],
+    )
+    async def search_tweets(
+        request: dict,
+        fake_time: Optional[datetime] = None,
+        limit: int = 10,
+    ):
+        """Search for tweets containing a specific string."""
+        query = request.get("query")
+        limit = min(limit, 1000)
+
+        if not query:
+            raise fastapi.HTTPException(
+                status_code=400, detail="No search query provided."
+            )
+
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
+
+        async with new_session() as db:
+            result = await db.execute(
+                select(models.sql.Tweet)
+                .where(models.sql.Tweet.text_fts.match(query))
+                .filter(models.sql.Tweet.fake_time <= fake_time)
+                .order_by(  # deprioritize NYT bots, then order by quote count
+                    models.sql.Tweet.author_id.in_(NYT_BOTS),
+                    desc(models.sql.Tweet.quotes),
+                )
+                .limit(limit)
+            )
+            tweets = result.scalars().all()
+
+        return list(tweets)
 
     return api
