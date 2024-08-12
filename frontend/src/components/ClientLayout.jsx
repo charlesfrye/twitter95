@@ -30,7 +30,7 @@ function LayoutContent({ children }) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [router]);
 
   const render_as_og = queryParams.get("render_as_og");
   if (render_as_og) {
