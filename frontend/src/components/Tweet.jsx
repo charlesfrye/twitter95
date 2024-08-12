@@ -3,12 +3,13 @@
 import "./Tweet.css";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import {
   MenuList,
   MenuListItem as React95MenuListItem,
   Separator,
   Button,
+  Counter,
 } from "react95";
 import TweetContent from "./TweetContent";
 import { useContext } from "react";
@@ -100,7 +101,12 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
 
           <div className="flex items-center justify-center">
             <div className="flex space-x-10">
-              {showStats && <p className="py-[5px]">QTs: {tweet.quotes}</p>}
+              {showStats && (
+                <div className="flex items-center justify-center space-x-5">
+                  <p className="text-xl">QTs:</p>
+                  <Counter value={tweet.quotes} minLength={3} />
+                </div>
+              )}
               <Button onClick={handleRetweetClick}>Retweet</Button>
             </div>
           </div>
