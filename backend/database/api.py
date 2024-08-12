@@ -18,10 +18,29 @@ image = modal.Image.debian_slim(python_version="3.11").pip_install(
 app = modal.App(
     "db-client",
     image=image,
-    secrets=[modal.Secret.from_name("pgsql-secret"), modal.Secret.from_name("api-key"), modal.Secret.from_name("screenshotone-api")],
+    secrets=[
+        modal.Secret.from_name("pgsql-secret"),
+        modal.Secret.from_name("api-key"),
+        modal.Secret.from_name("screenshotone-api"),
+    ],
 )
 
 screenshot_cache = modal.Dict.from_name("screnshot-cache", create_if_missing=True)
+
+NYT_BOTS = (
+    [3]  # NYT frontpage bot
+    + [  # topics bots
+        144,
+        145,
+        146,
+        147,
+        148,
+        149,
+        150,
+        151,
+    ]
+)
+
 
 @app.function(
     keep_warm=1,
@@ -161,43 +180,43 @@ def api() -> FastAPI:
             if user_name is not None:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
             else:
-                query = query.where(
-                    models.sql.Tweet.author_id != 3
-                )  # drop NYT bot from timeline
+                query = query.where(models.sql.Tweet.author_id.notin_(NYT_BOTS))
 
             result = await db.execute(query)
 
             tweets = result.scalars().all()
 
         return list(tweets)
-    
+
     @api.get("/tweet/{tweet_id}/", response_model=models.pydantic.FullTweetRead)
     async def read_tweet(tweet_id: int):
         """Read a specific tweet."""
         async with new_session() as db:
-            tweet_query = select(models.sql.Tweet, models.sql.User) \
+            tweet_query = (
+                select(models.sql.Tweet, models.sql.User)
                 .join(
                     models.sql.User,
                     models.sql.Tweet.author_id == models.sql.User.user_id,
-                ) \
-                .where(models.sql.Tweet.tweet_id == tweet_id) \
+                )
+                .where(models.sql.Tweet.tweet_id == tweet_id)
                 .options(
                     joinedload(models.sql.Tweet.author),
                     joinedload(models.sql.Tweet.quoted_tweet).joinedload(
                         models.sql.Tweet.author
                     ),
                 )
-            
+            )
+
             result = await db.execute(tweet_query)
             tweet = result.scalar_one_or_none()
-            
+
         if tweet is None:
             raise fastapi.HTTPException(
                 status_code=404, detail=f"Tweet {tweet_id} not found"
             )
-        
+
         return tweet
-    
+
     @api.get("/tweet/{tweet_id}/og.jpg", response_class=fastapi.responses.FileResponse)
     async def read_tweet_og(tweet_id: int):
         """Read a specific tweet."""
@@ -625,5 +644,42 @@ def api() -> FastAPI:
             result = await db.execute(text(query))
             # no commit, so auto-rollback of anything destructive and this is "safe"
             return {"result": [dict(row) for row in result.mappings()]}
+
+    @api.post(
+        "/search/",
+        dependencies=[fastapi.Depends(is_authenticated)],
+        response_model=List[models.pydantic.TweetRead],
+    )
+    async def search_tweets(
+        request: dict,
+        fake_time: Optional[datetime] = None,
+        limit: int = 10,
+    ):
+        """Search for tweets containing a specific string."""
+        query = request.get("query")
+        limit = min(limit, 1000)
+
+        if not query:
+            raise fastapi.HTTPException(
+                status_code=400, detail="No search query provided."
+            )
+
+        if fake_time is None:
+            fake_time = common.to_fake(datetime.utcnow())
+
+        async with new_session() as db:
+            result = await db.execute(
+                select(models.sql.Tweet)
+                .where(models.sql.Tweet.text_fts.match(query))
+                .filter(models.sql.Tweet.fake_time <= fake_time)
+                .order_by(  # deprioritize NYT bots, then order by quote count
+                    models.sql.Tweet.author_id.in_(NYT_BOTS),
+                    desc(models.sql.Tweet.quotes),
+                )
+                .limit(limit)
+            )
+            tweets = result.scalars().all()
+
+        return list(tweets)
 
     return api

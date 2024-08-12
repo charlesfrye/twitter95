@@ -7,7 +7,7 @@ const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 const deltaMilliseconds = 915235088 * 1000; // time from 1995 to 2024
 
 function fakeNow() {
-  return toFake(formatTime(new Date().toISOString()));
+  return toFake(formatTime(new Date().toUTCString()));
 }
 
 function toFake(realTime) {
@@ -116,5 +116,5 @@ export {
   toFake,
   getOgImageUrl,
   fakeNow,
-  formatTime
+  formatTime,
 };

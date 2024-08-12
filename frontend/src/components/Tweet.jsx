@@ -56,12 +56,10 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
   };
 
   const handleRetweetClick = () => {
-    setFakeTime(tweet.fake_time + 1000);
     const url = `https://twitter-95.com/tweet/${tweet.tweet_id}`;
     const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`;
     const tweetContent = `https://x.com/intent/post?text=${text}`;
     window.open(tweetContent, "_blank");
-    ``;
   };
 
   return (
