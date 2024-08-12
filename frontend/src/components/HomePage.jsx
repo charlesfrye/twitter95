@@ -1,3 +1,5 @@
+"use client";
+
 import { fakeNow } from "../services/database";
 
 function HomePage() {

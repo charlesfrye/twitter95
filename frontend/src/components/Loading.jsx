@@ -1,3 +1,5 @@
+"use client";
+
 import { Hourglass } from 'react95';
 
 function Loading() {

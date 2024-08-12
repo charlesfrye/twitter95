@@ -1,11 +1,13 @@
+"use client";
+
 import { useParams } from "react-router-dom";
 import Tweet from "./Tweet";
 import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from 'next/navigation';
 
 function TweetPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   // pull tweetID from url /tweet/:tweetId?render_as_og=true
   const tweetId = useParams().tweetId;
 
@@ -22,7 +24,7 @@ function TweetPage() {
         setTweet(fetched_tweet);
       } else {
         // redirect to home page
-        navigate("/timeline");
+        router.push("/timeline");
       }
     }
     fetchTweet();

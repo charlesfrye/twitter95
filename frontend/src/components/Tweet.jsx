@@ -1,7 +1,9 @@
+"use client";
+
 import "./Tweet.css";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   MenuList,
   MenuListItem as React95MenuListItem,
@@ -34,8 +36,8 @@ function formatFakeTime(fakeTimeStr) {
 }
 
 function Tweet({ tweet, showStats, showQuoted = true }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+
   const author = tweet.author;
 
   const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
@@ -49,11 +51,11 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
     const date = new Date(`${tweet.fake_time}Z`);
     date.setUTCSeconds(date.getUTCSeconds() + 1);
     const newFakeTime = date.toISOString().replace("Z", "");
-    navigate(`/profile/${author.user_name}?fakeTime=${newFakeTime}`);
+    router.push(`/profile/${author.user_name}?fakeTime=${newFakeTime}`);
   };
 
   const handleRetweetClick = () => {
-    fakeTime = tweet.fake_time + 1000;
+    setFakeTime(tweet.fake_time + 1000);
     const url = `https://twitter-95.com/tweet/${tweet.tweet_id}`;
     const text = `Check out this tweet from 1995 by ${author.user_name}:%0A%0A${url}`;
     const tweetContent = `https://x.com/intent/post?text=${text}`;

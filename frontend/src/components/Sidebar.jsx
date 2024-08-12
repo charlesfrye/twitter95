@@ -1,3 +1,5 @@
+"use client";
+
 import "./Sidebar.css";
 /* eslint-disable react/prop-types */
 import SidebarOption from "./SidebarOption";

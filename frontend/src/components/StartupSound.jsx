@@ -1,5 +1,8 @@
+"use client";
+
 import { useEffect, useRef, useCallback } from 'react';
-import audioFile from '../assets/win95.mp3';
+
+const audioFile = "/win95.mp3";
 
 const StartupSound = () => {
     const audioRef = useRef(null);
