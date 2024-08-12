@@ -1,6 +1,9 @@
 const urlPrefix = "ex-twitter--db-client-api";
 
-const urlSuffix = process.env.NEXT_PUBLIC_DEV_BACKEND === "true" ? "-dev.modal.run" : ".modal.run";
+const urlSuffix =
+  process.env.NEXT_PUBLIC_DEV_BACKEND === "true"
+    ? "-dev.modal.run"
+    : ".modal.run";
 
 const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 
@@ -106,6 +109,38 @@ const getTrending = async (fakeTime, limit) => {
   return trendingHashtags;
 };
 
+const searchTweets = async (query, fakeTime, limit) => {
+  const params = new URLSearchParams();
+
+  fakeTime ? params.append("fake_time", formatTime(fakeTime)) : null;
+  limit ? params.append("limit", limit) : null;
+
+  const url = `${baseUrl}/search/?${params}`;
+
+  const body = {
+    query: query || "",
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching search results:", error);
+    return { error };
+  }
+};
+
 export {
   getTimeline,
   getTweet,
@@ -117,4 +152,5 @@ export {
   getOgImageUrl,
   fakeNow,
   formatTime,
+  searchTweets,
 };
