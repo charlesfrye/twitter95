@@ -1,0 +1,20 @@
+.no-year input[type="number"]::-webkit-outer-spin-button,
+.no-year input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+.no-year input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.no-year input[type="number"] {
+    user-select: none;
+    pointer-events: none;
+}
+
+.no-year [data-testid="increment"],
+.no-year [data-testid="decrement"] {
+    user-select: none;
+    pointer-events: none;
+}

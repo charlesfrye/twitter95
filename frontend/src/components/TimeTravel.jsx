@@ -3,8 +3,9 @@
 import { DatePicker__UNSTABLE } from "react95";
 import { useState, useEffect, useContext } from "react";
 import { fakeNow, formatTime } from "../services/database";
-import { FakeTimeContext } from './FakeTimeContext';
-import { useRouter } from 'next/navigation';
+import { FakeTimeContext } from "./FakeTimeContext";
+import { useRouter } from "next/navigation";
+import "./TimeTravel.css";
 
 function TimeTravel() {
   const router = useRouter();
@@ -46,16 +47,16 @@ function TimeTravel() {
     }
 
     // date is UTC like 1995-08-06
-    // add 23hr, 59min, 59sec, 999ms to the end of the day
     let newFakeTime = new Date(`${date}T00:00:00.000Z`);
-    newFakeTime.setUTCHours(23, 59, 59, 999);
+    // add 12hr to put us in the middle of the day
+    newFakeTime.setUTCHours(12, 0, 0, 0);
     setFakeTime(formatTime(newFakeTime.toISOString()));
     router.push("/timeline");
   }
 
   return (
     <div className="banner align-middle mt-4">
-      <DatePicker__UNSTABLE onAccept={onAccept} date={date}>
+      <DatePicker__UNSTABLE className="no-year" onAccept={onAccept} date={date}>
         {" "}
       </DatePicker__UNSTABLE>
       {error && (
