@@ -12,10 +12,24 @@ import Trending from "./Trending";
 import MetaTags from "./MetaTags";
 import { FakeTimeContext } from './FakeTimeContext';
 import { formatTime, fakeNow } from "../services/database";
+import { useSearchParams } from 'next/navigation';
 
 function LayoutContent({ children }) {
   const router = useRouter();
   const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+
+  const queryParams = useSearchParams();
+  const render_as_og = queryParams.get("render_as_og");
+  if (render_as_og) {
+    // twitter renders 1600 px X 900 px, we'll halve that
+    return (
+      <ThemeProvider theme={original}>
+        <div className="app" style={{ width: '800px', height: '450px' }}>
+          {children}
+        </div>
+      </ThemeProvider>
+    );
+  }
 
   const leftSidebarOptions = [
     { text: "Timeline", path: "/timeline" },

@@ -1,17 +1,15 @@
 "use client";
-
-import { useParams } from "react-router-dom";
+import { useSearchParams } from 'next/navigation';
 import Tweet from "./Tweet";
 import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
-function TweetPage() {
+function TweetPage({ tweetID }) {
   const router = useRouter();
-  // pull tweetID from url /tweet/:tweetId?render_as_og=true
-  const tweetId = useParams().tweetId;
+  // pull tweetID from url /tweet/:tweetID?render_as_og=true
 
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = useSearchParams();
   const render_as_og = queryParams.get("render_as_og");
 
   // fetch tweet from backend
@@ -19,8 +17,8 @@ function TweetPage() {
 
   useEffect(() => {
     async function fetchTweet() {
-      if (tweetId) {
-        const fetched_tweet = await getTweet(tweetId);
+      if (tweetID) {
+        const fetched_tweet = await getTweet(tweetID);
         setTweet(fetched_tweet);
       } else {
         // redirect to home page
@@ -28,7 +26,7 @@ function TweetPage() {
       }
     }
     fetchTweet();
-  }, [tweetId]);
+  }, [tweetID]);
 
   if (render_as_og) {
     return (

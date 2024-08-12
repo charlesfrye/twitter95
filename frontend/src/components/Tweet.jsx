@@ -47,11 +47,12 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
     setFakeTime(queryParams.get("fakeTime"));
   }
 
+  const handleTweetClick = () => {
+    router.push(`/tweet/${tweet.tweet_id}`);
+  };
+
   const handleProfileClick = () => {
-    const date = new Date(`${tweet.fake_time}Z`);
-    date.setUTCSeconds(date.getUTCSeconds() + 1);
-    const newFakeTime = date.toISOString().replace("Z", "");
-    router.push(`/profile/${author.user_name}?fakeTime=${newFakeTime}`);
+    router.push(`/profile/${author.user_name}`);
   };
 
   const handleRetweetClick = () => {
