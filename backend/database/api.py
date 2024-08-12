@@ -18,10 +18,15 @@ image = modal.Image.debian_slim(python_version="3.11").pip_install(
 app = modal.App(
     "db-client",
     image=image,
-    secrets=[modal.Secret.from_name("pgsql-secret"), modal.Secret.from_name("api-key"), modal.Secret.from_name("screenshotone-api")],
+    secrets=[
+        modal.Secret.from_name("pgsql-secret"),
+        modal.Secret.from_name("api-key"),
+        modal.Secret.from_name("screenshotone-api"),
+    ],
 )
 
 screenshot_cache = modal.Dict.from_name("screnshot-cache", create_if_missing=True)
+
 
 @app.function(
     keep_warm=1,
@@ -162,42 +167,56 @@ def api() -> FastAPI:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
             else:
                 query = query.where(
-                    models.sql.Tweet.author_id != 3
-                )  # drop NYT bot from timeline
+                    models.sql.Tweet.author_id.notin_(
+                        [3]  # drop NYT frontpage bot from timeline
+                        + [  # drop topics bots too
+                            144,
+                            145,
+                            146,
+                            147,
+                            148,
+                            149,
+                            150,
+                            151,
+                        ]
+                    )
+                )
 
             result = await db.execute(query)
 
             tweets = result.scalars().all()
 
         return list(tweets)
-    
+
     @api.get("/tweet/{tweet_id}/", response_model=models.pydantic.FullTweetRead)
     async def read_tweet(tweet_id: int):
         """Read a specific tweet."""
         async with new_session() as db:
-            tweet_query = select(models.sql.Tweet, models.sql.User) \
+            tweet_query = (
+                select(models.sql.Tweet, models.sql.User)
                 .join(
                     models.sql.User,
                     models.sql.Tweet.author_id == models.sql.User.user_id,
-                ) \
-                .where(models.sql.Tweet.tweet_id == tweet_id) \
+                )
+                .where(models.sql.Tweet.tweet_id == tweet_id)
                 .options(
                     joinedload(models.sql.Tweet.author),
                     joinedload(models.sql.Tweet.quoted_tweet).joinedload(
                         models.sql.Tweet.author
                     ),
                 )
-            
+            )
+
             result = await db.execute(tweet_query)
             tweet = result.scalar_one_or_none()
-            
+
         if tweet is None:
             raise fastapi.HTTPException(
                 status_code=404, detail=f"Tweet {tweet_id} not found"
             )
-        
+
         return tweet
-    
+
     @api.get("/tweet/{tweet_id}/og.jpg", response_class=fastapi.responses.FileResponse)
     async def read_tweet_og(tweet_id: int):
         """Read a specific tweet."""
