@@ -167,8 +167,20 @@ def api() -> FastAPI:
                 query = query.where(models.sql.Tweet.author_id.in_(followed_users))
             else:
                 query = query.where(
-                    models.sql.Tweet.author_id != 3
-                )  # drop NYT bot from timeline
+                    models.sql.Tweet.author_id.notin_(
+                        [3]  # drop NYT frontpage bot from timeline
+                        + [  # drop topics bots too
+                            144,
+                            145,
+                            146,
+                            147,
+                            148,
+                            149,
+                            150,
+                            151,
+                        ]
+                    )
+                )
 
             result = await db.execute(query)
 
