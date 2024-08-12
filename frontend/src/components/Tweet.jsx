@@ -3,7 +3,7 @@
 import "./Tweet.css";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   MenuList,
   MenuListItem as React95MenuListItem,

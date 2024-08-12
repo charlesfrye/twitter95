@@ -5,14 +5,13 @@ import { ThemeProvider } from "styled-components";
 import { FakeTimeProvider } from './FakeTimeContext';
 import StartupSound from "./StartupSound";
 import original from "react95/dist/themes/original";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useContext, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Trending from "./Trending";
 import MetaTags from "./MetaTags";
 import { FakeTimeContext } from './FakeTimeContext';
 import { formatTime, fakeNow } from "../services/database";
-import { useSearchParams } from 'next/navigation';
 
 function LayoutContent({ children }) {
   const router = useRouter();

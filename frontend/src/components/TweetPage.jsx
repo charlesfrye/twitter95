@@ -1,9 +1,8 @@
 "use client";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Tweet from "./Tweet";
 import { getTweet } from "../services/database";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
 
 function TweetPage({ tweetID }) {
   const router = useRouter();

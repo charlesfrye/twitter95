@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
 import { useSearchParams } from 'next/navigation';
 import Tweet from "./Tweet";
 import User from "./User";
