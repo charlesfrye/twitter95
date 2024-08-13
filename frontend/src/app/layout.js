@@ -1,12 +1,12 @@
 import localFont from "next/font/local";
 
+import "./globals.css";
+import ClientLayout from "../components/ClientLayout";
+
 export const viewport = {
   width: "1024",
   initialScale: 1,
 };
-
-import "./globals.css";
-import ClientLayout from "../components/ClientLayout";
 
 const msSansSerif = localFont({
   src: "../../public/fonts/ms_sans_serif.woff2",
@@ -17,6 +17,9 @@ const msSansSerif = localFont({
 export const metadata = {
   title: "Twitter '95",
   description: "What if Twitter was around in 1995?",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {
