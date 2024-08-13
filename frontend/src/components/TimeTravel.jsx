@@ -46,10 +46,16 @@ function TimeTravel() {
       return;
     }
 
-    // date is UTC like 1995-08-06
-    let newFakeTime = new Date(`${date}T00:00:00.000Z`);
-    // add 12hr to put us in the middle of the day
-    newFakeTime.setUTCHours(12, 0, 0, 0);
+    const now = new Date();
+    const hours = now.getUTCHours();
+    const minutes = now.getUTCMinutes();
+    const seconds = now.getUTCSeconds();
+
+    const utcTime = `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+    let newFakeTime = new Date(`${date}T${utcTime}.000Z`);
     setFakeTime(formatTime(newFakeTime.toISOString()));
     router.push("/timeline");
   }
