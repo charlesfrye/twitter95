@@ -1,7 +1,3 @@
-import Feed from '../../components/Feed';
+import Timeline from "../../components/Timeline";
 
-export default function Timeline() {
-  return (
-      <Feed />
-  );
-}
+export default Timeline;
