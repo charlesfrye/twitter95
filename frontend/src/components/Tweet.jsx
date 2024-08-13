@@ -91,7 +91,8 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
           <Separator />
           <MenuListItem
             size="sm"
-            className="!whitespace-normal !text-left !min-h-24 !flex-1"
+            className="!whitespace-normal !text-left !min-h-24 !flex-1 !cursor-pointer"
+            onClick={handleTweetClick}
           >
             <TweetContent tweet={tweet} />
           </MenuListItem>
