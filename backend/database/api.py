@@ -647,8 +647,7 @@ def api() -> FastAPI:
 
     @api.post(
         "/search/",
-        dependencies=[fastapi.Depends(is_authenticated)],
-        response_model=List[models.pydantic.TweetRead],
+        response_model=List[models.pydantic.FullTweetRead],
     )
     async def search_tweets(
         request: dict,
@@ -677,9 +676,15 @@ def api() -> FastAPI:
                     desc(models.sql.Tweet.quotes),
                 )
                 .limit(limit)
+                .options(
+                    joinedload(models.sql.Tweet.author),
+                    joinedload(models.sql.Tweet.quoted_tweet).joinedload(
+                        models.sql.Tweet.author
+                    ),
+                )
             )
-            tweets = result.scalars().all()
+            posts = result.scalars().all()
 
-        return list(tweets)
+        return list(posts)
 
     return api

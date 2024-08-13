@@ -1,7 +1,3 @@
-import TimeTravel from '../../components/TimeTravel';
+import Search from "../../components/Search";
 
-export default function Search() {
-  return (
-    <TimeTravel />
-  );
-}
+export default Search;
