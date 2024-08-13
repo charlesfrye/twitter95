@@ -25,10 +25,18 @@ function SearchBar({ onButtonClick }) {
     "Croatia...",
     "Al Gore...",
     "Bulls...",
-    "49ers...",
+    "Mickey Mantle...",
+    "Stanley Cup...",
+    "49ers win...",
     "Baseball strike...",
-    "Unions...",
+    "Pro-life...",
+    "Pro-choice...",
     "Medicare...",
+    "Balanced Budget...",
+    "Terrorism...",
+    "Nerve gas...",
+    "Iraq WMD...",
+    "Russia...",
   ];
 
   const [state, setState] = useState(() => {
@@ -54,7 +62,7 @@ function SearchBar({ onButtonClick }) {
           placeholderIndex: newPlaceholderIndex,
         };
       });
-    }, 5000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [placeholderOptions.length]);
