@@ -20,20 +20,51 @@ function SearchBar({ onButtonClick }) {
     "FuckMicrosoft...",
     "Aum Shinrikyo...",
     "SimulationTheory...",
+    "Frederick Cuny...",
+    "Scott O'Grady...",
+    "Croatia...",
+    "Al Gore...",
+    "Bulls...",
+    "Mickey Mantle...",
+    "Stanley Cup...",
+    "49ers win...",
+    "Baseball strike...",
+    "Pro-life...",
+    "Pro-choice...",
+    "Medicare...",
+    "Balanced Budget...",
+    "Terrorism...",
+    "Nerve gas...",
+    "Iraq WMD...",
+    "Russia...",
+    "War...",
   ];
-  const [state, setState] = useState({
-    value: "",
-    placeholderIndex: 0,
-  });
 
+  const [state, setState] = useState(() => {
+    const initialPlaceholderIndex = Math.floor(
+      Math.random() * placeholderOptions.length
+    );
+    return {
+      value: "",
+      placeholderIndex: initialPlaceholderIndex,
+    };
+  });
   useEffect(() => {
     const interval = setInterval(() => {
-      setState((prevState) => ({
-        ...prevState,
-        placeholderIndex:
-          (prevState.placeholderIndex + 1) % placeholderOptions.length,
-      }));
-    }, 5000);
+      setState((prevState) => {
+        const randomOffset =
+          Math.floor(Math.random() * (placeholderOptions.length - 1)) + 1;
+        const newPlaceholderIndex =
+          (prevState.placeholderIndex + randomOffset) %
+          placeholderOptions.length;
+
+        return {
+          ...prevState,
+          placeholderIndex: newPlaceholderIndex,
+        };
+      });
+    }, 1000);
+
     return () => clearInterval(interval);
   }, [placeholderOptions.length]);
 

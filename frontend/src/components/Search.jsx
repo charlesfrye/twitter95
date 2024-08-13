@@ -18,10 +18,14 @@ function Search() {
     setFakeTime(queryParams.get("fakeTime"));
   }
 
+  const clearTweets = () => {
+    setTweets([]);
+  };
+
   const handleKeyDown = (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key === "k") {
       event.preventDefault();
-      setTweets([]);
+      clearTweets();
     }
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -40,8 +44,11 @@ function Search() {
   if (isLoading || tweets.length > 0) {
     return (
       <div>
-        <h2 className="text-center text-white mt-1 text-l">
-          Press Cmd+K to search again
+        <h2
+          className="text-center text-white mt-1 text-l cursor-pointer select-none"
+          onClick={clearTweets}
+        >
+          Click here or press Cmd+K to search again
         </h2>
         <Feed isLoading={isLoading} tweets={tweets} />;
       </div>
