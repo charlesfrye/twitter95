@@ -13,11 +13,14 @@ function TweetPage({ tweetID }) {
 
   // fetch tweet from backend
   const [tweet, setTweet] = useState(undefined);
+  const [quoteTweets, setQuoteTweets] = useState([]);
 
   useEffect(() => {
     async function fetchTweet() {
       if (tweetID) {
+        setIsLoading(true);
         const fetched_tweet = await getTweet(tweetID);
+        setIsLoading(false);
         setTweet(fetched_tweet);
       } else {
         // redirect to home page
@@ -43,9 +46,30 @@ function TweetPage({ tweetID }) {
     );
   }
 
+  useEffect(() => {
+    async function fetchQuotes() {
+      if (tweetID) {
+        const fetchedQuotes = await getQuotes(tweetID);
+        setQuoteTweets(fetchedQuotes);
+      } else {
+        // redirect to home page
+        router.push("/timeline");
+      }
+    }
+    fetchQuotes();
+  }, [quoteTweets, router]);
+
   return (
     <div className="banner align-middle mt-4">
-      {tweet ? <Tweet tweet={tweet} showStats={true} /> : <p>Loading...</p>}
+      {tweet ? (
+        <Tweet tweet={tweet} showStats={true} /> ? (
+          quoteTweets.length > 0
+        ) : (
+          <Feed />
+        )
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 }
