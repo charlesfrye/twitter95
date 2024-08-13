@@ -3,7 +3,7 @@
 import "./Tweet.css";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   MenuList,
   MenuListItem as React95MenuListItem,
@@ -41,9 +41,9 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
 
   const author = tweet.author;
 
-  const { fakeTime, setFakeTime } = useContext(FakeTimeContext);
+  const { setFakeTime } = useContext(FakeTimeContext);
   // any url param will set the fakeTime in the browsing session
-  const queryParams = new URLSearchParams(location.search);
+  const queryParams = useSearchParams();
   if (queryParams.get("fakeTime")) {
     setFakeTime(queryParams.get("fakeTime"));
   }

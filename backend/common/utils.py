@@ -37,7 +37,8 @@ def screenshot_tweet(tweet_id):
     if image_bytes is None:
         print("No image cache found, fetching from screenshotone")
         api_key = os.getenv("SCREENSHOTONE_API_KEY")
-        screenshot_url = f"https://api.screenshotone.com/take?access_key={api_key}&url=https%3A%2F%2Fwww.twitter-95.com%2Ftweet%2F{tweet_id}%3Frender_as_og%3Dtrue&full_page=false&viewport_width=800&viewport_height=450&device_scale_factor=3&format=jpg&image_quality=80&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=false&block_trackers=true&delay=3&timeout=60"
+        delay = 5 # time to allow for the page to populate its data
+        screenshot_url = f"https://api.screenshotone.com/take?access_key={api_key}&url=https%3A%2F%2Fwww.twitter-95.com%2Ftweet%2F{tweet_id}%3Frender_as_og%3Dtrue&full_page=false&viewport_width=800&viewport_height=450&device_scale_factor=3&format=jpg&image_quality=80&block_ads=true&block_cookie_banners=true&block_banners_by_heuristics=false&block_trackers=true&delay={delay}&timeout=60"
         response = requests.get(screenshot_url)
         if response.status_code == 200:
             image_bytes = response.content

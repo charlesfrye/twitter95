@@ -5,7 +5,7 @@ const urlSuffix =
     ? "-dev.modal.run"
     : ".modal.run";
 
-const baseUrl = `https://${urlPrefix}${urlSuffix}`;
+export const baseUrl = `https://${urlPrefix}${urlSuffix}`;
 
 const deltaMilliseconds = 915235088 * 1000; // time from 1995 to 2024
 
