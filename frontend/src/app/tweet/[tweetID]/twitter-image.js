@@ -6,7 +6,7 @@ export const runtime = "edge";
 export const alt = "Tweet Image";
 export const size = {
   width: 800,
-  height: 450,
+  height: 400,
 };
 export const contentType = "image/png";
 
@@ -123,7 +123,7 @@ export default async function Image({ params }) {
           {
             name: "MS Sans Serif",
             data: fontData,
-            style: '"normal',
+            style: "normal",
           },
         ],
       }

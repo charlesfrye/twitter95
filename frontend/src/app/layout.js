@@ -20,6 +20,26 @@ export const metadata = {
   icons: {
     icon: "/logo.png",
   },
+  openGraph: {
+    title: "Twitter '95",
+    description: "What if Twitter was around in 1995?",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Twitter '95",
+      },
+    ],
+    url: "https://twitter-95.com/",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Twitter '95",
+    description: "What if Twitter was around in 1995?",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({ children }) {
