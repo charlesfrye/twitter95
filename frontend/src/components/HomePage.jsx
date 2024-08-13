@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import StartupSound from "./StartupSound";
 import { fakeNow } from "../services/database";
 
 function HomePage() {
@@ -16,6 +17,7 @@ function HomePage() {
 
   return (
     <div className="banner align-middle bg-white mt-4">
+      <StartupSound />
       <h1 className="text-3xl leading-tight p-2 bg-[#7FEE64] text-[#FF0ECA]">
         Welcome to Twitter (&apos;95)!
       </h1>

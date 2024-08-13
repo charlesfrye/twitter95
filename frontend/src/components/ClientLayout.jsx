@@ -113,7 +113,6 @@ export default function ClientLayout({ children }) {
     <ErrorBoundary>
       <FakeTimeProvider>
         <ThemeProvider theme={original}>
-          <StartupSound />
           <Suspense fallback={<div>Loading layout...</div>}>
             <LayoutContent>{children}</LayoutContent>
           </Suspense>
