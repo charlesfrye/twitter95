@@ -61,7 +61,7 @@ function TimeTravel() {
   }
 
   return (
-    <div className="banner align-middle mt-4">
+    <div>
       <DatePicker__UNSTABLE className="no-year" onAccept={onAccept} date={date}>
         {" "}
       </DatePicker__UNSTABLE>
