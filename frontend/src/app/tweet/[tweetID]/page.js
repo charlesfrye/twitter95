@@ -1,5 +1,5 @@
 import { getTweet } from '../../../services/database';
-import Tweet from '../../../components/Tweet';
+import TweetPage from '../../../components/TweetPage';
 
 export async function generateMetadata({ params }) {
   const tweet = await getTweet(params.tweetID);
@@ -13,13 +13,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function TweetPage({ params }) {
-  // serverside render the tweet
-  const tweet = await getTweet(params.tweetID);
-
-  return (
-    <div className="banner align-middle mt-4">
-      <Tweet tweet={tweet} showStats={true} />
-    </div>
-  );
+export default async function Tweet({ params }) {
+  return <TweetPage tweetID={params.tweetID} />;
 }
