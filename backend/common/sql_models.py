@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import (
     Column,
+    Computed,
     Integer,
     String,
     DateTime,
@@ -42,8 +43,8 @@ class Tweet(Base):
 
     text_fts = Column(  # full-text search term count vector
         TSVECTOR,
+        Computed("to_tsvector('english', text)", persisted=True),
         nullable=False,
-        default=None,
     )
 
     author = relationship("User", foreign_keys=[author_id], back_populates="tweets")
