@@ -37,6 +37,7 @@ function SearchBar({ onButtonClick }) {
     "Nerve gas...",
     "Iraq WMD...",
     "Russia...",
+    "War...",
   ];
 
   const [state, setState] = useState(() => {
