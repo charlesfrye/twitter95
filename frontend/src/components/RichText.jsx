@@ -1,20 +1,27 @@
-"use client"
+"use client";
 
 import { useRouter } from "next/navigation";
 
 function RichText({ text }) {
   const router = useRouter();
+
   const hashtagRegex = /(#\w+)/g; // match on # followed by 1 or more letters, numbers, or underscores
   const usernameRegex = /(@[\w]+)/g; // match on @ followed by 1 or more letters, numbers, or underscores
   const urlRegex = /(https?:\/\/[^\s]+)/g; // match on http(s) followed by :// and non-whitespace characters
 
   const parts = text.split(/(#\w+|@\w+|https?:\/\/[^\s]+)/);
 
-  function handleHashtagClick(hashtag) {
+  const stopPropagation = (e) => {
+    e.stopPropagation();
+  };
+
+  function handleHashtagClick(hashtag, e) {
+    stopPropagation(e);
     router.push(`/hashtag/${hashtag}`);
   }
 
-  function handleUsernameClick(username) {
+  function handleUsernameClick(username, e) {
+    stopPropagation(e);
     router.push(`/profile/${username}`);
   }
 
@@ -28,6 +35,7 @@ function RichText({ text }) {
           key={index}
           href={part}
           className="text-[#008080] underline hover:text-[#00abab]"
+          onClick={(e) => stopPropagation(e)}
         >
           {displayText}
         </a>
@@ -37,7 +45,7 @@ function RichText({ text }) {
       return (
         <a
           key={index}
-          onClick={() => handleHashtagClick(hashtag)}
+          onClick={(e) => handleHashtagClick(hashtag, e)}
           className="text-[#008080] underline hover:text-[#00abab]"
         >
           {part}
@@ -48,7 +56,7 @@ function RichText({ text }) {
       return (
         <a
           key={index}
-          onClick={() => handleUsernameClick(username)}
+          onClick={(e) => handleUsernameClick(username, e)}
           className="text-[#008080] underline hover:text-[#00abab]"
         >
           {part}
