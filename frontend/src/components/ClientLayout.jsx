@@ -73,7 +73,7 @@ function LayoutContent({ children }) {
         <Sidebar className="sidebarLeft z-10" options={leftSidebarOptions} />
         <div className="middle">
           <Marquee className="py-1 -mb-2 z-0 pause-on text-[#7FEE64] hover:text-[#48ffa7]" gradient={true} gradientColor="black">
-              <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp</a>
+              <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp;</a>
           </Marquee>
           {children}
           {displayTimeTravel && (
