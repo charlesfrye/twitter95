@@ -39,11 +39,12 @@ function HashtagFeed({ hashtagText }) {
       <div className="tweetList">
         {tweets
           ? tweets.map((tweet, index) => (
+            <div className="w-[600px]">
               <Tweet key={index} tweet={tweet} showStats={true} />
+            </div>
             ))
           : null}
       </div>
-      {/* <TweetCount /> temporarily disabled */}
     </div>
   );
 }

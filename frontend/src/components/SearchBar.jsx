@@ -73,13 +73,15 @@ function SearchBar({ onButtonClick }) {
     onButtonClick(state.value);
   };
   return (
-    <div style={{ display: "flex" }}>
-      <TextInput
-        value={state.value}
-        placeholder={placeholderOptions[state.placeholderIndex]}
-        onChange={handleChange}
-        fullWidth
-      />
+    <div className="flex justify-center items-center">
+      <div className="w-1/2">
+        <TextInput
+          value={state.value}
+          placeholder={placeholderOptions[state.placeholderIndex]}
+          onChange={handleChange}
+          fullWidth
+        />
+      </div>
       <Button onClick={go}>Search</Button>
     </div>
   );

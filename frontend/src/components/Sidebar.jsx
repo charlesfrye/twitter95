@@ -11,7 +11,7 @@ function SidebarOption({ Icon, text, path }) {
   return (
     <div className="flex items-center p-2.5 cursor-pointer">
       {Icon && <Icon />}
-      <h2 className="ml-2.5">
+      <h2 className="ml-2.5 mt-4">
         <a onClick={handleClick}>{text}</a>
       </h2>
     </div>

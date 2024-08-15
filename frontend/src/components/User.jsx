@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 function User({ user, bio }) {
   return (
-    <div className="user flex gap-8 justify-between">
+    <div className="w-[600px] mb-4 flex gap-8 justify-between">
       <img
         src={
           user.profile_pic
@@ -17,9 +17,9 @@ function User({ user, bio }) {
       />
       <div className="user-info">
         {bio ? <BioContent bio={bio} /> : null}
-        <div className="block text-left m-4">
-          <div className="username text-white">@{user.user_name}</div>
-          <div className="displayName text-white">{user.display_name}</div>
+        <div className="block text-left text-white m-4">
+          <div>@{user.user_name}</div>
+          <div>{user.display_name}</div>
         </div>
       </div>
     </div>

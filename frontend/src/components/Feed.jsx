@@ -5,12 +5,14 @@ import Loading from "./Loading";
 
 function Feed({ isLoading, tweets }) {
   return (
-    <div className="Feed">
+    <div className="mt-4">
       {isLoading && <Loading />}
-      <div className="tweetList">
+      <div className="flex flex-col justify-center items-center h-full space-y-8">
         {tweets
           ? tweets.map((tweet, index) => (
-              <Tweet key={index} tweet={tweet} showStats={true} />
+              <div className="w-[600px]">
+                <Tweet key={index} tweet={tweet} showStats={true} />
+              </div>
             ))
           : null}
       </div>

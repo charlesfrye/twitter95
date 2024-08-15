@@ -65,6 +65,7 @@ function LayoutContent({ children }) {
     setFakeTime(newFakeTime.toISOString());
     router.push("/timeline");
   }
+
   
   return (
     <div className="h-full w-full ">
@@ -104,7 +105,7 @@ function LayoutContent({ children }) {
               <img
                 src="/logo.png"
                 alt="Twitter 95"
-                className="pt-4 animate-tilt w-1/4"
+                className="pt-4 animate-tilt w-1/6"
               />
             </div>
             <a className="text-sm" href="https://modal.com">
