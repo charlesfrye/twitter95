@@ -38,7 +38,7 @@ function LayoutContent({ children }) {
     // twitter renders 1600 px X 900 px, we'll halve that
     return (
       <ThemeProvider theme={original}>
-        <div className="app" style={{ width: "800px", height: "450px" }}>
+        <div className="flex justify-between items-stretch h-full min-h-full w-full" style={{ width: "800px", height: "450px" }}>
           {children}
         </div>
       </ThemeProvider>
@@ -65,42 +65,48 @@ function LayoutContent({ children }) {
     setFakeTime(newFakeTime.toISOString());
     router.push("/timeline");
   }
-
+  
   return (
-    <>
+    <div className="h-full w-full ">
       <MetaTags />
-      <div className="app">
-        <Sidebar className="sidebarLeft z-10" options={leftSidebarOptions} />
-        <div className="middle">
-          <Marquee className="py-1 -mb-2 z-0 pause-on text-[#7FEE64] hover:text-[#48ffa7]" gradient={true} gradientColor="black">
-              <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp;</a>
-          </Marquee>
-          {children}
-          {displayTimeTravel && (
-            <div className="fixed bottom-0 left-0 w-full z-50">
-              <p className="bg-[#7FEE64] py-1 text-black ">
-                Currently viewing from{" "}
-                {new Date(formatTime(fakeTime)).toDateString()},
-                <a
-                  className="underline cursor-pointer hover:text-gray-500 ml-1"
-                  onClick={resetTimeTravel}
-                >
-                  click here to reset
-                </a>
-              </p>
+      <div className="flex justify-between items-stretch h-full min-h-full w-full">
+        <Sidebar className="z-10 h-100 fixed top-0 left-0 bottom-0" options={leftSidebarOptions} />
+        <div className="w-full flex justify-center">
+          <div className="w-3/5">
+            <div className="h-6 mt-3">
+              <Marquee className="w-10 text-[#7FEE64] hover:text-[#48ffa7]" gradient={true} gradientColor="black">
+                  <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp;</a>
+              </Marquee>
             </div>
+            <div className="px-[10%]">
+              {children}
+            </div>
+            {displayTimeTravel && (
+              <div className="fixed bottom-0 left-0 w-full z-50">
+                <p className="bg-[#7FEE64] py-1 text-black ">
+                  Currently viewing from{" "}
+                  {new Date(formatTime(fakeTime)).toDateString()},
+                  <a
+                    className="underline cursor-pointer hover:text-gray-500 ml-1"
+                    onClick={resetTimeTravel}
+                  >
+                    click here to reset
+                  </a>
+                </p>
+              </div>
           )}
-
+          </div>
         </div>
-        <Sidebar className="sidebarRight" options={rightSidebarOptions}>
+        <Sidebar className="z-10 h-100 fixed top-0 right-0 bottom-0" options={rightSidebarOptions}>
           <div className="text-[#7FEE64] text-2xl">
             <a href="/">Twitter &apos;95</a>
-            <br />
-            <img
-              src="/logo.png"
-              alt="Twitter 95"
-              className="logo-animate pt-4"
-            />
+            <div className="flex justify-center mb-4">
+              <img
+                src="/logo.png"
+                alt="Twitter 95"
+                className="pt-4 animate-tilt w-1/4"
+              />
+            </div>
             <a className="text-sm" href="https://modal.com">
               {" "}
               #PoweredByModal
@@ -109,7 +115,7 @@ function LayoutContent({ children }) {
           <Trending />
         </Sidebar>
       </div>
-    </>
+    </div>
   );
 }
 
