@@ -34,16 +34,17 @@ function HashtagFeed({ hashtagText }) {
   }, [hashtagText, fakeTime, limit]);
 
   return (
-    <div className="HashtagFeed">
+    <div className="mt-4">
       {isLoading && <Loading />}
-      <div className="tweetList">
+      <div className="flex flex-col justify-center items-center h-full space-y-8">
         {tweets
           ? tweets.map((tweet, index) => (
-              <Tweet key={index} tweet={tweet} showStats={true} />
+            <div className="w-[600px]" key={index}>
+              <Tweet tweet={tweet} showStats={true} />
+            </div>
             ))
           : null}
       </div>
-      {/* <TweetCount /> temporarily disabled */}
     </div>
   );
 }

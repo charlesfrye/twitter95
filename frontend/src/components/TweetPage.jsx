@@ -33,7 +33,9 @@ function TweetPage({ tweetID }) {
         <div className="flex justify-center items-center h-full">
           <div className="h-fit scale-125">
             {tweet ? (
-              <Tweet tweet={tweet} showStats={true} showQuoted={false} />
+              <div className="w-[600px]">
+                <Tweet tweet={tweet} showStats={true} showQuoted={false} />
+              </div>
             ) : (
               <p>Loading...</p>
             )}
@@ -44,8 +46,12 @@ function TweetPage({ tweetID }) {
   }
 
   return (
-    <div className="banner align-middle mt-4">
-      {tweet ? <Tweet tweet={tweet} showStats={true} /> : <p>Loading...</p>}
+    <div className="flex flex-col justify-center items-center h-full">
+      {tweet ? 
+        <div className="w-[600px]">
+          <Tweet tweet={tweet} showStats={true} />
+        </div>
+        : <p>Loading...</p>}
     </div>
   );
 }

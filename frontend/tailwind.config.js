@@ -8,9 +8,19 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        'space': "url('/space-background1.png')",
+      },
+      backgroundColor: {
+        'background-default': 'var(--background-default)',
+      },
+      keyframes: {
+        tiltAnimation: {
+          '0%, 100%': { transform: 'rotate(-10deg)' },
+          '50%': { transform: 'rotate(10deg)' },
+        },
+      },
+      animation: {
+        'tilt': 'tiltAnimation 2s infinite',
       },
     },
   },

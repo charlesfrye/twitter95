@@ -1,6 +1,4 @@
 "use client";
-
-import "./Tweet.css";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -62,13 +60,13 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
     const tweetContent = `https://x.com/intent/post?text=${text}`;
     window.open(tweetContent, "_blank");
   };
-
+  
   return (
     tweet && (
-      <div className="tweet">
-        <MenuList className="!flex !flex-col text-ellipsis">
+      <div>
+        <MenuList className="flex flex-col !py-2">
           <MenuListItem
-            className="!cursor-pointer !text-sm !overflow-hidden !whitespace-nowrap !text-ellipsis"
+            className="cursor-pointer text-sm overflow-hidden whitespace-nowrap"
             onClick={handleProfileClick}
           >
             {author.profile_pic && (
@@ -88,27 +86,31 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
             )}
             {`@${author.user_name} on ${formatFakeTime(tweet.fake_time)}`}
           </MenuListItem>
-          <Separator />
+          <Separator className="!my-2" />
           <MenuListItem
             size="sm"
-            className="!whitespace-normal !text-left !min-h-24 !flex-1 !cursor-pointer"
+            className="whitespace-normal text-left min-h-24 flex-1 cursor-pointer"
             onClick={handleTweetClick}
           >
             <TweetContent tweet={tweet} />
           </MenuListItem>
           {tweet.quoted && tweet.quoted_tweet && showQuoted && (
-            <Tweet tweet={tweet.quoted_tweet} showStats={false} />
+            <div className="p-2">
+              <Tweet tweet={tweet.quoted_tweet} showStats={false} />
+            </div>
           )}
 
           <div className="flex items-center justify-center">
-            <div className="flex space-x-10">
+            <div className="flex space-x-10 h-fit">
               {showStats && (
                 <div className="flex items-center justify-center space-x-5">
                   <p className="text-xl">QTs:</p>
                   <Counter value={tweet.quotes} minLength={3} />
                 </div>
               )}
-              <Button onClick={handleRetweetClick}>Retweet</Button>
+              <div className="flex items-center justify-center space-x-5">
+                <Button onClick={handleRetweetClick}>Retweet</Button>
+              </div>
             </div>
           </div>
         </MenuList>

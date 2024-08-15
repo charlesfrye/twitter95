@@ -40,13 +40,15 @@ function Profile({ userId }) {
   }, [userId, fakeTime]);
 
   return (
-    <div className="profile pt-4">
+    <div className="profile pt-4 flex flex-col justify-center items-center h-full space-y-8">
       {isLoading && <Loading />}
       {profile.user ? <User user={profile.user} bio={profile.bio} /> : null}
 
       {profile && profile.tweets && profile.tweets.length > 0 ? (
         profile.tweets.map((tweet, index) => (
-          <Tweet key={index} tweet={tweet} showStats={true} />
+          <div className="w-[600px]" key={index}>
+            <Tweet tweet={tweet} showStats={true} />
+          </div>
         ))
       ) : (
         <p>No tweets found.</p>

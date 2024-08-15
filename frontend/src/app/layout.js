@@ -44,9 +44,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full w-full">
       <body className={msSansSerif.className}>
-        <div id="app-root">
+        <div className="text-center">
           <ClientLayout>{children}</ClientLayout>
         </div>
       </body>
