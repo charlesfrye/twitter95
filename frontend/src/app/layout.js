@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full w-full">
       <body className={msSansSerif.className}>
-        <div className="w-full h-full text-center">
+        <div className="text-center">
           <ClientLayout>{children}</ClientLayout>
         </div>
       </body>
