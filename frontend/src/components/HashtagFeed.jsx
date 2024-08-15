@@ -39,8 +39,8 @@ function HashtagFeed({ hashtagText }) {
       <div className="flex flex-col justify-center items-center h-full space-y-8">
         {tweets
           ? tweets.map((tweet, index) => (
-            <div className="w-[600px]">
-              <Tweet key={index} tweet={tweet} showStats={true} />
+            <div className="w-[600px]" key={index}>
+              <Tweet tweet={tweet} showStats={true} />
             </div>
             ))
           : null}

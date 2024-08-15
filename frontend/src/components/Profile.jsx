@@ -46,8 +46,8 @@ function Profile({ userId }) {
 
       {profile && profile.tweets && profile.tweets.length > 0 ? (
         profile.tweets.map((tweet, index) => (
-          <div className="w-[600px]">
-            <Tweet key={index} tweet={tweet} showStats={true} />
+          <div className="w-[600px]" key={index}>
+            <Tweet tweet={tweet} showStats={true} />
           </div>
         ))
       ) : (
