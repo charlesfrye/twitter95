@@ -12,6 +12,7 @@ import Trending from "./Trending";
 import MetaTags from "./MetaTags";
 import { FakeTimeContext } from "./FakeTimeContext";
 import { formatTime, fakeNow } from "../services/database";
+import Marquee from "react-fast-marquee";
 
 function LayoutContent({ children }) {
   const router = useRouter();
@@ -69,8 +70,12 @@ function LayoutContent({ children }) {
     <>
       <MetaTags />
       <div className="app">
-        <Sidebar className="sidebarLeft" options={leftSidebarOptions} />
+        <Sidebar className="sidebarLeft z-10" options={leftSidebarOptions} />
         <div className="middle">
+          <Marquee className="py-1 -mb-2 z-0 pause-on text-[#7FEE64] hover:text-[#48ffa7]" gradient={true} gradientColor="black">
+              <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp;</a>
+          </Marquee>
+          {children}
           {displayTimeTravel && (
             <div className="fixed bottom-0 left-0 w-full z-50">
               <p className="bg-[#7FEE64] py-1 text-black ">
@@ -85,7 +90,7 @@ function LayoutContent({ children }) {
               </p>
             </div>
           )}
-          {children}
+
         </div>
         <Sidebar className="sidebarRight" options={rightSidebarOptions}>
           <div className="text-[#7FEE64] text-2xl">
