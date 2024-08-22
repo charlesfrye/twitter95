@@ -28,13 +28,12 @@ volume = modal.Volume.from_name("llamas", create_if_missing=False)
 @app.function(
     image=vllm_image,
     gpu=modal.gpu.H100(count=N_GPU),
-    memory=336 * GIGABYTES,  # max
-    container_idle_timeout=20 * MINUTES,
+    container_idle_timeout=1 * MINUTES,
     timeout=1 * HOURS,
     allow_concurrent_inputs=100,
     volumes={"/llamas": volume},
     secrets=[modal.Secret.from_name("vllm-secret")],
-    keep_warm=1,
+    keep_warm=0,
     concurrency_limit=1,
 )
 @modal.asgi_app()
