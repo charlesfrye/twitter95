@@ -202,7 +202,7 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
             f"\t```tweet {tweet.tweet_id}\n\t"
             + tweet.text
             + f"\n\t```\n\tposted by you at {tweet.fake_time.isoformat(timespec='minutes')} with TweetID# {tweet.tweet_id}"
-            + (f"quoting tweet with TweetID# {tweet.quoted}" if tweet.quoted else "")
+            + (f" quoting tweet with TweetID# {tweet.quoted}" if tweet.quoted else "")
             + "\n\t"
             for tweet in posts
         ]
@@ -263,13 +263,11 @@ def take_action(name, bio, timeline, posts, fake_time=None, verbose=False):
     prompt = textwrap.dedent(prompt)
 
     client = OpenAI(api_key=os.environ["VLLM_API_KEY"])
-    client.base_url = (
-        "https://ex-twitter--vllm-openai-compatible-405b-serve.modal.run/v1"
-    )
+    client.base_url = "https://ex-twitter--vllm-openai-compatible-serve.modal.run/v1"
     client = instructor.from_openai(client)
 
     action = client.chat.completions.create(
-        model="/llamas/meta-llama/Meta-Llama-3.1-405B-Instruct-FP8",
+        model="/llamas/NousResearch/Hermes-3-Llama-3.1-70B-FP8",
         response_model=Union[QuoteTweet, DoNothing],
         temperature=0.7,
         frequency_penalty=2.0,
