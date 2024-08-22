@@ -1,11 +1,10 @@
 import modal
 
-MODEL_NAME = "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8"
-MODEL_REVISION = "a8f01524ffd5c05a7de914a51fae0b5afe738d3b"
+MODEL_NAME = "NousResearch/Hermes-3-Llama-3.1-70B-FP8"
+MODEL_REVISION = "091814e7b637c90d9bb62aee6eddfa38b22cd5da"
 
 volume = modal.Volume.from_name("llamas", create_if_missing=True)
 volumes = {"/llamas": volume}
-MODEL_DIR = f"/llamas/{MODEL_NAME}"
 
 image = (
     modal.Image.debian_slim(python_version="3.10")
@@ -48,5 +47,9 @@ def download_model(model_dir, model_name, model_revision):
 
 
 @app.local_entrypoint()
-def main():
-    download_model.remote(MODEL_DIR, MODEL_NAME, MODEL_REVISION)
+def main(model_name: str = None, model_revision: str = None):
+    MODEL_DIR = f"/llamas/{MODEL_NAME}"
+    if model_name is None:
+        model_name = MODEL_NAME
+        model_revision = MODEL_REVISION
+    download_model.remote(MODEL_DIR, model_name, model_revision)
