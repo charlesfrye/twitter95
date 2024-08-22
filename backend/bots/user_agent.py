@@ -98,17 +98,47 @@ def go(
         if any(tweet.text.strip() == action.text.strip() for tweet in timeline):
             warnings.warn("repeating a quote tweet, skipping")
             return
+    if isinstance(action, (Tweet, QuoteTweet)):
+        if tweet.text.strip() == "":
+            warnings.warn("empty tweet, skipping")
+            return
     if isinstance(action, DoNothing) or dryrun:
         return
     else:
         send_tweet(profile.user.user_id, action, fake_time=fake_time)
 
 
-def send_tweet(user_id, tweet, fake_time=None):
+def send_tweet(user_id, tweet, fake_time=None, cleanup=True):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
+    if cleanup:
+        tweet.text = cleanup_text(tweet.text)
 
     Client.create_tweet.remote(user_id, fake_time=str(fake_time), **tweet.dict())
+
+
+def cleanup_text(text):
+    """Remove common LLM artifacts from the text."""
+    import re
+
+    # LLM took "quote tweet" too literally
+    if text.endswith('"'):
+        text = text.strip('"')
+
+    # improper hashtag, usually ID number
+    hashtag_number_pattern = r"(^|\s)(#\d+)(\s|$)"
+    text = re.sub(hashtag_number_pattern, " ", text)
+    # improper user mention, usually ID number
+    mention_number_pattern = r"(^|\s)(@\d+)(\s|$)"
+    text = re.sub(mention_number_pattern, " ", text)
+    # json
+    json_pattern = r"(\{.*\})"
+    text = re.sub(json_pattern, "", text)
+    # brackets
+    bracket_pattern = r"(\[.*\]|<.*>|\(.*\))"
+    text = re.sub(bracket_pattern, "", text)
+
+    return text
 
 
 def get_profile(user_name="NewYorkTimes"):
