@@ -10,24 +10,24 @@ vllm_image = modal.Image.debian_slim(python_version="3.10").pip_install(
     ]
 )
 
-MODEL_NAME = "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8"
-MODEL_REVISION = "d8e5bf570eac69f7dfc596cfaaebe6acbf95ca2e"
+MODEL_NAME = "NousResearch/Hermes-3-Llama-3.1-70B-FP8"
+MODEL_REVISION = "091814e7b637c90d9bb62aee6eddfa38b22cd5da"
 MODEL_DIR = f"/llamas/{MODEL_NAME}"
 
 MINUTES = 60  # seconds
 HOURS = 60 * MINUTES
 GIGABYTES = 1024  # megabytes
 
-app = modal.App("vllm-openai-compatible-405b")
+app = modal.App("vllm-openai-compatible")
 
-N_GPU = 8
+N_GPU = 2
 
 volume = modal.Volume.from_name("llamas", create_if_missing=False)
 
 
 @app.function(
     image=vllm_image,
-    gpu=modal.gpu.A100(count=N_GPU, size="80GB"),
+    gpu=modal.gpu.H100(count=N_GPU),
     memory=336 * GIGABYTES,  # max
     container_idle_timeout=20 * MINUTES,
     timeout=1 * HOURS,
@@ -92,7 +92,7 @@ def serve():
         model=MODEL_DIR,
         tensor_parallel_size=N_GPU,
         gpu_memory_utilization=0.90,
-        max_model_len=2048 + 256,
+        max_model_len=2048 + 512,
         enforce_eager=False,
     )
 
