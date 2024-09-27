@@ -60,7 +60,7 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
     const tweetContent = `https://x.com/intent/post?text=${text}`;
     window.open(tweetContent, "_blank");
   };
-  
+
   return (
     tweet && (
       <div>
@@ -108,7 +108,7 @@ function Tweet({ tweet, showStats, showQuoted = true }) {
                   <Counter value={tweet.quotes} minLength={3} />
                 </div>
               )}
-              <div className="flex items-center justify-center space-x-5">
+              <div className="flex items-center justify-center space-x-5 py-2">
                 <Button onClick={handleRetweetClick}>Retweet</Button>
               </div>
             </div>
