@@ -66,7 +66,7 @@ function LayoutContent({ children }) {
     router.push("/timeline");
   }
 
-  
+
   return (
     <div className="h-full w-full ">
       <MetaTags />
@@ -74,11 +74,6 @@ function LayoutContent({ children }) {
         <Sidebar className="z-10 h-100 fixed top-0 left-0 bottom-0" options={leftSidebarOptions} />
         <div className="w-full flex justify-center">
           <div className="w-3/5">
-            <div className="h-6 mt-3">
-              <Marquee className="w-10 text-[#7FEE64] hover:text-[#48ffa7]" gradient={true} gradientColor="black">
-                  <a href="https://x.com/posts1995">&nbsp;Follow @Posts1995 on real twitter to keep up with the best from Twitter &apos;95.&nbsp;</a>
-              </Marquee>
-            </div>
             <div className="px-[10%]">
               {children}
             </div>
