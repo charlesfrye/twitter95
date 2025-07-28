@@ -99,7 +99,7 @@ def go(
             warnings.warn("repeating a quote tweet, skipping")
             return
     if isinstance(action, (Tweet, QuoteTweet)):
-        if tweet.text.strip() == "":
+        if action.text.strip() == "":
             warnings.warn("empty tweet, skipping")
             return
     if isinstance(action, DoNothing) or dryrun:
