@@ -15,8 +15,7 @@ BOT_DATA_FILE = Path(__file__).parent.parent / "data" / "nyt-topics.jsonl"
 
 app = modal.App(
     "nyt-topics",
-    image=modal.Image.debian_slim(python_version="3.11"),
-    mounts=[modal.Mount.from_local_file(BOT_DATA_FILE)],
+    image=modal.Image.debian_slim(python_version="3.11").add_local_file(BOT_DATA_FILE, "/nyt-topics.jsonl")
 )
 app.include(nyt_common.app)
 

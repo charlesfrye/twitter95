@@ -34,7 +34,7 @@ app = modal.App(
 
 @app.function()
 def get_bot_id(user_name: str):
-    bot_user = Client.get_user_by_name.remote(user_name)
+    bot_user = Client().get_user_by_name.remote(user_name)
     bot_user_id = bot_user["user_id"]
     print(f"bot user: {bot_user}")
     return int(bot_user_id)
