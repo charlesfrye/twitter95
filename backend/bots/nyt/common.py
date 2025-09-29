@@ -11,7 +11,7 @@ BOT_PROFILE_PIC = (
     "https://1000logos.net/wp-content/uploads/2017/04/New-York-Times-emblem.jpg"
 )
 
-image = modal.Image.debian_slim(python_version="3.11").pip_install("pandas==2.2.2")
+image = modal.Image.debian_slim(python_version="3.11").pip_install("pandas==2.2.2").add_local_python_source("common")
 volume = modal.Volume.from_name("nyt-headlines", create_if_missing=True)
 ARCHIVE_ROOT = Path("/archive")
 
@@ -29,7 +29,6 @@ app = modal.App(
     "nyt_bot",
     image=image,
     volumes={ARCHIVE_ROOT: volume},
-    mounts=[common.mount],
 )
 
 
