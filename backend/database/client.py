@@ -12,7 +12,7 @@ DB_URL_SUFFIX = ".modal.run"
 
 DB_BASE_URL = f"https://{DB_URL_PREFIX}{DB_URL_SUFFIX}"
 
-image = modal.Image.debian_slim(python_version="3.11").pip_install("aiohttp==3.9.5")
+image = modal.Image.debian_slim(python_version="3.11").pip_install("aiohttp==3.9.5").add_local_python_source("common")
 
 app = modal.App(
     "db-client-sdk", image=image, secrets=[modal.Secret.from_name("api-key")]
@@ -171,7 +171,7 @@ class Client:
         async with self.session.post("/query/", json={"query": query}) as resp:
             resp.raise_for_status()
             return await resp.json()
-        
+
     @modal.method()
     async def read_all_tweets(self, limit: int = 10):
         async with self.session.get(
@@ -182,7 +182,7 @@ class Client:
         ) as resp:
             resp.raise_for_status()
             return await resp.json()
-        
+
 
     @modal.exit()
     async def close(self):
