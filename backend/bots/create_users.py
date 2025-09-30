@@ -7,11 +7,10 @@ import common
 from bots.common import Client
 
 
-image = modal.Image.debian_slim(python_version="3.11").pip_install()
+image = modal.Image.debian_slim(python_version="3.11").add_local_python_source("common")
 
 app = modal.App(
-    "create-users",
-    mounts=[common.mount],
+    "create-users"
 )
 
 
@@ -37,7 +36,7 @@ with image.imports():
     import common.pydantic_models as models
 
 
-@app.function()
+@app.function(image=image)
 def create_from_spec(user_spec, allow_errors=False, dryrun=True):
     user_name = user_spec.get("user_name", slugify(user_spec["name"]))
     display_name = user_spec["name"]
@@ -80,6 +79,6 @@ def main(path: str, allow_errors: bool = False, dryrun: bool = True, key=None):
     ):
         results.append(result)
     if not dryrun:
-        print(f"Created {len(filter(lambda uid: uid > 0, results))} users.")
+        print(f"Created {len(list(filter(lambda uid: uid > 0, results)))} users.")
     else:
-        print(f"Would've created {len(filter(lambda uid: uid == 0, results))} users.")
+        print(f"Would've created {len(list(filter(lambda uid: uid == 0, results)))} users.")
