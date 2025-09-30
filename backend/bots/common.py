@@ -1,4 +1,4 @@
 import modal
 
 
-Client = modal.Cls.lookup("db-client-sdk", "Client")
+Client = modal.Cls.from_name("db-client-sdk", "Client")

@@ -13,10 +13,11 @@ from . import common as nyt_common
 
 BOT_DATA_FILE = Path(__file__).parent.parent / "data" / "nyt-topics.jsonl"
 
+image = modal.Image.debian_slim(python_version="3.11").add_local_file(BOT_DATA_FILE, "/nyt-topics.jsonl").add_local_python_source("common")
+
 app = modal.App(
     "nyt-topics",
-    image=modal.Image.debian_slim(python_version="3.11"),
-    mounts=[modal.Mount.from_local_file(BOT_DATA_FILE)],
+    image=image
 )
 app.include(nyt_common.app)
 
@@ -76,7 +77,7 @@ async def post_nyt_articles(
         fake_time += timedelta(hours=1)
 
 
-@app.function(schedule=modal.Period(hours=1))
+@app.function(schedule=modal.Period(hours=1), image=image)
 def post_all_bots(fake_time: datetime = None, dryrun: bool = False):
     topics_bots = get_topics_bots()
     for topic_bot in topics_bots:

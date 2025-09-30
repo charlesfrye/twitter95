@@ -83,6 +83,8 @@ def accept_article(article):
 
 @app.local_entrypoint()
 def main(fake_time: str = None, lookahead_hours: int = None, dryrun: bool = True):
+    if fake_time is None:
+        fake_time = "1995-01-01#12:00:00"
     post_nyt_articles.remote(
         datetime.fromisoformat(fake_time), lookahead_hours, dryrun=dryrun
     )

@@ -12,7 +12,7 @@ import common
 
 image = modal.Image.debian_slim(python_version="3.11").pip_install(
     "asyncpg==0.29.0", "sqlalchemy[asyncio]==2.0.30", "requests==2.32.3"
-)
+).add_local_python_source("common")
 
 
 app = modal.App(
@@ -43,11 +43,10 @@ NYT_BOTS = (
 
 
 @app.function(
-    keep_warm=1,
-    allow_concurrent_inputs=1000,
-    concurrency_limit=1,
-    mounts=[common.mount],
+    min_containers=1,
+    max_containers=1
 )
+@modal.concurrent(max_inputs=1000)
 @modal.asgi_app()
 def api() -> FastAPI:
     """API for accessing the Twitter '95 database.

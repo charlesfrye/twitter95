@@ -20,22 +20,20 @@ GIGABYTES = 1024  # megabytes
 
 app = modal.App("vllm-openai-compatible")
 
-N_GPU = 2
+N_GPU = 1
 
 volume = modal.Volume.from_name("llamas", create_if_missing=False)
 
 
 @app.function(
     image=vllm_image,
-    gpu=modal.gpu.H100(count=N_GPU),
-    container_idle_timeout=1 * MINUTES,
+    gpu="H200",
+    scaledown_window=1 * MINUTES,
     timeout=1 * HOURS,
-    allow_concurrent_inputs=100,
     volumes={"/llamas": volume},
     secrets=[modal.Secret.from_name("vllm-secret")],
-    keep_warm=0,
-    concurrency_limit=1,
 )
+@modal.concurrent(max_inputs=100)
 @modal.asgi_app()
 def serve():
     import asyncio
@@ -92,7 +90,7 @@ def serve():
         tensor_parallel_size=N_GPU,
         gpu_memory_utilization=0.90,
         max_model_len=2048 + 512,
-        enforce_eager=False,
+        enforce_eager=True,
     )
 
     engine = AsyncLLMEngine.from_engine_args(

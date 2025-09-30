@@ -16,12 +16,11 @@ MINUTES = 60
 
 image = modal.Image.debian_slim(python_version="3.11").pip_install(
     "openai", "instructor"
-)
+).add_local_python_source("common")
 
 app = modal.App(
     "user_agent",
-    image=image,
-    mounts=[common.mount],
+    image=image
 )
 
 with image.imports():
@@ -114,7 +113,7 @@ def send_tweet(user_id, tweet, fake_time=None, cleanup=True):
     if cleanup:
         tweet.text = cleanup_text(tweet.text)
 
-    Client.create_tweet.remote(user_id, fake_time=str(fake_time), **tweet.dict())
+    Client().create_tweet.remote(user_id, fake_time=str(fake_time), **tweet.dict())
 
 
 def cleanup_text(text):
@@ -142,7 +141,7 @@ def cleanup_text(text):
 
 
 def get_profile(user_name="NewYorkTimes"):
-    profile = Client.get_user_profile.remote(user_name)
+    profile = Client().get_user_profile.remote(user_name)
 
     user = models.ProfileRead(**profile)
 
@@ -153,7 +152,7 @@ def get_timeline(user_name=None, fake_time=None, limit=10):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    timeline = Client.read_user_timeline.remote(user_name, fake_time, limit)
+    timeline = Client().read_user_timeline.remote(user_name, fake_time, limit)
     timeline = [models.FullTweetRead(**tweet) for tweet in timeline]
     return timeline
 
@@ -162,7 +161,7 @@ def get_posts(user_name=None, fake_time=None, limit=5):
     if fake_time is None:
         fake_time = common.to_fake(datetime.utcnow())
 
-    posts = Client.read_user_posts.remote(user_name, fake_time, limit)
+    posts = Client().read_user_posts.remote(user_name, fake_time, limit)
     posts = [models.FullTweetRead(**post) for post in posts]
     return posts
 
@@ -170,7 +169,7 @@ def get_posts(user_name=None, fake_time=None, limit=5):
 def get_random_user_name():
     source_bots = (3, 144, 145, 146, 147, 148, 149, 150, 151)
     query = f'SELECT * FROM "users" WHERE user_id NOT IN {source_bots} ORDER BY RANDOM() LIMIT 1;'
-    random_user = Client.run_query.remote(query)["result"][0]
+    random_user = Client().run_query.remote(query)["result"][0]
     return random_user["user_name"]
 
 

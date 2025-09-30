@@ -12,10 +12,9 @@ app = modal.App(
     "nyt_etl",
     image=modal.Image.debian_slim(python_version="3.11").pip_install(
         "pynytimes==0.10.0"
-    ),
+    ).add_local_python_source("common"),
     secrets=[modal.Secret.from_name("nyt-api-secret")],
     volumes=nyt_common.volumes,
-    mounts=[common.mount],
 )
 
 with nyt_common.image.imports():
