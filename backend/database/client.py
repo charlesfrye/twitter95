@@ -22,7 +22,7 @@ with image.imports():
     import aiohttp
 
 
-@app.cls(mounts=[common.mount])
+@app.cls()
 class Client:
     @modal.enter()
     async def connect(self):
